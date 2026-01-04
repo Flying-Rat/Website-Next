@@ -91,25 +91,27 @@ const ProjectCard = memo(
         onKeyDown={handleKeyDown}
       >
         <div className="aspect-video bg-[var(--color-surface-light)] relative overflow-hidden">
-          {project.image ? (
-            <Image
-              src={project.image}
-              alt={project.title}
-              fill
-              className="object-cover group-hover:scale-105 transition-transform duration-300"
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-            />
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-center">
-                <span className="text-4xl">🧀</span>
-                <p className="text-xs text-[var(--color-text-subtle)] mt-2">
-                  {t("projects.comingSoon")}
-                </p>
+          <div className="absolute inset-0 transition-transform duration-[400ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105 will-change-transform">
+            {project.image ? (
+              <Image
+                src={project.image}
+                alt={project.title}
+                fill
+                className="object-cover"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              />
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="text-center">
+                  <span className="text-4xl">🧀</span>
+                  <p className="text-xs text-[var(--color-text-subtle)] mt-2">
+                    {t("projects.comingSoon")}
+                  </p>
+                </div>
               </div>
-            </div>
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-surface-light)]/80 to-transparent" />
+            )}
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-surface-light)]/80 to-transparent pointer-events-none" />
 
           {project.isInternal && (
             <div className="absolute top-3 right-3 px-2 py-1 bg-accent text-xs font-semibold rounded">

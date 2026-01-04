@@ -67,8 +67,8 @@
     ],
     "image": "/images/projects/silica.jpg",
     "description": {
-      "en": "Executed targeted CPU and GPU performance optimizations. Profiling-driven instruction cycle reduction and render pipeline optimizations",
-      "cs": "Cílené optimalizace výkonu CPU a GPU. Redukce instrukčních cyklů na základě profilování a optimalizace renderovací pipeline"
+      "en": "Executed targeted CPU and GPU performance optimizations. Profiling-driven instruction cycle reduction and render pipeline optimizations.",
+      "cs": "Cílené optimalizace výkonu CPU a GPU. Redukce instrukčních cyklů na základě profilování a optimalizace renderovací pipeline."
     }
   },
   {
@@ -95,8 +95,8 @@
     ],
     "image": "/images/projects/wrath.jpg",
     "description": {
-      "en": "Rewrote original Quake-engine logic to Unity C# while maintaining 1:1 physics and rendering parity. Ported optimized console versions",
-      "cs": "Přepis původní logiky Quake enginu do Unity C# se zachováním fyziky a renderování v poměru 1:1. Portování optimalizovaných verzí pro konzole"
+      "en": "Rewrote original Quake-engine logic to Unity C# while maintaining 1:1 physics and rendering parity. Ported optimized console versions.",
+      "cs": "Přepis původní logiky Quake enginu do Unity C# se zachováním fyziky a renderování v poměru 1:1. Portování optimalizovaných verzí pro konzole."
     }
   },
   {
@@ -119,8 +119,8 @@
     ],
     "image": "/images/projects/phantom-fury.jpg",
     "description": {
-      "en": "Extended existing core gameplay architectures and system component logic",
-      "cs": "Rozšíření existující architektury gameplaye a logiky systémových komponent"
+      "en": "Extended existing core gameplay architectures and system component logic.",
+      "cs": "Rozšíření existující architektury gameplaye a logiky systémových komponent."
     }
   },
   {
@@ -135,8 +135,8 @@
     ],
     "image": "/images/projects/specter.jpg",
     "description": {
-      "en": "Full-cycle engineering from concept to gold master. Architected on web-native stack utilizing TypeScript and BabylonJS with hardware-accelerated WebGL rendering",
-      "cs": "Kompletní technický vývoj od konceptu po vydání. Postaveno na web-native stacku s využitím TypeScriptu a BabylonJS s hardwarově akcelerovaným WebGL vykreslováním"
+      "en": "Full-cycle engineering from concept to gold master. Architected on web-native stack utilizing TypeScript and BabylonJS with hardware-accelerated WebGL rendering.",
+      "cs": "Kompletní technický vývoj od konceptu po vydání. Postaveno na web-native stacku s využitím TypeScriptu a BabylonJS s hardwarově akcelerovaným WebGL vykreslováním."
     }
   },
   {
@@ -159,8 +159,8 @@
     ],
     "image": "/images/projects/last-oricru.jpg",
     "description": {
-      "en": "Engineered platform abstraction layers for console targets. Implemented low-level networking code for multiplayer and optimized GPU and CPU performance",
-      "cs": "Návrh abstrakčních vrstev pro konzolové platformy. Implementace nízkoúrovňového síťového kódu pro multiplayer a optimalizace výkonu GPU a CPU"
+      "en": "Engineered platform abstraction layers for console targets. Implemented low-level networking code for multiplayer and optimized GPU and CPU performance.",
+      "cs": "Návrh abstrakčních vrstev pro konzolové platformy. Implementace nízkoúrovňového síťového kódu pro multiplayer a optimalizace výkonu GPU a CPU."
     }
   },
   {
@@ -191,8 +191,8 @@
     ],
     "image": "/images/projects/darkest-dungeon-1.jpg",
     "description": {
-      "en": "Revitalized legacy C++ codebase to utilize modern C++ features and latest compilers (clang, gcc, msvc). Upgraded dependencies and created native x64 builds",
-      "cs": "Modernizace legacy C++ kódu s využitím moderních vlastností jazyka a nejnovějších kompilátorů (clang, gcc, msvc). Aktualizace závislostí a vytvoření nativních x64 buildů"
+      "en": "Revitalized legacy C++ codebase to utilize modern C++ features and latest compilers (clang, gcc, msvc). Upgraded dependencies and created native x64 builds.",
+      "cs": "Modernizace legacy C++ kódu s využitím moderních vlastností jazyka a nejnovějších kompilátorů (clang, gcc, msvc). Aktualizace závislostí a vytvoření nativních x64 buildů."
     }
   },
   {
@@ -207,8 +207,8 @@
     ],
     "image": "/images/projects/soulbound-legions.jpg",
     "description": {
-      "en": "Core gameplay programming within existing engineering team. VFX creation and implementation",
-      "cs": "Programování core gameplaye v rámci existujícího týmu. Tvorba a implementace VFX"
+      "en": "Core gameplay programming within existing engineering team. VFX creation and implementation.",
+      "cs": "Programování core gameplaye v rámci existujícího týmu. Tvorba a implementace VFX."
     }
   },
   {
@@ -227,8 +227,8 @@
     ],
     "image": "/images/projects/mothergunship-forge.jpg",
     "description": {
-      "en": "Engine version migrations and platform-specific SDK middleware updates",
-      "cs": "Migrace verzí enginu a aktualizace platformě specifických SDK a middlewaru"
+      "en": "Engine version migrations and platform-specific SDK middleware updates.",
+      "cs": "Migrace verzí enginu a aktualizace platformě specifických SDK a middlewaru."
     }
   },
   {
