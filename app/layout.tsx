@@ -1,7 +1,7 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
@@ -42,22 +42,13 @@ export const metadata: Metadata = {
   },
 };
 
-const themeScript = `
-(function() {
-  var theme = localStorage.getItem('theme');
-  var resolved = theme;
-  if (!theme || theme === 'system') {
-    resolved = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-  }
-  document.documentElement.classList.add(resolved);
-})();
-`;
+const themeScript = `(function(){var t=localStorage.getItem('theme');document.documentElement.classList.add(t&&t!=='system'?t:matchMedia('(prefers-color-scheme:light)').matches?'light':'dark')})()`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={inter.variable} suppressHydrationWarning>
       <head>
-        {/* biome-ignore lint/security/noDangerouslySetInnerHtml: Theme script injection needed for FOUC prevention */}
+        {/* biome-ignore lint/security/noDangerouslySetInnerHtml: Required for FOUC prevention */}
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body className="bg-[var(--color-bg)] text-[var(--color-text)] antialiased transition-colors">
