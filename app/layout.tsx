@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 const inter = Inter({
@@ -61,6 +63,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="bg-[var(--color-bg)] text-[var(--color-text)] antialiased transition-colors">
         <div className="crt-overlay" aria-hidden="true" />
         {children}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
