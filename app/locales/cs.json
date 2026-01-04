@@ -1,0 +1,79 @@
+{
+  "nav": {
+    "about": "O nás",
+    "whatWeDo": "Co děláme",
+    "projects": "Projekty",
+    "blog": "Tech Blog",
+    "contact": "Kontakt",
+    "toggleMenu": "Přepnout menu"
+  },
+  "hero": {
+    "tagline": "Odemykáme nová dobrodružství",
+    "subtitle": "Pražské studio, které pomáhá týmům vydávat skvělé hry – od gameplaye až po konzolové porty.",
+    "trustedBy": "Důvěřují nám týmy z",
+    "cta": {
+      "projects": "Naše práce",
+      "contact": "Ozvěte se"
+    }
+  },
+  "about": {
+    "title": "Řešíme složité výzvy",
+    "description1": "Jsme pražský tým, který si poradí s tím nejtěžším: herní systémy, optimalizace výkonu, renderovací pipeline a portování na PlayStation, Xbox, Switch a handheldy.",
+    "description2": "Studia se na nás obracejí, když potřebují vyřešit náročné technické úkoly a stihnout termíny.",
+    "stats": {
+      "projects": "Projektů",
+      "years": "Let zkušeností",
+      "passion": "Vášeň"
+    },
+    "focus": {
+      "title": "Technická excelence",
+      "subtitle": "Jsme posedlí výkonem a dotažením detailů."
+    }
+  },
+  "whatWeDo": {
+    "title": "Co děláme",
+    "subtitle": "Specializovaný tým, který dokáže rychle dostat ambiciózní hry na více platforem.",
+    "engineering": {
+      "title": "Engineering",
+      "body": "Pracujeme přímo v enginech Unreal, Unity a Godot, ale dobře se orientujeme i v proprietárních technologiích na bázi C/C++ a Rustu. Stavíme stabilní systémy a výkon, který obstojí v produkci."
+    },
+    "porting": {
+      "title": "Portování",
+      "body": "Vydáváme hry na Xbox One, Xbox Series, PlayStation 4, PlayStation 5, Nintendo Switch, Switch 2 a VR platformy jako Meta Quest. Platformní specifika řešíme pečlivě, aby hratelnost, výkon i certifikace proběhly hladce."
+    },
+    "qa": {
+      "title": "In-house QA",
+      "body": "Náš QA tým pracuje přímo s vývojáři, rychle ověřuje změny a zkracuje tím iterace. Zároveň provádí compliance kontroly pro každou platformu u každého buildu."
+    },
+    "release": {
+      "title": "Release management",
+      "body": "Nastavíme tituly, vyladíme profily a provedeme celý proces od buildu až po produkci. Postup je strukturovaný, opakovatelný a přehledný pro všechny strany."
+    },
+    "backend": {
+      "title": "Backend a cloud",
+      "body": "Stavíme API a backendové služby na AWS a Azure s využitím moderního stacku. Spolehlivost, observabilita a udržitelnost jsou pro nás klíčové."
+    },
+    "ai": {
+      "title": "AI",
+      "body": "Interně vyvíjíme a trénujeme modely, které pomáhají týmům v každém kroku vývoje – od prototypu po finální ladění. Cílem je reálné zrychlení práce, žádný hype."
+    }
+  },
+  "projects": {
+    "title": "Naše práce",
+    "subtitle": "Jsme hrdí, že můžeme být součástí těchto skvělých projektů.",
+    "internal": "Interní",
+    "comingSoon": "Již brzy",
+    "tba": "TBA"
+  },
+  "contact": {
+    "title": "Máte projekt v hlavě?",
+    "subtitle": "Rádi si o něm popovídáme. Napište nám a uvidíme, co společně vymyslíme.",
+    "cta": "Napište Martymu",
+    "social": "Nebo nás najdete na sítích.",
+    "statusAvailable": "K dispozici"
+  },
+  "footer": {
+    "rights": "Všechna práva vyhrazena.",
+    "cookies": "Žádné cookies tu nejsou, všechny jsme snědli. 🍪"
+  }
+}

@@ -1,0 +1,246 @@
+[
+  {
+    "id": "beat-saber",
+    "title": "Beat Saber",
+    "studio": "Meta / Beat Games",
+    "platforms": [
+      {
+        "name": "Steam",
+        "url": "https://store.steampowered.com/app/620980/Beat_Saber/"
+      },
+      {
+        "name": "PlayStation",
+        "url": "https://store.playstation.com/en-us/product/UP4882-PPSA14734_00-BEATSABERFULLPS5"
+      },
+      {
+        "name": "Meta Quest",
+        "url": "https://www.meta.com/experiences/2448060205267927/"
+      }
+    ],
+    "image": "/images/projects/beat-saber.jpg",
+    "description": {
+      "en": "Ongoing engineering support for the world's most popular VR rhythm game. Performance optimization, platform integrations, and new feature development.",
+      "cs": "Dlouhodobá technická podpora pro nejpopulárnější VR rytmickou hru na světě. Optimalizace výkonu, integrace platforem a vývoj nových funkcí."
+    }
+  },
+  {
+    "id": "darkest-dungeon-2",
+    "title": "Darkest Dungeon 2",
+    "studio": "Red Hook Studios",
+    "platforms": [
+      {
+        "name": "Steam",
+        "url": "https://store.steampowered.com/app/1940340/Darkest_Dungeon_II/"
+      },
+      {
+        "name": "Epic",
+        "url": "https://store.epicgames.com/en-US/p/darkest-dungeon-2"
+      },
+      {
+        "name": "PlayStation",
+        "url": "https://store.playstation.com/en-us/product/UP2619-PPSA19590_00-0191103846959805"
+      },
+      {
+        "name": "Xbox",
+        "url": "https://www.xbox.com/en-US/games/store/darkest-dungeon-ii/9n0q3tgwhg1f"
+      },
+      {
+        "name": "Switch",
+        "url": "https://www.nintendo.com/us/store/products/darkest-dungeon-ii-switch/"
+      }
+    ],
+    "image": "/images/projects/darkest-dungeon-2.jpg",
+    "description": {
+      "en": "Console ports for PlayStation, Xbox, and Nintendo Switch. Adapted the roguelike experience for controllers and optimized performance across all platforms.",
+      "cs": "Konzolové porty pro PlayStation, Xbox a Nintendo Switch. Přizpůsobení roguelike hratelnosti pro ovladače a optimalizace výkonu napříč všemi platformami."
+    }
+  },
+  {
+    "id": "silica",
+    "title": "Silica",
+    "studio": "Bohemia Incubator",
+    "platforms": [
+      {
+        "name": "Steam",
+        "url": "https://store.steampowered.com/app/1494420/Silica/"
+      }
+    ],
+    "image": "/images/projects/silica.jpg",
+    "description": {
+      "en": "Executed targeted CPU and GPU performance optimizations. Profiling-driven instruction cycle reduction and render pipeline optimizations",
+      "cs": "Cílené optimalizace výkonu CPU a GPU. Redukce instrukčních cyklů na základě profilování a optimalizace renderovací pipeline"
+    }
+  },
+  {
+    "id": "wrath",
+    "title": "WRATH: Aeon of Ruin",
+    "studio": "3D Realms",
+    "platforms": [
+      {
+        "name": "Steam",
+        "url": "https://store.steampowered.com/app/1000410/WRATH_Aeon_of_Ruin/"
+      },
+      {
+        "name": "PlayStation",
+        "url": "https://store.playstation.com/en-us/concept/233288"
+      },
+      {
+        "name": "Xbox",
+        "url": "https://www.xbox.com/en-US/games/store/wrath-aeon-of-ruin/9nz2xwjlgjsv"
+      },
+      {
+        "name": "Switch",
+        "url": "https://www.nintendo.com/us/store/products/wrath-aeon-of-ruin-switch/"
+      }
+    ],
+    "image": "/images/projects/wrath.jpg",
+    "description": {
+      "en": "Rewrote original Quake-engine logic to Unity C# while maintaining 1:1 physics and rendering parity. Ported optimized console versions",
+      "cs": "Přepis původní logiky Quake enginu do Unity C# se zachováním fyziky a renderování v poměru 1:1. Portování optimalizovaných verzí pro konzole"
+    }
+  },
+  {
+    "id": "phantom-fury",
+    "title": "Phantom Fury",
+    "studio": "Slipgate Ironworks",
+    "platforms": [
+      {
+        "name": "Steam",
+        "url": "https://store.steampowered.com/app/1733240/Phantom_Fury/"
+      },
+      {
+        "name": "PlayStation",
+        "url": "https://store.playstation.com/en-us/product/UP5459-PPSA15627_00-PHANTOMFURYGAME1"
+      },
+      {
+        "name": "Xbox",
+        "url": "https://www.xbox.com/en-US/games/store/phantom-fury/9pgmvwh6dd31"
+      }
+    ],
+    "image": "/images/projects/phantom-fury.jpg",
+    "description": {
+      "en": "Extended existing core gameplay architectures and system component logic",
+      "cs": "Rozšíření existující architektury gameplaye a logiky systémových komponent"
+    }
+  },
+  {
+    "id": "specter",
+    "title": "Specter",
+    "studio": "VR Group",
+    "platforms": [
+      {
+        "name": "Website",
+        "url": "https://www.doarmady.cz/hry/specter"
+      }
+    ],
+    "image": "/images/projects/specter.jpg",
+    "description": {
+      "en": "Full-cycle engineering from concept to gold master. Architected on web-native stack utilizing TypeScript and BabylonJS with hardware-accelerated WebGL rendering",
+      "cs": "Kompletní technický vývoj od konceptu po vydání. Postaveno na web-native stacku s využitím TypeScriptu a BabylonJS s hardwarově akcelerovaným WebGL vykreslováním"
+    }
+  },
+  {
+    "id": "last-oricru",
+    "title": "The Last Oricru",
+    "studio": "Gold Knights",
+    "platforms": [
+      {
+        "name": "Steam",
+        "url": "https://store.steampowered.com/app/1663640/The_Last_Oricru/"
+      },
+      {
+        "name": "PlayStation",
+        "url": "https://store.playstation.com/en-se/product/EP6713-PPSA04866_00-LASTORICRU0000EU"
+      },
+      {
+        "name": "Xbox",
+        "url": "https://www.xbox.com/en-us/games/store/the-last-oricru/9nhsqv0grw9z"
+      }
+    ],
+    "image": "/images/projects/last-oricru.jpg",
+    "description": {
+      "en": "Engineered platform abstraction layers for console targets. Implemented low-level networking code for multiplayer and optimized GPU and CPU performance",
+      "cs": "Návrh abstrakčních vrstev pro konzolové platformy. Implementace nízkoúrovňového síťového kódu pro multiplayer a optimalizace výkonu GPU a CPU"
+    }
+  },
+  {
+    "id": "darkest-dungeon-1",
+    "title": "Darkest Dungeon",
+    "studio": "Red Hook Studios",
+    "platforms": [
+      {
+        "name": "Steam",
+        "url": "https://store.steampowered.com/app/262060/Darkest_Dungeon/"
+      },
+      {
+        "name": "GOG",
+        "url": "https://www.gog.com/en/game/darkest_dungeon"
+      },
+      {
+        "name": "PlayStation",
+        "url": "https://store.playstation.com/en-us/product/UP2619-CUSA05254_00-RHSDDPS400000001"
+      },
+      {
+        "name": "Xbox",
+        "url": "https://www.xbox.com/en-US/games/store/darkest-dungeon/bxkvn6g9c5wj"
+      },
+      {
+        "name": "Switch",
+        "url": "https://www.nintendo.com/us/store/products/darkest-dungeon-switch/"
+      }
+    ],
+    "image": "/images/projects/darkest-dungeon-1.jpg",
+    "description": {
+      "en": "Revitalized legacy C++ codebase to utilize modern C++ features and latest compilers (clang, gcc, msvc). Upgraded dependencies and created native x64 builds",
+      "cs": "Modernizace legacy C++ kódu s využitím moderních vlastností jazyka a nejnovějších kompilátorů (clang, gcc, msvc). Aktualizace závislostí a vytvoření nativních x64 buildů"
+    }
+  },
+  {
+    "id": "soulbound-legions",
+    "title": "Soulbound Legions: Battle RPG",
+    "studio": "Geewa",
+    "platforms": [
+      {
+        "name": "Android",
+        "url": "https://play.google.com/store/apps/details?id=com.geewa.survivalquest"
+      }
+    ],
+    "image": "/images/projects/soulbound-legions.jpg",
+    "description": {
+      "en": "Core gameplay programming within existing engineering team. VFX creation and implementation",
+      "cs": "Programování core gameplaye v rámci existujícího týmu. Tvorba a implementace VFX"
+    }
+  },
+  {
+    "id": "mothergunship-forge",
+    "title": "MotherGunship: Forge",
+    "studio": "Terrible Posture Games",
+    "platforms": [
+      {
+        "name": "Meta Quest",
+        "url": "https://www.meta.com/experiences/mothergunship-forge/4188843481174389/"
+      },
+      {
+        "name": "Steam",
+        "url": "https://store.steampowered.com/app/1931240/MOTHERGUNSHIP_FORGE/"
+      }
+    ],
+    "image": "/images/projects/mothergunship-forge.jpg",
+    "description": {
+      "en": "Engine version migrations and platform-specific SDK middleware updates",
+      "cs": "Migrace verzí enginu a aktualizace platformě specifických SDK a middlewaru"
+    }
+  },
+  {
+    "id": "project-cheese",
+    "title": "Project Cheese",
+    "studio": "Flying Rat Studio",
+    "platforms": [],
+    "image": "/images/projects/project-cheese.jpg",
+    "isInternal": true,
+    "description": {
+      "en": "Our upcoming internal project. More details coming soon!",
+      "cs": "Náš nadcházející interní projekt. Více detailů již brzy!"
+    }
+  }
+]

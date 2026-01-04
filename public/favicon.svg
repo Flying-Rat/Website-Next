@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="index,follow">
+    <meta name="description" content="Flying Rat Studio is a game development studio based in Prague, Czech Republic. We are a team of experienced developers with passion for games.">
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+    <link rel="canonical" href="https://flying-rat.online/">
+    <title>Flying Rat Studio</title>
+  <script defer src="js/index.build.js"></script><link href="css/app.build.css" rel="stylesheet"></head>
+  <body>
+    <div class="page-error">
+      <div class="container">
+        <div class="title-prefix">Error {$error}</div>
+        <h1>Page not found</h1>
+        <p>
+          Seems like we are out of cheese and this page is not found in our storage.
+          If you feel the page should be here, please let us know!
+        </p>
+        <div class="page-error_btns"><a class="button" href="{$url_homepage}">Homepage</a></div>
+      </div>
+    </div>
+  </body>
+</html>

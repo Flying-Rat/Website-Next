@@ -1,0 +1,79 @@
+{
+  "nav": {
+    "about": "About",
+    "whatWeDo": "What We Do",
+    "projects": "Projects",
+    "blog": "Tech Blog",
+    "contact": "Contact",
+    "toggleMenu": "Toggle menu"
+  },
+  "hero": {
+    "tagline": "Unlocking Adventures",
+    "subtitle": "Prague-based studio helping teams ship great games, from gameplay to console ports.",
+    "trustedBy": "Trusted by teams at",
+    "cta": {
+      "projects": "See Our Work",
+      "contact": "Let's Talk"
+    }
+  },
+  "about": {
+    "title": "Hard Problems, Solved",
+    "description1": "We're a Prague-based development team that tackles the tough stuff: gameplay systems, performance optimization, rendering pipelines, and porting to PlayStation, Xbox, Switch, and handhelds.",
+    "description2": "Studios call us when they need complex technical challenges solved and shipped on time.",
+    "stats": {
+      "projects": "Projects",
+      "years": "Years Experience",
+      "passion": "Passion"
+    },
+    "focus": {
+      "title": "Technical Excellence",
+      "subtitle": "We obsess over performance and polish."
+    }
+  },
+  "whatWeDo": {
+    "title": "What We Do",
+    "subtitle": "A focused team built to ship ambitious games across platforms fast.",
+    "engineering": {
+      "title": "Engineering",
+      "body": "We work hands-on with Unreal, Unity, and Godot, and are comfortable with proprietary engines built in C/C++ and Rust. We focus on clean, stable systems and performance that holds up in production."
+    },
+    "porting": {
+      "title": "Porting",
+      "body": "We ship to Xbox One, Xbox Series, PlayStation 4, PlayStation 5, Nintendo Switch, Nintendo Switch 2, and VR platforms like Meta Quest. We handle platform specifics carefully so gameplay, performance, and certification stay on track."
+    },
+    "qa": {
+      "title": "In-House QA",
+      "body": "Our QA team works alongside engineers to validate changes quickly and reduce turnaround time. They also run platform compliance checks on each build to keep releases safe and predictable."
+    },
+    "release": {
+      "title": "Release Management",
+      "body": "We set up titles, fine-tune profiles, and move builds through the full pipeline to production. The process is structured, repeatable, and easy to follow for partners."
+    },
+    "backend": {
+      "title": "Backend and Cloud",
+      "body": "We build APIs and backend services on AWS and Azure using modern, production-ready stacks. Reliability, observability, and maintainability guide how we ship and operate."
+    },
+    "ai": {
+      "title": "AI",
+      "body": "We develop and train in-house models to support teams across every development step, from prototyping to polish. The goal is practical acceleration, not hype."
+    }
+  },
+  "projects": {
+    "title": "Our Work",
+    "subtitle": "Proud to be part of these amazing projects.",
+    "internal": "Internal",
+    "comingSoon": "Coming soon",
+    "tba": "TBA"
+  },
+  "contact": {
+    "title": "Got a Project in Mind?",
+    "subtitle": "We'd love to hear about it. Drop us a line and let's see what we can build together.",
+    "cta": "Email Marty",
+    "social": "Or find us on social.",
+    "statusAvailable": "Available"
+  },
+  "footer": {
+    "rights": "All rights reserved.",
+    "cookies": "No cookies here, we ate them all. 🍪"
+  }
+}
