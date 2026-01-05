@@ -35,6 +35,34 @@ export function useTheme() {
   }, []);
 
   useEffect(() => {
+    const handleThemeChange = (event: Event) => {
+      const custom = event as CustomEvent<{ theme?: Theme }>;
+      const nextTheme = custom.detail?.theme;
+      if (!nextTheme) {
+        return;
+      }
+      setThemeState(nextTheme);
+      applyTheme(nextTheme);
+    };
+
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key !== "theme") {
+        return;
+      }
+      const nextTheme = (event.newValue as Theme) || "system";
+      setThemeState(nextTheme);
+      applyTheme(nextTheme);
+    };
+
+    window.addEventListener("themechange", handleThemeChange);
+    window.addEventListener("storage", handleStorage);
+    return () => {
+      window.removeEventListener("themechange", handleThemeChange);
+      window.removeEventListener("storage", handleStorage);
+    };
+  }, []);
+
+  useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: light)");
     const handleChange = () => {
       if (theme === "system") {
@@ -49,6 +77,7 @@ export function useTheme() {
     setThemeState(newTheme);
     localStorage.setItem("theme", newTheme);
     applyTheme(newTheme);
+    window.dispatchEvent(new CustomEvent("themechange", { detail: { theme: newTheme } }));
   }, []);
 
   const toggleTheme = useCallback(() => {

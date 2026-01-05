@@ -1,6 +1,7 @@
 "use client";
 
 import { memo, useEffect, useRef, useState } from "react";
+import { useTheme } from "../hooks/useTheme";
 
 const CANVAS_SIZE = 220;
 const STAR_COUNT = 80;
@@ -124,6 +125,7 @@ function drawFlyingRat(
 export const RetroScene = memo(function RetroScene({ label }: { label: string }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [inputKeys, setInputKeys] = useState<Array<{ id: string; key: string }>>([]);
+  const { resolvedTheme } = useTheme();
   const boostRef = useRef(false);
   const keysRef = useRef<string[]>([]);
   const keyEntriesRef = useRef<Array<{ id: string; key: string }>>([]);
@@ -153,14 +155,37 @@ export const RetroScene = memo(function RetroScene({ label }: { label: string })
       speed: 0.05 + Math.random() * 0.08,
     }));
 
+    const isLight = resolvedTheme === "light";
+    const accentRgb = isLight ? "232, 64, 84" : "250, 85, 101";
+    const accentShadowRgb = isLight ? "196, 46, 64" : "250, 85, 101";
+    const skyStops = isLight
+      ? ["rgba(232, 236, 244, 1)", "rgba(216, 222, 234, 1)", "rgba(198, 206, 222, 1)"]
+      : ["rgba(10, 10, 12, 1)", "rgba(12, 12, 14, 1)", "rgba(6, 6, 8, 1)"];
+    const floorStops = isLight
+      ? [`rgba(${accentRgb}, 0.18)`, `rgba(${accentRgb}, 0.05)`]
+      : [`rgba(${accentRgb}, 0.08)`, `rgba(${accentRgb}, 0.02)`];
+    const vignetteEdge = isLight ? "rgba(0, 0, 0, 0.32)" : "rgba(0, 0, 0, 0.45)";
+    const mountainColor = isLight ? "rgba(18, 20, 28, 0.38)" : "rgba(0, 0, 0, 0.35)";
+    const roadColor = isLight ? "rgba(18, 20, 30, 0.48)" : "rgba(0, 0, 0, 0.55)";
+    const noiseColor = isLight ? "rgba(0, 0, 0, 0.03)" : "rgba(255, 255, 255, 0.03)";
+    const borderColor = `rgba(${accentRgb}, ${isLight ? "0.65" : "0.5"})`;
+    const borderInnerColor = `rgba(${accentRgb}, ${isLight ? "0.45" : "0.35"})`;
+    const scanBase = isLight ? 0.05 : 0.08;
+    const scanVar = isLight ? 0.02 : 0.03;
+    const sunHueBase = isLight ? 355 : 350;
+    const sunCoreAlpha = isLight ? 0.98 : 0.95;
+    const sunCoreEndAlpha = isLight ? 0.65 : 0.55;
+    const sunGlowMidAlpha = isLight ? 0.45 : 0.3;
+    const sunGlowStartAlpha = isLight ? 0.85 : 0.8;
+
     const skyGradient = ctx.createLinearGradient(0, 0, 0, height);
-    skyGradient.addColorStop(0, "rgba(10, 10, 12, 1)");
-    skyGradient.addColorStop(0.6, "rgba(12, 12, 14, 1)");
-    skyGradient.addColorStop(1, "rgba(6, 6, 8, 1)");
+    skyGradient.addColorStop(0, skyStops[0]);
+    skyGradient.addColorStop(0.6, skyStops[1]);
+    skyGradient.addColorStop(1, skyStops[2]);
 
     const floorGradient = ctx.createLinearGradient(0, horizon, 0, height);
-    floorGradient.addColorStop(0, "rgba(250, 85, 101, 0.08)");
-    floorGradient.addColorStop(1, "rgba(250, 85, 101, 0.02)");
+    floorGradient.addColorStop(0, floorStops[0]);
+    floorGradient.addColorStop(1, floorStops[1]);
 
     const vignette = ctx.createRadialGradient(
       width / 2,
@@ -171,7 +196,7 @@ export const RetroScene = memo(function RetroScene({ label }: { label: string })
       width,
     );
     vignette.addColorStop(0, "rgba(0, 0, 0, 0)");
-    vignette.addColorStop(1, "rgba(0, 0, 0, 0.45)");
+    vignette.addColorStop(1, vignetteEdge);
 
     canvas.width = width;
     canvas.height = height;
@@ -223,8 +248,8 @@ export const RetroScene = memo(function RetroScene({ label }: { label: string })
           continue;
         }
 
-        const brightness = Math.min(1, 1.2 - star.z);
-        ctx.fillStyle = `rgba(250, 85, 101, ${brightness})`;
+        const brightness = Math.min(isLight ? 0.95 : 1, 1.2 - star.z);
+        ctx.fillStyle = `rgba(${accentRgb}, ${brightness})`;
         ctx.fillRect(sx, sy, 1.5, 1.5);
       }
 
@@ -250,7 +275,7 @@ export const RetroScene = memo(function RetroScene({ label }: { label: string })
         const tx = Math.cos(angle) * len;
         const ty = Math.sin(angle) * len;
 
-        ctx.strokeStyle = "rgba(250, 85, 101, 0.6)";
+        ctx.strokeStyle = `rgba(${accentRgb}, ${isLight ? "0.5" : "0.6"})`;
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(sx - tx, sy - ty);
@@ -287,9 +312,9 @@ export const RetroScene = memo(function RetroScene({ label }: { label: string })
       const sunY = horizon - 10 + parallaxY * 0.2;
 
       const glow = ctx.createRadialGradient(sunX, sunY, 4, sunX, sunY, 60);
-      const hs = 350 + hueShift;
-      glow.addColorStop(0, `hsla(${hs}, 95%, 70%, 0.8)`);
-      glow.addColorStop(0.45, `hsla(${hs}, 95%, 60%, 0.3)`);
+      const hs = sunHueBase + hueShift;
+      glow.addColorStop(0, `hsla(${hs}, 95%, 70%, ${sunGlowStartAlpha})`);
+      glow.addColorStop(0.45, `hsla(${hs}, 95%, 60%, ${sunGlowMidAlpha})`);
       glow.addColorStop(1, "rgba(250, 85, 101, 0)");
       ctx.fillStyle = glow;
       ctx.beginPath();
@@ -297,22 +322,22 @@ export const RetroScene = memo(function RetroScene({ label }: { label: string })
       ctx.fill();
 
       const core = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, 18);
-      core.addColorStop(0, `hsla(${hs}, 95%, 72%, 0.95)`);
-      core.addColorStop(1, `hsla(${hs}, 95%, 60%, 0.55)`);
+      core.addColorStop(0, `hsla(${hs}, 95%, 72%, ${sunCoreAlpha})`);
+      core.addColorStop(1, `hsla(${hs}, 95%, 60%, ${sunCoreEndAlpha})`);
       ctx.fillStyle = core;
       ctx.beginPath();
       ctx.arc(sunX, sunY, 18, 0, Math.PI * 2);
       ctx.fill();
 
       const bloom = ctx.createRadialGradient(sunX, sunY, 10, sunX, sunY, 110);
-      bloom.addColorStop(0, `hsla(${hs}, 95%, 70%, 0.25)`);
+      bloom.addColorStop(0, `hsla(${hs}, 95%, 70%, ${isLight ? "0.35" : "0.25"})`);
       bloom.addColorStop(1, "rgba(250, 85, 101, 0)");
       ctx.fillStyle = bloom;
       ctx.beginPath();
       ctx.arc(sunX, sunY, 110, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.fillStyle = "rgba(250, 85, 101, 0.12)";
+      ctx.fillStyle = `rgba(${accentRgb}, ${isLight ? "0.2" : "0.12"})`;
       ctx.fillRect(0, horizon - 2, width, 6);
 
       ctx.beginPath();
@@ -340,7 +365,7 @@ export const RetroScene = memo(function RetroScene({ label }: { label: string })
         const wave = Math.sin(t + depth * 8) * 4;
         const lineAlpha = 0.2 + (1 - depth) * 0.5;
 
-        ctx.strokeStyle = `rgba(250, 85, 101, ${lineAlpha})`;
+        ctx.strokeStyle = `rgba(${accentRgb}, ${lineAlpha})`;
         ctx.beginPath();
         ctx.moveTo(0, y + wave);
         ctx.lineTo(width, y + wave);
@@ -360,7 +385,7 @@ export const RetroScene = memo(function RetroScene({ label }: { label: string })
       }
 
       // City Silhouette (Black)
-      ctx.fillStyle = "rgba(0, 0, 0, 0.35)";
+      ctx.fillStyle = mountainColor;
       ctx.beginPath();
       ctx.moveTo(0, mountainYOffset);
       for (let x = 0; x <= width; x += 20) {
@@ -379,7 +404,7 @@ export const RetroScene = memo(function RetroScene({ label }: { label: string })
       const roadBottomRightX = width * 0.75 + sway * 2 + parallaxX * 0.4;
       const roadTopY = horizon + parallaxY * 0.2;
 
-      ctx.fillStyle = "rgba(0, 0, 0, 0.55)";
+      ctx.fillStyle = roadColor;
       ctx.beginPath();
       ctx.moveTo(roadBottomLeftX, height);
       ctx.lineTo(roadBottomRightX, height);
@@ -388,9 +413,9 @@ export const RetroScene = memo(function RetroScene({ label }: { label: string })
       ctx.closePath();
       ctx.fill();
 
-      ctx.strokeStyle = "rgba(250, 85, 101, 0.35)";
+      ctx.strokeStyle = `rgba(${accentRgb}, ${isLight ? "0.5" : "0.35"})`;
       ctx.lineWidth = 1;
-      ctx.shadowColor = "rgba(250, 85, 101, 0.45)";
+      ctx.shadowColor = `rgba(${accentShadowRgb}, ${isLight ? "0.5" : "0.45"})`;
       ctx.shadowBlur = 6;
       ctx.beginPath();
       ctx.moveTo(roadBottomLeftX, height);
@@ -400,7 +425,7 @@ export const RetroScene = memo(function RetroScene({ label }: { label: string })
       ctx.stroke();
       ctx.shadowBlur = 0;
 
-      ctx.strokeStyle = "rgba(250, 85, 101, 0.6)";
+      ctx.strokeStyle = `rgba(${accentRgb}, ${isLight ? "0.7" : "0.6"})`;
       ctx.lineWidth = 1;
       for (let i = 0; i < 14; i += 1) {
         const z = (t * 0.4 * speedScale + i * 0.22) % 1;
@@ -417,8 +442,8 @@ export const RetroScene = memo(function RetroScene({ label }: { label: string })
         );
       }
 
-      ctx.fillStyle = "rgba(250, 85, 101, 0.75)";
-      ctx.shadowColor = "rgba(250, 85, 101, 0.5)";
+      ctx.fillStyle = `rgba(${accentRgb}, ${isLight ? "0.8" : "0.75"})`;
+      ctx.shadowColor = `rgba(${accentShadowRgb}, ${isLight ? "0.55" : "0.5"})`;
       ctx.shadowBlur = 4;
       for (let i = 0; i < 10; i += 1) {
         const z = (t * 0.32 * speedScale + i * 0.18) % 1;
@@ -433,8 +458,11 @@ export const RetroScene = memo(function RetroScene({ label }: { label: string })
       ctx.shadowBlur = 0;
 
       const reflection = ctx.createLinearGradient(0, horizon + 5, 0, height);
-      reflection.addColorStop(0, `hsla(${350 + hueShift}, 95%, 60%, 0.25)`);
-      reflection.addColorStop(0.5, "rgba(250, 85, 101, 0.06)");
+      reflection.addColorStop(
+        0,
+        `hsla(${sunHueBase + hueShift}, 95%, 60%, ${isLight ? "0.4" : "0.25"})`,
+      );
+      reflection.addColorStop(0.5, `rgba(${accentRgb}, ${isLight ? "0.12" : "0.06"})`);
       reflection.addColorStop(1, "rgba(250, 85, 101, 0)");
       ctx.fillStyle = reflection;
       ctx.fillRect(
@@ -444,18 +472,18 @@ export const RetroScene = memo(function RetroScene({ label }: { label: string })
         height - horizon,
       );
 
-      ctx.fillStyle = "rgba(2, 3, 6, 0.24)";
+      ctx.fillStyle = isLight ? "rgba(255, 255, 255, 0.25)" : "rgba(2, 3, 6, 0.24)";
       for (let y = 0; y < height; y += 2) {
         ctx.fillRect(0, y, width, 1);
       }
 
-      const scanAlpha = 0.08 + Math.sin(t * 0.9) * 0.03;
-      ctx.fillStyle = `rgba(250, 85, 101, ${scanAlpha})`;
+      const scanAlpha = scanBase + Math.sin(t * 0.9) * scanVar;
+      ctx.fillStyle = `rgba(${accentRgb}, ${scanAlpha})`;
       for (let y = 0; y < height; y += 6) {
         ctx.fillRect(0, y, width, 1);
       }
 
-      ctx.fillStyle = "rgba(255, 255, 255, 0.03)";
+      ctx.fillStyle = noiseColor;
       for (let i = 0; i < 80; i += 1) {
         ctx.fillRect(Math.random() * width, Math.random() * height, 1, 1);
       }
@@ -463,11 +491,11 @@ export const RetroScene = memo(function RetroScene({ label }: { label: string })
       ctx.fillStyle = vignette;
       ctx.fillRect(0, 0, width, height);
 
-      ctx.strokeStyle = "rgba(250, 85, 101, 0.5)";
+      ctx.strokeStyle = borderColor;
       ctx.lineWidth = 1;
       ctx.strokeRect(6, 6, width - 12, height - 12);
 
-      ctx.strokeStyle = "rgba(250, 85, 101, 0.35)";
+      ctx.strokeStyle = borderInnerColor;
       ctx.beginPath();
       ctx.moveTo(12, 12);
       ctx.lineTo(28, 12);
@@ -574,7 +602,7 @@ export const RetroScene = memo(function RetroScene({ label }: { label: string })
         cancelAnimationFrame(animationFrame);
       }
     };
-  }, []);
+  }, [resolvedTheme]);
 
   useEffect(() => {
     const triggerEaster = () => {

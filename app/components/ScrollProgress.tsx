@@ -13,14 +13,14 @@ export function ScrollProgress() {
       frame = 0;
       const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
       const maxScroll = scrollHeight - clientHeight;
-      const next = maxScroll > 0 ? (scrollTop / maxScroll) * 100 : 0;
-      if (Math.abs(next - last) < 0.1) {
+      const next = maxScroll > 0 ? scrollTop / maxScroll : 0;
+      if (Math.abs(next - last) < 0.001) {
         return;
       }
       last = next;
       const bar = barRef.current;
       if (bar) {
-        bar.style.width = `${next}%`;
+        bar.style.transform = `scaleX(${next})`;
       }
     };
 
@@ -46,8 +46,8 @@ export function ScrollProgress() {
     <div className="fixed top-0 left-0 right-0 h-[2px] z-[100]">
       <div
         ref={barRef}
-        className="scroll-progress-bar h-full transition-all duration-150 ease-out bg-gradient-to-r from-accent via-accent to-accent/50"
-        style={{ width: "0%" }}
+        className="scroll-progress-bar h-full transition-transform duration-150 ease-out bg-gradient-to-r from-accent via-accent to-accent/50"
+        style={{ transform: "scaleX(0)" }}
       />
     </div>
   );
