@@ -12,7 +12,7 @@ export function Hero() {
   return (
     <section
       id="hero"
-      className="min-h-screen flex items-center justify-center relative overflow-hidden"
+      className="min-h-[100dvh] flex items-center justify-center relative overflow-hidden pt-20 pb-32 md:pt-0 md:pb-0"
     >
       <div className="absolute inset-0">
         <Image
@@ -43,7 +43,7 @@ export function Hero() {
       <div className="container mx-auto px-6 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
           <motion.h1
-            className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6"
+            className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-4 md:mb-6"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -52,7 +52,7 @@ export function Hero() {
           </motion.h1>
 
           <motion.p
-            className="text-xl md:text-2xl text-[var(--color-text-secondary)] mb-12 max-w-2xl mx-auto"
+            className="text-lg sm:text-xl md:text-2xl text-[var(--color-text-secondary)] mb-8 md:mb-12 max-w-2xl mx-auto"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
@@ -68,17 +68,17 @@ export function Hero() {
           >
             <motion.a
               href="#projects"
-              className="px-8 py-4 bg-accent hover:bg-accent-dark text-white font-semibold rounded-xl transition-colors hover:shadow-lg hover:shadow-accent/30"
+              className="px-6 py-3 sm:px-8 sm:py-4 bg-accent hover:bg-accent-dark text-white font-semibold rounded-xl transition-all hover:shadow-lg hover:shadow-accent/30 active:scale-95"
               whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.98 }}
+              whileTap={{ scale: 0.95 }}
             >
               {t("hero.cta.projects")}
             </motion.a>
             <motion.a
               href="#contact"
-              className="px-8 py-4 border border-[var(--color-text-muted)] hover:border-accent text-[var(--color-text)] font-semibold rounded-xl transition-colors backdrop-blur-sm"
+              className="px-6 py-3 sm:px-8 sm:py-4 border border-[var(--color-text-muted)] hover:border-accent text-[var(--color-text)] font-semibold rounded-xl transition-all backdrop-blur-sm active:scale-95"
               whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.98 }}
+              whileTap={{ scale: 0.95 }}
             >
               {t("hero.cta.contact")}
             </motion.a>

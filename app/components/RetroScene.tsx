@@ -5,6 +5,7 @@ import { memo, useEffect, useRef, useState } from "react";
 const CANVAS_SIZE = 220;
 const STAR_COUNT = 80;
 const STREAK_COUNT = 6;
+const RAT_INTERVAL = 8;
 const KONAMI_SEQUENCE = [
   "arrowup",
   "arrowup",
@@ -60,7 +61,67 @@ function resetStar(star: Star) {
   star.z = Math.random() * 1.2 + 0.1;
 }
 
-export const GameplayDemo = memo(function GameplayDemo({ label }: { label: string }) {
+function drawFlyingRat(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  scale: number,
+  wingPhase: number,
+) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(scale, scale);
+
+  const wingY = Math.sin(wingPhase) * 3;
+
+  ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+  ctx.beginPath();
+  ctx.ellipse(0, 0, 8, 5, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.ellipse(-10, -1, 4, 3, 0.3, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.moveTo(-12, -3);
+  ctx.lineTo(-16, -5);
+  ctx.lineTo(-14, -2);
+  ctx.closePath();
+  ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(-12, -1);
+  ctx.lineTo(-16, 0);
+  ctx.lineTo(-14, 1);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.moveTo(6, -1);
+  ctx.lineTo(14, 2);
+  ctx.lineTo(8, 2);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+  ctx.beginPath();
+  ctx.moveTo(-4, -4);
+  ctx.quadraticCurveTo(-12, -14 + wingY, -20, -8 + wingY);
+  ctx.quadraticCurveTo(-14, -6 + wingY * 0.5, -4, -2);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.moveTo(-4, -4);
+  ctx.quadraticCurveTo(4, -14 + wingY, 14, -8 + wingY);
+  ctx.quadraticCurveTo(6, -6 + wingY * 0.5, -2, -2);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.restore();
+}
+
+export const RetroScene = memo(function RetroScene({ label }: { label: string }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [inputKeys, setInputKeys] = useState<Array<{ id: string; key: string }>>([]);
   const boostRef = useRef(false);
@@ -195,6 +256,30 @@ export const GameplayDemo = memo(function GameplayDemo({ label }: { label: strin
         ctx.moveTo(sx - tx, sy - ty);
         ctx.lineTo(sx + tx, sy + ty);
         ctx.stroke();
+      }
+
+      const ratCycle = (t % RAT_INTERVAL) / RAT_INTERVAL;
+      if (ratCycle < 0.4) {
+        const ratProgress = ratCycle / 0.4;
+        const ratX = -30 + ratProgress * (width + 60);
+        const ratY = 25 + Math.sin(ratProgress * Math.PI * 3) * 8 + parallaxY * 0.3;
+        const ratScale = 0.7 + Math.sin(ratProgress * Math.PI) * 0.15;
+        const wingPhase = t * 12;
+
+        drawFlyingRat(ctx, ratX, ratY, ratScale, wingPhase);
+
+        ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
+        ctx.beginPath();
+        ctx.ellipse(
+          ratX + (ratY - horizon) * 0.3,
+          horizon + 20,
+          12 * ratScale,
+          4 * ratScale,
+          0,
+          0,
+          Math.PI * 2,
+        );
+        ctx.fill();
       }
 
       const pulse = Math.sin(time * 0.0014) * 6;

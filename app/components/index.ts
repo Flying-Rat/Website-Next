@@ -1,9 +1,9 @@
 export { About } from "./About";
 export { Contact } from "./Contact";
 export { Footer } from "./Footer";
-export { GameplayDemo } from "./GameplayDemo";
 export { Header } from "./Header";
 export { Hero } from "./Hero";
 export { Projects } from "./Projects";
+export { RetroScene } from "./RetroScene";
 export { ScrollProgress } from "./ScrollProgress";
 export { WhatWeDo } from "./WhatWeDo";

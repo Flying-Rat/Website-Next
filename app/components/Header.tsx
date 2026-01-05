@@ -5,75 +5,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useTheme } from "../hooks/useTheme";
 import { useLanguage, useTranslation } from "../i18n";
-
-function SunIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <title>Light Mode</title>
-      <circle cx="12" cy="12" r="5" />
-      <line x1="12" y1="1" x2="12" y2="3" />
-      <line x1="12" y1="21" x2="12" y2="23" />
-      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-      <line x1="1" y1="12" x2="3" y2="12" />
-      <line x1="21" y1="12" x2="23" y2="12" />
-      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-    </svg>
-  );
-}
-
-function MoonIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <title>Dark Mode</title>
-      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-    </svg>
-  );
-}
-
-function FlagEN({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 18" fill="none">
-      <title>English</title>
-      <rect width="24" height="18" rx="2" fill="#B22234" />
-      <path d="M0 2H24M0 5H24M0 8H24M0 11H24M0 14H24M0 17H24" stroke="#fff" strokeWidth="1.5" />
-      <path d="M0 0H12V9H0V0Z" fill="#3C3B6E" />
-      <path
-        d="M6 1.5L6.5 2.5L7.5 2.5L6.8 3.2L7.1 4.2L6 3.6L4.9 4.2L5.2 3.2L4.5 2.5L5.5 2.5L6 1.5Z"
-        fill="#fff"
-        transform="scale(0.8) translate(1, 1)"
-      />
-    </svg>
-  );
-}
-
-function FlagCS({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 18" fill="none">
-      <title>Czech</title>
-      <rect width="24" height="18" fill="#D7141A" rx="2" />
-      <rect width="24" height="9" fill="#fff" />
-      <path d="M0 0L12 9L0 18V0Z" fill="#11457E" />
-    </svg>
-  );
-}
+import { ExternalLinkIcon, MoonIcon, SunIcon } from "./icons";
 
 const navSections = [
   { href: "#about", key: "nav.about" },
@@ -162,61 +94,51 @@ export function Header() {
                 whileHover={{ y: -2 }}
               >
                 {t(item.key)}
-                {isExternal && (
-                  <svg
-                    width="10"
-                    height="10"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="opacity-50"
-                  >
-                    <title>External Link</title>
-                    <path d="M7 17l9.2-9.2M17 17V7H7" />
-                  </svg>
-                )}
+                {isExternal && <ExternalLinkIcon className="w-2.5 h-2.5 opacity-50" />}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all group-hover:w-full" />
               </motion.a>
             );
           })}
 
           <motion.div
-            className="flex items-center gap-1 ml-4 border-l border-[var(--color-border-hover)] pl-4"
+            className="flex items-center gap-3 ml-4 border-l border-[var(--color-border-hover)] pl-4 text-sm text-[var(--color-text-muted)]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.4, delay: 0.4 }}
           >
+            <div className="flex items-center">
+              <motion.button
+                type="button"
+                onClick={() => setLanguage("en")}
+                className={`px-1.5 py-1 rounded transition-colors ${currentLang === "en" ? "text-[var(--color-text)]" : "hover:text-[var(--color-text)]"}`}
+                whileTap={{ scale: 0.95 }}
+              >
+                EN
+              </motion.button>
+              <span className="opacity-30">|</span>
+              <motion.button
+                type="button"
+                onClick={() => setLanguage("cs")}
+                className={`px-1.5 py-1 rounded transition-colors ${currentLang === "cs" ? "text-[var(--color-text)]" : "hover:text-[var(--color-text)]"}`}
+                whileTap={{ scale: 0.95 }}
+              >
+                CS
+              </motion.button>
+            </div>
             <motion.button
               type="button"
               onClick={toggleTheme}
-              className="p-2 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-light)] transition-colors"
+              className="p-1.5 rounded-lg hover:text-[var(--color-text)] hover:bg-[var(--color-surface-light)] transition-colors"
               aria-label="Toggle theme"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
             >
               {mounted &&
                 (resolvedTheme === "dark" ? (
-                  <SunIcon className="w-5 h-5" />
+                  <SunIcon className="w-4 h-4" />
                 ) : (
-                  <MoonIcon className="w-5 h-5" />
+                  <MoonIcon className="w-4 h-4" />
                 ))}
-            </motion.button>
-            <motion.button
-              type="button"
-              onClick={() => setLanguage(currentLang === "en" ? "cs" : "en")}
-              className="p-2 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-light)] transition-colors"
-              aria-label="Toggle language"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              {currentLang === "en" ? (
-                <FlagEN className="w-5 h-4" />
-              ) : (
-                <FlagCS className="w-5 h-4" />
-              )}
             </motion.button>
           </motion.div>
         </nav>
@@ -273,58 +195,51 @@ export function Header() {
                     transition={{ duration: 0.3, delay: index * 0.05 }}
                   >
                     {t(item.key)}
-                    {isExternal && (
-                      <svg
-                        width="10"
-                        height="10"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="opacity-50"
-                      >
-                        <title>External Link</title>
-                        <path d="M7 17l9.2-9.2M17 17V7H7" />
-                      </svg>
-                    )}
+                    {isExternal && <ExternalLinkIcon className="w-2.5 h-2.5 opacity-50" />}
                   </motion.a>
                 );
               })}
               <motion.div
-                className="flex items-center gap-1 pt-4 border-t border-[var(--color-border-hover)]"
+                className="flex items-center gap-3 pt-4 border-t border-[var(--color-border-hover)] text-sm text-[var(--color-text-muted)]"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3, delay: 0.2 }}
               >
+                <div className="flex items-center">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setLanguage("en");
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className={`px-1.5 py-1 rounded transition-colors ${currentLang === "en" ? "text-[var(--color-text)]" : "hover:text-[var(--color-text)]"}`}
+                  >
+                    EN
+                  </button>
+                  <span className="opacity-30">|</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setLanguage("cs");
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className={`px-1.5 py-1 rounded transition-colors ${currentLang === "cs" ? "text-[var(--color-text)]" : "hover:text-[var(--color-text)]"}`}
+                  >
+                    CS
+                  </button>
+                </div>
                 <button
                   type="button"
                   onClick={toggleTheme}
-                  className="p-2 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-light)] transition-colors"
+                  className="p-1.5 rounded-lg hover:text-[var(--color-text)] hover:bg-[var(--color-surface-light)] transition-colors"
                   aria-label="Toggle theme"
                 >
                   {mounted &&
                     (resolvedTheme === "dark" ? (
-                      <SunIcon className="w-5 h-5" />
+                      <SunIcon className="w-4 h-4" />
                     ) : (
-                      <MoonIcon className="w-5 h-5" />
+                      <MoonIcon className="w-4 h-4" />
                     ))}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setLanguage(currentLang === "en" ? "cs" : "en");
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="p-2 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-light)] transition-colors"
-                  aria-label="Toggle language"
-                >
-                  {currentLang === "en" ? (
-                    <FlagEN className="w-5 h-4" />
-                  ) : (
-                    <FlagCS className="w-5 h-4" />
-                  )}
                 </button>
               </motion.div>
             </nav>

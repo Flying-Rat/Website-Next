@@ -10,7 +10,7 @@ export function Contact() {
   const email = "marty@flying-rat.studio";
 
   return (
-    <section id="contact" className="py-24 md:py-32 relative overflow-hidden">
+    <section id="contact" className="py-16 md:py-32 relative overflow-hidden">
       <div className="absolute inset-0">
         <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-accent/10 to-transparent" />
       </div>
@@ -23,16 +23,16 @@ export function Contact() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           >
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4">
               {t("contact.title")}
             </h2>
-            <p className="text-[var(--color-text-muted)] text-lg mb-12 max-w-xl mx-auto">
+            <p className="text-[var(--color-text-muted)] text-base md:text-lg mb-8 md:mb-12 max-w-xl mx-auto">
               {t("contact.subtitle")}
             </p>
           </motion.div>
 
           <motion.div
-            className="mb-16"
+            className="mb-10 md:mb-16"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
@@ -95,6 +95,18 @@ export function Contact() {
                 </motion.a>
               ))}
             </div>
+            <motion.a
+              href="https://x.com/search?q=%23flyingWithRats"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block mt-6 text-accent hover:text-accent-dark transition-colors font-medium"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: 0.5 }}
+            >
+              #flyingWithRats
+            </motion.a>
           </motion.div>
         </div>
       </div>

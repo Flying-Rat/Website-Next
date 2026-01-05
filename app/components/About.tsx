@@ -2,7 +2,7 @@
 
 import { motion } from "motion/react";
 import { useTranslation } from "../i18n";
-import { GameplayDemo } from "./GameplayDemo";
+import { RetroScene } from "./RetroScene";
 
 const aboutStats = [
   { value: "8+", key: "about.stats.projects" },
@@ -14,7 +14,7 @@ export function About() {
   const { t } = useTranslation();
 
   return (
-    <section id="about" className="py-24 md:py-32 relative">
+    <section id="about" className="py-16 md:py-32 relative">
       <div className="container mx-auto px-6">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
@@ -24,15 +24,15 @@ export function About() {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             >
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6">
                 {t("about.title")}
               </h2>
-              <div className="space-y-4 text-[var(--color-text-muted)] text-lg">
+              <div className="space-y-3 md:space-y-4 text-[var(--color-text-muted)] text-base md:text-lg">
                 <p>{t("about.description1")}</p>
                 <p>{t("about.description2")}</p>
               </div>
 
-              <div className="grid grid-cols-3 gap-6 mt-10">
+              <div className="grid grid-cols-3 gap-3 sm:gap-6 mt-8 md:mt-10">
                 {aboutStats.map((stat, index) => (
                   <motion.div
                     key={stat.key}
@@ -46,8 +46,10 @@ export function About() {
                       ease: [0.16, 1, 0.3, 1],
                     }}
                   >
-                    <div className="text-3xl md:text-4xl font-bold text-accent">{stat.value}</div>
-                    <div className="text-sm text-[var(--color-text-subtle)] mt-1">
+                    <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-accent">
+                      {stat.value}
+                    </div>
+                    <div className="text-xs sm:text-sm text-[var(--color-text-subtle)] mt-1">
                       {t(stat.key)}
                     </div>
                   </motion.div>
@@ -56,13 +58,13 @@ export function About() {
             </motion.div>
 
             <motion.div
-              className="relative aspect-square"
+              className="relative aspect-square w-full max-w-sm mx-auto md:max-w-full"
               initial={{ opacity: 0, x: 40 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
             >
-              <GameplayDemo label={t("about.focus.title")} />
+              <RetroScene label={t("about.focus.title")} />
             </motion.div>
           </div>
         </div>

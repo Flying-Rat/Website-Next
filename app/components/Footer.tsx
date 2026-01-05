@@ -3,9 +3,10 @@
 import Image from "next/image";
 import { useTranslation } from "../i18n";
 
+const year = new Date().getFullYear();
+
 export function Footer() {
   const { t } = useTranslation();
-  const year = new Date().getFullYear();
 
   return (
     <footer className="py-8 border-t border-[var(--color-border)]">

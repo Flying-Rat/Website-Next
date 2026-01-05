@@ -115,24 +115,39 @@ html.light ::-webkit-scrollbar-thumb {
   background: #cccccc;
 }
 
-html.light .logo-dark {
-  display: block;
-}
-
-html.light .logo-light {
-  display: none;
-}
-
 html.light .hero-image {
   opacity: 0.5;
 }
 
 html {
   scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  html {
+    scrollbar-width: none;
+  }
 }
 
 body {
   font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+    transition-duration: 0.01ms;
+  }
 }
 
 html.crt-mode body {
@@ -275,49 +290,9 @@ html.crt-mode .scroll-progress-bar {
     0 0 40px color-mix(in srgb, var(--color-accent) 15%, transparent);
 }
 
-.glow-button {
-  position: relative;
-  overflow: hidden;
-}
-
-.glow-button::before {
-  content: "";
-  position: absolute;
-  inset: -2px;
-  background: linear-gradient(45deg, var(--color-accent), transparent, var(--color-accent));
-  border-radius: inherit;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  z-index: -1;
-  filter: blur(12px);
-}
-
-.glow-button:hover::before {
-  opacity: 0.6;
-}
-
 .pattern-dots {
   background-image: radial-gradient(var(--color-accent) 1px, transparent 1px);
   background-size: 30px 30px;
-}
-
-.pattern-grid {
-  background-image:
-    linear-gradient(var(--color-accent) 1px, transparent 1px),
-    linear-gradient(90deg, var(--color-accent) 1px, transparent 1px);
-  background-size: 40px 40px;
-}
-
-.section-padding {
-  padding-top: 6rem;
-  padding-bottom: 8rem;
-}
-
-@media (min-width: 768px) {
-  .section-padding {
-    padding-top: 8rem;
-    padding-bottom: 8rem;
-  }
 }
 
 .platform-badge {
@@ -392,25 +367,6 @@ html.crt-mode .scroll-progress-bar {
   }
 }
 
-.link-underline {
-  position: relative;
-}
-
-.link-underline::after {
-  content: "";
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--color-accent), transparent);
-  transition: width 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.link-underline:hover::after {
-  width: 100%;
-}
-
 ::selection {
   background: var(--color-accent);
   color: white;
@@ -425,8 +381,15 @@ img {
   transition: opacity 0.3s ease;
 }
 
-.section-divider {
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
-  opacity: 0.3;
+@supports (padding: max(0px)) {
+  .container {
+    padding-left: max(1.5rem, env(safe-area-inset-left));
+    padding-right: max(1.5rem, env(safe-area-inset-right));
+  }
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
