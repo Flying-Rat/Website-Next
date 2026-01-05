@@ -7,7 +7,7 @@ const CANVAS_SIZE = 220;
 const STAR_COUNT = 80;
 const STREAK_COUNT = 6;
 const RAT_INTERVAL = 8;
-const KONAMI_SEQUENCE = [
+const EASTER_SEQUENCE = [
   "arrowup",
   "arrowup",
   "arrowdown",
@@ -19,7 +19,7 @@ const KONAMI_SEQUENCE = [
   "b",
   "a",
 ];
-const KONAMI_SET = new Set(KONAMI_SEQUENCE);
+const EASTER_SET = new Set(EASTER_SEQUENCE);
 
 interface BatteryManager extends EventTarget {
   charging: boolean;
@@ -125,12 +125,15 @@ function drawFlyingRat(
 export const RetroScene = memo(function RetroScene({ label }: { label: string }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [inputKeys, setInputKeys] = useState<Array<{ id: string; key: string }>>([]);
+  const [easterActive, setEasterActive] = useState(false);
   const { resolvedTheme } = useTheme();
   const boostRef = useRef(false);
   const keysRef = useRef<string[]>([]);
   const keyEntriesRef = useRef<Array<{ id: string; key: string }>>([]);
   const keyIdRef = useRef(0);
   const timerRef = useRef<number | null>(null);
+  const easterAtRef = useRef(0);
+  const easterEmail = "marty+levelup@flying-rat.studio";
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -511,6 +514,24 @@ export const RetroScene = memo(function RetroScene({ label }: { label: string })
       ctx.lineTo(width - 28, height - 18);
       ctx.stroke();
 
+      if (boostRef.current) {
+        const easterElapsed = Math.max(0, (time - easterAtRef.current) / 1000);
+        const easterFade = Math.max(0, 1 - easterElapsed / 5);
+        const beat = 0.5 + 0.5 * Math.sin(time * 0.012);
+        const flare = easterFade * (0.6 + beat * 0.4);
+        const flareHue = sunHueBase + hueShift + 8;
+
+        ctx.save();
+        ctx.globalCompositeOperation = "screen";
+        const burst = ctx.createRadialGradient(sunX, sunY, 8, sunX, sunY, 140);
+        burst.addColorStop(0, `hsla(${flareHue}, 100%, 72%, ${flare})`);
+        burst.addColorStop(0.5, `hsla(${flareHue}, 100%, 62%, ${flare * 0.6})`);
+        burst.addColorStop(1, "rgba(0, 0, 0, 0)");
+        ctx.fillStyle = burst;
+        ctx.fillRect(0, 0, width, height);
+        ctx.restore();
+      }
+
       if (running && !prefersReducedMotion) {
         animationFrame = requestAnimationFrame(drawFrame);
       }
@@ -607,30 +628,33 @@ export const RetroScene = memo(function RetroScene({ label }: { label: string })
   useEffect(() => {
     const triggerEaster = () => {
       boostRef.current = true;
+      easterAtRef.current = performance.now();
+      setEasterActive(true);
       document.documentElement.classList.add("crt-mode");
       if (timerRef.current) {
         window.clearTimeout(timerRef.current);
       }
       timerRef.current = window.setTimeout(() => {
         boostRef.current = false;
+        setEasterActive(false);
         document.documentElement.classList.remove("crt-mode");
       }, 5000);
     };
 
     const handleKeyDown = (event: KeyboardEvent) => {
       const key = event.key.toLowerCase();
-      if (!KONAMI_SET.has(key)) {
+      if (!EASTER_SET.has(key)) {
         return;
       }
 
-      const next = [...keysRef.current, key].slice(-KONAMI_SEQUENCE.length);
+      const next = [...keysRef.current, key].slice(-EASTER_SEQUENCE.length);
       keyIdRef.current += 1;
       const nextEntries = [...keyEntriesRef.current, { id: `key-${keyIdRef.current}`, key }].slice(
-        -KONAMI_SEQUENCE.length,
+        -EASTER_SEQUENCE.length,
       );
       const matches =
-        next.length === KONAMI_SEQUENCE.length &&
-        next.every((value, idx) => value === KONAMI_SEQUENCE[idx]);
+        next.length === EASTER_SEQUENCE.length &&
+        next.every((value, idx) => value === EASTER_SEQUENCE[idx]);
       const nextKeys = matches ? [] : next;
       const nextKeyEntries = matches ? [] : nextEntries;
       if (matches) {
@@ -647,6 +671,7 @@ export const RetroScene = memo(function RetroScene({ label }: { label: string })
       if (timerRef.current) {
         window.clearTimeout(timerRef.current);
       }
+      setEasterActive(false);
       document.documentElement.classList.remove("crt-mode");
       boostRef.current = false;
     };
@@ -654,6 +679,18 @@ export const RetroScene = memo(function RetroScene({ label }: { label: string })
 
   return (
     <div className="relative h-full w-full" aria-label={label} role="img">
+      {easterActive && (
+        <div className="absolute bottom-4 left-4 z-10 max-w-[280px] rounded-2xl border border-white/10 bg-black/70 px-4 py-3 text-[12px] leading-relaxed text-gray-200 shadow-[0_0_18px_rgba(250,85,101,0.35)] backdrop-blur">
+          <p className="font-semibold uppercase tracking-[0.2em] text-white/80">Hey gamer</p>
+          <p className="mt-1 text-gray-300/90">
+            Sounds like you know your way around. Say hi at{" "}
+            <a className="text-white hover:text-white/90" href={`mailto:${easterEmail}`}>
+              {easterEmail}
+            </a>
+            .
+          </p>
+        </div>
+      )}
       {inputKeys.length > 0 && (
         <div className="absolute top-3 right-3 z-10">
           <div className="flex items-center gap-1 rounded-full border border-white/10 bg-black/60 px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-gray-300 backdrop-blur">

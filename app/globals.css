@@ -151,7 +151,15 @@ body {
 }
 
 html.crt-mode body {
-  filter: saturate(1.25) contrast(1.18);
+  filter: none;
+}
+
+html.crt-mode body > :not(.crt-overlay) {
+  filter: saturate(1.45) contrast(1.3) brightness(1.08);
+}
+
+html.light.crt-mode body > :not(.crt-overlay) {
+  filter: saturate(1.25) contrast(1.22) brightness(0.98);
 }
 
 .crt-overlay {
@@ -190,7 +198,16 @@ html.crt-mode body {
 
 html.crt-mode .crt-overlay {
   display: block;
-  opacity: 1;
+  opacity: 0.9;
+}
+
+html.light.crt-mode .crt-overlay {
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+}
+
+html.dark.crt-mode .crt-overlay {
+  opacity: 0.95;
 }
 
 html.crt-mode .scroll-progress-bar {
