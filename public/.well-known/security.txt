@@ -1,0 +1,7 @@
+# Flying Rat Studio Security Policy
+# https://securitytxt.org/
+
+Contact: mailto:security@flying-rat.studio
+Expires: 2027-01-05T00:00:00.000Z
+Preferred-Languages: en, cs
+Canonical: https://flying-rat.studio/.well-known/security.txt
