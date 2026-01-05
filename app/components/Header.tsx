@@ -1,11 +1,13 @@
 "use client";
 
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence } from "motion/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { useAnimationsEnabled } from "../hooks/useAnimationsEnabled";
 import { useTheme } from "../hooks/useTheme";
 import { useLanguage, useTranslation } from "../i18n";
 import { ExternalLinkIcon, MoonIcon, SunIcon } from "./icons";
+import { M } from "./Motion";
 
 const navSections = [
   { href: "#about", key: "nav.about" },
@@ -21,6 +23,7 @@ export function Header() {
   const { resolvedTheme, toggleTheme, mounted } = useTheme();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const shouldAnimate = useAnimationsEnabled();
 
   useEffect(() => {
     let frame = 0;
@@ -52,11 +55,11 @@ export function Header() {
   }, []);
 
   return (
-    <motion.header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? "glass py-3" : "py-6"}`}
-      initial={{ y: -100, opacity: 0 }}
+    <M.header
+      className={`fixed top-0 left-0 right-0 z-50 transition-[padding] duration-300 ${isScrolled ? "glass py-3" : "py-6"}`}
+      initial={shouldAnimate ? { y: -100, opacity: 0 } : { y: 0, opacity: 1 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+      transition={shouldAnimate ? { duration: 0.6, ease: [0.16, 1, 0.3, 1] } : { duration: 0 }}
     >
       <div className="container mx-auto px-6 flex items-center justify-between">
         <a href="/" className="group">
@@ -82,56 +85,58 @@ export function Header() {
           {navSections.map((item, index) => {
             const isExternal = item.href.startsWith("http");
             return (
-              <motion.a
+              <M.a
                 key={item.href}
                 href={item.href}
                 target={isExternal ? "_blank" : undefined}
                 rel={isExternal ? "noopener noreferrer" : undefined}
                 className="text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-colors relative group flex items-center gap-1"
-                initial={{ opacity: 0, y: -10 }}
+                initial={shouldAnimate ? { opacity: 0, y: -10 } : { opacity: 1, y: 0 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.1 + index * 0.05 }}
-                whileHover={{ y: -2 }}
+                transition={
+                  shouldAnimate ? { duration: 0.4, delay: 0.1 + index * 0.05 } : { duration: 0 }
+                }
+                whileHover={shouldAnimate ? { y: -2 } : undefined}
               >
                 {t(item.key)}
                 {isExternal && <ExternalLinkIcon className="w-2.5 h-2.5 opacity-50" />}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all group-hover:w-full" />
-              </motion.a>
+              </M.a>
             );
           })}
 
-          <motion.div
+          <M.div
             className="flex items-center gap-3 ml-4 border-l border-[var(--color-border-hover)] pl-4 text-sm text-[var(--color-text-muted)]"
-            initial={{ opacity: 0 }}
+            initial={shouldAnimate ? { opacity: 0 } : { opacity: 1 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.4, delay: 0.4 }}
+            transition={shouldAnimate ? { duration: 0.4, delay: 0.4 } : { duration: 0 }}
           >
             <div className="flex items-center">
-              <motion.button
+              <M.button
                 type="button"
                 onClick={() => setLanguage("en")}
                 className={`px-1.5 py-1 rounded transition-colors ${currentLang === "en" ? "text-[var(--color-text)]" : "hover:text-[var(--color-text)]"}`}
-                whileTap={{ scale: 0.95 }}
+                whileTap={shouldAnimate ? { scale: 0.95 } : undefined}
               >
                 EN
-              </motion.button>
+              </M.button>
               <span className="opacity-30">|</span>
-              <motion.button
+              <M.button
                 type="button"
                 onClick={() => setLanguage("cs")}
                 className={`px-1.5 py-1 rounded transition-colors ${currentLang === "cs" ? "text-[var(--color-text)]" : "hover:text-[var(--color-text)]"}`}
-                whileTap={{ scale: 0.95 }}
+                whileTap={shouldAnimate ? { scale: 0.95 } : undefined}
               >
                 CS
-              </motion.button>
+              </M.button>
             </div>
-            <motion.button
+            <M.button
               type="button"
               onClick={toggleTheme}
               className="p-1.5 rounded-lg hover:text-[var(--color-text)] hover:bg-[var(--color-surface-light)] transition-colors"
               aria-label="Toggle theme"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
+              whileHover={shouldAnimate ? { scale: 1.1 } : undefined}
+              whileTap={shouldAnimate ? { scale: 0.9 } : undefined}
             >
               {mounted &&
                 (resolvedTheme === "dark" ? (
@@ -139,8 +144,8 @@ export function Header() {
                 ) : (
                   <MoonIcon className="w-4 h-4" />
                 ))}
-            </motion.button>
-          </motion.div>
+            </M.button>
+          </M.div>
         </nav>
 
         <button
@@ -151,20 +156,20 @@ export function Header() {
           aria-expanded={isMobileMenuOpen}
         >
           <div className="w-6 h-5 relative flex flex-col justify-between">
-            <motion.span
+            <M.span
               className="w-full h-0.5 bg-[var(--color-text)]"
               animate={isMobileMenuOpen ? { rotate: 45, y: 9 } : { rotate: 0, y: 0 }}
-              transition={{ duration: 0.2 }}
+              transition={shouldAnimate ? { duration: 0.2 } : { duration: 0 }}
             />
-            <motion.span
+            <M.span
               className="w-full h-0.5 bg-[var(--color-text)]"
               animate={isMobileMenuOpen ? { opacity: 0 } : { opacity: 1 }}
-              transition={{ duration: 0.2 }}
+              transition={shouldAnimate ? { duration: 0.2 } : { duration: 0 }}
             />
-            <motion.span
+            <M.span
               className="w-full h-0.5 bg-[var(--color-text)]"
               animate={isMobileMenuOpen ? { rotate: -45, y: -9 } : { rotate: 0, y: 0 }}
-              transition={{ duration: 0.2 }}
+              transition={shouldAnimate ? { duration: 0.2 } : { duration: 0 }}
             />
           </div>
         </button>
@@ -172,38 +177,42 @@ export function Header() {
 
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <motion.div
+          <M.div
             className="md:hidden glass mt-2 mx-4 rounded-lg p-4 overflow-hidden"
-            initial={{ opacity: 0, height: 0 }}
+            initial={shouldAnimate ? { opacity: 0, height: 0 } : { opacity: 1, height: "auto" }}
             animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            exit={shouldAnimate ? { opacity: 0, height: 0 } : undefined}
+            transition={
+              shouldAnimate ? { duration: 0.3, ease: [0.16, 1, 0.3, 1] } : { duration: 0 }
+            }
           >
             <nav className="flex flex-col gap-4">
               {navSections.map((item, index) => {
                 const isExternal = item.href.startsWith("http");
                 return (
-                  <motion.a
+                  <M.a
                     key={item.href}
                     href={item.href}
                     target={isExternal ? "_blank" : undefined}
                     rel={isExternal ? "noopener noreferrer" : undefined}
                     className="text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-colors py-2 flex items-center gap-2"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    initial={{ opacity: 0, x: -20 }}
+                    initial={shouldAnimate ? { opacity: 0, x: -20 } : { opacity: 1, x: 0 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3, delay: index * 0.05 }}
+                    transition={
+                      shouldAnimate ? { duration: 0.3, delay: index * 0.05 } : { duration: 0 }
+                    }
                   >
                     {t(item.key)}
                     {isExternal && <ExternalLinkIcon className="w-2.5 h-2.5 opacity-50" />}
-                  </motion.a>
+                  </M.a>
                 );
               })}
-              <motion.div
+              <M.div
                 className="flex items-center gap-3 pt-4 border-t border-[var(--color-border-hover)] text-sm text-[var(--color-text-muted)]"
-                initial={{ opacity: 0 }}
+                initial={shouldAnimate ? { opacity: 0 } : { opacity: 1 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 0.3, delay: 0.2 }}
+                transition={shouldAnimate ? { duration: 0.3, delay: 0.2 } : { duration: 0 }}
               >
                 <div className="flex items-center">
                   <button
@@ -241,11 +250,11 @@ export function Header() {
                       <MoonIcon className="w-4 h-4" />
                     ))}
                 </button>
-              </motion.div>
+              </M.div>
             </nav>
-          </motion.div>
+          </M.div>
         )}
       </AnimatePresence>
-    </motion.header>
+    </M.header>
   );
 }

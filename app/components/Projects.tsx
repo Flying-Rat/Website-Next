@@ -1,16 +1,19 @@
 "use client";
 
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence } from "motion/react";
 import Image from "next/image";
 import { memo, useCallback, useState } from "react";
 import { projects } from "../data/projects";
+import { useAnimationsEnabled } from "../hooks/useAnimationsEnabled";
 import { useTranslation } from "../i18n";
 import { PlatformIcon } from "./icons";
+import { M } from "./Motion";
 
 export const Projects = () => {
   const { t, i18n } = useTranslation();
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const currentLang = (i18n.language === "cs" ? "cs" : "en") as "en" | "cs";
+  const shouldAnimate = useAnimationsEnabled();
 
   const toggleExpand = useCallback((id: string) => {
     setExpandedId((prev) => (prev === id ? null : id));
@@ -24,12 +27,15 @@ export const Projects = () => {
 
       <div className="container mx-auto px-6 relative z-10">
         <div className="max-w-6xl mx-auto">
-          <motion.div
+          <M.div
             className="text-center mb-10 md:mb-16"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={shouldAnimate ? { opacity: 0, y: 30 } : { opacity: 1, y: 0 }}
+            animate={!shouldAnimate ? { opacity: 1, y: 0 } : undefined}
+            whileInView={shouldAnimate ? { opacity: 1, y: 0 } : undefined}
             viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            transition={
+              shouldAnimate ? { duration: 0.7, ease: [0.16, 1, 0.3, 1] } : { duration: 0 }
+            }
           >
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4">
               {t("projects.title")}
@@ -37,11 +43,11 @@ export const Projects = () => {
             <p className="text-[var(--color-text-muted)] text-base md:text-lg max-w-2xl mx-auto">
               {t("projects.subtitle")}
             </p>
-          </motion.div>
+          </M.div>
 
-          <motion.div
+          <M.div
             className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6"
-            layout
+            layout={shouldAnimate ? true : undefined}
           >
             {projects.map((project, index) => (
               <ProjectCard
@@ -52,9 +58,10 @@ export const Projects = () => {
                 onToggle={toggleExpand}
                 t={t}
                 currentLang={currentLang}
+                shouldAnimate={shouldAnimate}
               />
             ))}
-          </motion.div>
+          </M.div>
         </div>
       </div>
     </section>
@@ -68,6 +75,7 @@ interface ProjectCardProps {
   onToggle: (id: string) => void;
   t: (key: string) => string;
   currentLang: "en" | "cs";
+  shouldAnimate: boolean;
 }
 
 const ProjectCard = memo(function ProjectCard({
@@ -77,6 +85,7 @@ const ProjectCard = memo(function ProjectCard({
   onToggle,
   t,
   currentLang,
+  shouldAnimate,
 }: ProjectCardProps) {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" || e.key === " ") {
@@ -86,13 +95,18 @@ const ProjectCard = memo(function ProjectCard({
   };
 
   return (
-    <motion.div
-      layout
+    <M.div
+      layout={shouldAnimate ? true : undefined}
       className="project-card bg-[var(--color-surface)] rounded-xl sm:rounded-2xl overflow-hidden group border border-[var(--color-border)] cursor-pointer"
-      initial={{ opacity: 0, y: 40, scale: 0.98 }}
-      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      initial={shouldAnimate ? { opacity: 0, y: 40, scale: 0.98 } : { opacity: 1, y: 0, scale: 1 }}
+      animate={!shouldAnimate ? { opacity: 1, y: 0, scale: 1 } : undefined}
+      whileInView={shouldAnimate ? { opacity: 1, y: 0, scale: 1 } : undefined}
       viewport={{ once: true, margin: "-30px" }}
-      transition={{ duration: 0.5, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}
+      transition={
+        shouldAnimate
+          ? { duration: 0.5, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }
+          : { duration: 0 }
+      }
       onClick={() => onToggle(project.id)}
       role="button"
       tabIndex={0}
@@ -129,7 +143,7 @@ const ProjectCard = memo(function ProjectCard({
         )}
       </div>
 
-      <motion.div className="p-3 sm:p-5" layout="position">
+      <M.div className="p-3 sm:p-5" layout={shouldAnimate ? "position" : undefined}>
         <div className="flex items-start justify-between gap-1 sm:gap-2">
           <div className="min-w-0">
             <h3 className="text-sm sm:text-lg font-bold mb-0.5 sm:mb-1 group-hover:text-accent transition-colors truncate">
@@ -139,10 +153,10 @@ const ProjectCard = memo(function ProjectCard({
               {project.studio}
             </p>
           </div>
-          <motion.div
+          <M.div
             className="mt-0.5 sm:mt-1 text-[var(--color-text-muted)] shrink-0"
             animate={{ rotate: isExpanded ? 180 : 0 }}
-            transition={{ duration: 0.2 }}
+            transition={shouldAnimate ? { duration: 0.2 } : { duration: 0 }}
           >
             <svg
               width="16"
@@ -157,7 +171,7 @@ const ProjectCard = memo(function ProjectCard({
               <title>External Link</title>
               <polyline points="6 9 12 15 18 9" />
             </svg>
-          </motion.div>
+          </M.div>
         </div>
 
         <fieldset
@@ -185,20 +199,24 @@ const ProjectCard = memo(function ProjectCard({
 
         <AnimatePresence>
           {isExpanded && project.description && (
-            <motion.div
+            <M.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              transition={{ type: "spring", stiffness: 200, damping: 24, mass: 0.8 }}
+              transition={
+                shouldAnimate
+                  ? { type: "spring", stiffness: 200, damping: 24, mass: 0.8 }
+                  : { duration: 0 }
+              }
               className="overflow-hidden"
             >
               <p className="text-sm text-[var(--color-text-muted)] mt-4 pt-4 border-t border-[var(--color-border)]">
                 {project.description[currentLang]}
               </p>
-            </motion.div>
+            </M.div>
           )}
         </AnimatePresence>
-      </motion.div>
-    </motion.div>
+      </M.div>
+    </M.div>
   );
 });

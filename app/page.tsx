@@ -1,32 +1,10 @@
-"use client";
+import { headers } from "next/headers";
+import { HomeClient } from "./HomeClient";
+import { isPrivacyBrowser } from "./lib/motionDetect";
 
-import {
-  About,
-  Contact,
-  Footer,
-  Header,
-  Hero,
-  Projects,
-  ScrollProgress,
-  WhatWeDo,
-} from "./components";
-import { useSectionObserver } from "./hooks/useSectionObserver";
+export default async function Home() {
+  const userAgent = (await headers()).get("user-agent") ?? "";
+  const initialShouldAnimate = !isPrivacyBrowser(userAgent);
 
-export default function Home() {
-  useSectionObserver();
-
-  return (
-    <>
-      <ScrollProgress />
-      <Header />
-      <main>
-        <Hero />
-        <About />
-        <WhatWeDo />
-        <Projects />
-        <Contact />
-      </main>
-      <Footer />
-    </>
-  );
+  return <HomeClient initialShouldAnimate={initialShouldAnimate} />;
 }

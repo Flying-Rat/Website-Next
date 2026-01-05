@@ -1,6 +1,7 @@
 "use client";
 
 import { memo, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useTheme } from "../hooks/useTheme";
 
 const CANVAS_SIZE = 220;
@@ -122,11 +123,18 @@ function drawFlyingRat(
   ctx.restore();
 }
 
-export const RetroScene = memo(function RetroScene({ label }: { label: string }) {
+export const RetroScene = memo(function RetroScene({
+  label,
+  shouldAnimate,
+}: {
+  label: string;
+  shouldAnimate: boolean;
+}) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [inputKeys, setInputKeys] = useState<Array<{ id: string; key: string }>>([]);
   const [easterActive, setEasterActive] = useState(false);
   const { resolvedTheme } = useTheme();
+  const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
   const boostRef = useRef(false);
   const keysRef = useRef<string[]>([]);
   const keyEntriesRef = useRef<Array<{ id: string; key: string }>>([]);
@@ -134,6 +142,10 @@ export const RetroScene = memo(function RetroScene({ label }: { label: string })
   const timerRef = useRef<number | null>(null);
   const easterAtRef = useRef(0);
   const easterEmail = "marty+levelup@flying-rat.studio";
+
+  useEffect(() => {
+    setPortalTarget(document.body);
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -208,10 +220,11 @@ export const RetroScene = memo(function RetroScene({ label }: { label: string })
     ctx.imageSmoothingEnabled = false;
 
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const allowMotion = shouldAnimate && !prefersReducedMotion;
 
     let animationFrame = 0;
     let lastTime = 0;
-    let running = true;
+    let running = allowMotion;
     let visible = true;
     let inView = true;
     let lowPower = false;
@@ -221,7 +234,7 @@ export const RetroScene = memo(function RetroScene({ label }: { label: string })
     const drawFrame = (time: number) => {
       const delta = time - lastTime;
 
-      if (!prefersReducedMotion && delta < 16) {
+      if (allowMotion && delta < 16) {
         animationFrame = requestAnimationFrame(drawFrame);
         return;
       }
@@ -532,13 +545,19 @@ export const RetroScene = memo(function RetroScene({ label }: { label: string })
         ctx.restore();
       }
 
-      if (running && !prefersReducedMotion) {
+      if (running && allowMotion) {
         animationFrame = requestAnimationFrame(drawFrame);
       }
     };
 
+    drawFrame(0);
+
+    if (!allowMotion) {
+      return;
+    }
+
     const updateRunning = () => {
-      const shouldRun = !prefersReducedMotion && visible && inView && !lowPower;
+      const shouldRun = allowMotion && visible && inView && !lowPower;
       if (shouldRun === running) {
         return;
       }
@@ -608,8 +627,6 @@ export const RetroScene = memo(function RetroScene({ label }: { label: string })
         .catch(() => {});
     }
 
-    drawFrame(0);
-
     return () => {
       document.removeEventListener("visibilitychange", handleVisibility);
       canvas.removeEventListener("pointermove", handlePointerMove);
@@ -623,9 +640,16 @@ export const RetroScene = memo(function RetroScene({ label }: { label: string })
         cancelAnimationFrame(animationFrame);
       }
     };
-  }, [resolvedTheme]);
+  }, [resolvedTheme, shouldAnimate]);
 
   useEffect(() => {
+    if (!shouldAnimate) {
+      setEasterActive(false);
+      document.documentElement.classList.remove("crt-mode");
+      boostRef.current = false;
+      return;
+    }
+
     const triggerEaster = () => {
       boostRef.current = true;
       easterAtRef.current = performance.now();
@@ -675,10 +699,13 @@ export const RetroScene = memo(function RetroScene({ label }: { label: string })
       document.documentElement.classList.remove("crt-mode");
       boostRef.current = false;
     };
-  }, []);
+  }, [shouldAnimate]);
 
   return (
     <div className="relative h-full w-full" aria-label={label} role="img">
+      {easterActive && portalTarget
+        ? createPortal(<div className="crt-overlay" aria-hidden="true" />, portalTarget)
+        : null}
       {easterActive && (
         <div className="absolute bottom-4 left-4 z-10 max-w-[280px] rounded-2xl border border-white/10 bg-black/70 px-4 py-3 text-[12px] leading-relaxed text-gray-200 shadow-[0_0_18px_rgba(250,85,101,0.35)] backdrop-blur">
           <p className="font-semibold uppercase tracking-[0.2em] text-white/80">Hey gamer</p>

@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useAnimationsEnabled } from "../hooks/useAnimationsEnabled";
 
 export function ScrollProgress() {
   const barRef = useRef<HTMLDivElement | null>(null);
+  const shouldAnimate = useAnimationsEnabled();
 
   useEffect(() => {
     let frame = 0;
@@ -30,17 +32,28 @@ export function ScrollProgress() {
       }
     };
 
-    requestUpdate();
-    window.addEventListener("scroll", requestUpdate, { passive: true });
-    window.addEventListener("resize", requestUpdate);
+    if (shouldAnimate) {
+      requestUpdate();
+      window.addEventListener("scroll", requestUpdate, { passive: true });
+      window.addEventListener("resize", requestUpdate);
+    } else {
+      updateProgress();
+      window.addEventListener("scroll", updateProgress, { passive: true });
+      window.addEventListener("resize", updateProgress);
+    }
     return () => {
       if (frame !== 0) {
         window.cancelAnimationFrame(frame);
       }
-      window.removeEventListener("scroll", requestUpdate);
-      window.removeEventListener("resize", requestUpdate);
+      if (shouldAnimate) {
+        window.removeEventListener("scroll", requestUpdate);
+        window.removeEventListener("resize", requestUpdate);
+      } else {
+        window.removeEventListener("scroll", updateProgress);
+        window.removeEventListener("resize", updateProgress);
+      }
     };
-  }, []);
+  }, [shouldAnimate]);
 
   return (
     <div className="fixed top-0 left-0 right-0 h-[2px] z-[100]">

@@ -1,13 +1,15 @@
 "use client";
 
-import { motion } from "motion/react";
 import Image from "next/image";
+import { useAnimationsEnabled } from "../hooks/useAnimationsEnabled";
 import { useTranslation } from "../i18n";
+import { M } from "./Motion";
 
 const trustedStudios = ["Meta", "Red Hook Studios", "3D Realms", "Bohemia Incubator"];
 
 export function Hero() {
   const { t } = useTranslation();
+  const shouldAnimate = useAnimationsEnabled();
 
   return (
     <section
@@ -34,55 +36,67 @@ export function Hero() {
 
       <div className="container mx-auto px-6 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
-          <motion.h1
+          <M.h1
             className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-4 md:mb-6"
-            initial={{ opacity: 0, y: 30 }}
+            initial={shouldAnimate ? { opacity: 0, y: 30 } : { opacity: 1, y: 0 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            transition={
+              shouldAnimate ? { duration: 0.8, ease: [0.16, 1, 0.3, 1] } : { duration: 0 }
+            }
           >
             <span className="gradient-text">{t("hero.tagline")}</span>
-          </motion.h1>
+          </M.h1>
 
-          <motion.p
+          <M.p
             className="text-lg sm:text-xl md:text-2xl text-[var(--color-text-secondary)] mb-8 md:mb-12 max-w-2xl mx-auto"
-            initial={{ opacity: 0, y: 30 }}
+            initial={shouldAnimate ? { opacity: 0, y: 30 } : { opacity: 1, y: 0 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+            transition={
+              shouldAnimate
+                ? { duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.1 }
+                : { duration: 0 }
+            }
           >
             {t("hero.subtitle")}
-          </motion.p>
+          </M.p>
 
-          <motion.div
+          <M.div
             className="flex flex-col sm:flex-row gap-4 justify-center"
-            initial={{ opacity: 0, y: 30 }}
+            initial={shouldAnimate ? { opacity: 0, y: 30 } : { opacity: 1, y: 0 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+            transition={
+              shouldAnimate
+                ? { duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.2 }
+                : { duration: 0 }
+            }
           >
-            <motion.a
+            <M.a
               href="#projects"
-              className="px-6 py-3 sm:px-8 sm:py-4 bg-accent hover:bg-accent-dark text-white font-semibold rounded-xl transition-all hover:shadow-lg hover:shadow-accent/30 active:scale-95"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              className="px-6 py-3 sm:px-8 sm:py-4 bg-accent hover:bg-accent-dark text-white font-semibold rounded-xl transition-colors transition-shadow hover:shadow-lg hover:shadow-accent/30"
+              whileHover={shouldAnimate ? { scale: 1.05 } : undefined}
+              whileTap={shouldAnimate ? { scale: 0.95 } : undefined}
             >
               {t("hero.cta.projects")}
-            </motion.a>
-            <motion.a
+            </M.a>
+            <M.a
               href="#contact"
-              className="px-6 py-3 sm:px-8 sm:py-4 border border-[var(--color-text-muted)] hover:border-accent text-[var(--color-text)] font-semibold rounded-xl transition-all backdrop-blur-sm active:scale-95"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              className="px-6 py-3 sm:px-8 sm:py-4 border border-[var(--color-text-muted)] hover:border-accent text-[var(--color-text)] font-semibold rounded-xl transition-colors backdrop-blur-sm"
+              whileHover={shouldAnimate ? { scale: 1.05 } : undefined}
+              whileTap={shouldAnimate ? { scale: 0.95 } : undefined}
             >
               {t("hero.cta.contact")}
-            </motion.a>
-          </motion.div>
+            </M.a>
+          </M.div>
         </div>
       </div>
 
-      <motion.div
+      <M.div
         className="absolute bottom-24 md:bottom-28 left-1/2 -translate-x-1/2 w-full px-6"
-        initial={{ opacity: 0, y: 30 }}
+        initial={shouldAnimate ? { opacity: 0, y: 30 } : { opacity: 1, y: 0 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+        transition={
+          shouldAnimate ? { duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.3 } : { duration: 0 }
+        }
       >
         <div className="flex items-center justify-center gap-4 text-[11px] uppercase tracking-[0.35em] text-[var(--color-text-subtle)]">
           <span className="h-px w-10 bg-gradient-to-r from-transparent via-[var(--color-text)]/20 to-transparent" />
@@ -99,11 +113,11 @@ export function Hero() {
             </span>
           ))}
         </div>
-      </motion.div>
+      </M.div>
 
-      <motion.div
+      <M.div
         className="absolute bottom-8 left-1/2 -translate-x-1/2"
-        animate={{ y: [0, 8, 0] }}
+        animate={shouldAnimate ? { y: [0, 8, 0] } : undefined}
         transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
       >
         {/* Desktop Mouse */}
@@ -128,7 +142,7 @@ export function Hero() {
             <path d="M7 13l5 5 5-5" />
           </svg>
         </div>
-      </motion.div>
+      </M.div>
     </section>
   );
 }

@@ -124,6 +124,23 @@ html {
   -webkit-tap-highlight-color: transparent;
 }
 
+html.no-motion {
+  scroll-behavior: auto;
+}
+
+html.no-motion *,
+html.no-motion *::before,
+html.no-motion *::after {
+  animation-duration: 0.01ms;
+  animation-iteration-count: 1;
+  transition-duration: 0.01ms;
+  transition-delay: 0ms;
+}
+
+html.no-motion .crt-overlay {
+  animation: none;
+}
+
 @media (max-width: 768px) {
   ::-webkit-scrollbar {
     display: none;
