@@ -282,7 +282,6 @@ html.crt-mode .scroll-progress-bar {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: shimmer 8s linear infinite;
 }
 
 .glass {
