@@ -1,46 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useAnimationsEnabled } from "../hooks/useAnimationsEnabled";
 import { useTranslation } from "../i18n";
+import { FadeInView } from "./FadeInView";
 import { MailIcon, socialLinks } from "./icons";
-import { M } from "./Motion";
 
 export function Contact() {
   const { t } = useTranslation();
   const email = "marty@flying-rat.studio";
-  const shouldAnimate = useAnimationsEnabled();
-
-  const socialContainerVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.7,
-        ease: [0.16, 1, 0.3, 1],
-        delay: 0.2,
-        when: "beforeChildren",
-      },
-    },
-  };
-
-  const socialItemVariants = {
-    hidden: { opacity: 0, scale: 0.8 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      transition: { duration: 0.4 },
-    },
-  };
-
-  const hashtagVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { duration: 0.4, delay: 0.2 },
-    },
-  };
 
   return (
     <section id="contact" className="py-16 md:py-32 relative overflow-hidden">
@@ -50,41 +17,18 @@ export function Contact() {
 
       <div className="container mx-auto px-6 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
-          <M.div
-            initial={shouldAnimate ? { opacity: 0, y: 30 } : { opacity: 1, y: 0 }}
-            animate={!shouldAnimate ? { opacity: 1, y: 0 } : undefined}
-            whileInView={shouldAnimate ? { opacity: 1, y: 0 } : undefined}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={
-              shouldAnimate ? { duration: 0.7, ease: [0.16, 1, 0.3, 1] } : { duration: 0 }
-            }
-          >
+          <FadeInView animation="up">
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4">
               {t("contact.title")}
             </h2>
             <p className="text-[var(--color-text-muted)] text-base md:text-lg mb-8 md:mb-12 max-w-xl mx-auto">
               {t("contact.subtitle")}
             </p>
-          </M.div>
+          </FadeInView>
 
-          <M.div
-            className="mb-10 md:mb-16"
-            initial={shouldAnimate ? { opacity: 0, y: 30 } : { opacity: 1, y: 0 }}
-            animate={!shouldAnimate ? { opacity: 1, y: 0 } : undefined}
-            whileInView={shouldAnimate ? { opacity: 1, y: 0 } : undefined}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={
-              shouldAnimate
-                ? { duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.1 }
-                : { duration: 0 }
-            }
-          >
+          <FadeInView animation="up" delay={0.1} margin="-50px" className="mb-10 md:mb-16">
             <div className="flex flex-col items-center gap-4">
-              <M.div
-                className="relative"
-                whileHover={shouldAnimate ? { scale: 1.05 } : undefined}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
+              <div className="relative hover:scale-105 transition-transform">
                 <Image
                   src="/images/marty.png"
                   alt="Marty"
@@ -96,57 +40,42 @@ export function Contact() {
                   className="absolute -bottom-1 -right-1 status-online"
                   title={t("contact.statusAvailable")}
                 />
-              </M.div>
-              <M.a
+              </div>
+              <a
                 href={`mailto:${email}`}
-                className="inline-flex items-center gap-3 px-8 py-4 bg-accent hover:bg-accent-dark text-white font-semibold rounded-xl transition-colors hover:shadow-lg hover:shadow-accent/30 text-lg"
-                whileHover={shouldAnimate ? { scale: 1.05 } : undefined}
-                whileTap={shouldAnimate ? { scale: 0.98 } : undefined}
+                className="inline-flex items-center gap-3 px-8 py-4 bg-accent hover:bg-accent-dark text-white font-semibold rounded-xl transition-all hover:shadow-lg hover:shadow-accent/30 text-lg hover:scale-105 active:scale-98"
               >
                 <MailIcon className="w-6 h-6" />
                 {t("contact.cta")}
-              </M.a>
+              </a>
               <p className="text-[var(--color-text-subtle)] text-sm">{email}</p>
             </div>
-          </M.div>
+          </FadeInView>
 
-          <M.div
-            initial={shouldAnimate ? "hidden" : "visible"}
-            animate={!shouldAnimate ? "visible" : undefined}
-            whileInView={shouldAnimate ? "visible" : undefined}
-            viewport={{ once: true, margin: "-50px" }}
-            variants={socialContainerVariants}
-            transition={shouldAnimate ? undefined : { duration: 0 }}
-          >
+          <FadeInView animation="up" delay={0.2} margin="-50px">
             <p className="text-[var(--color-text-muted)] mb-6">{t("contact.social")}</p>
             <div className="flex flex-wrap justify-center gap-4">
-              {socialLinks.map((link, index) => (
-                <M.a
+              {socialLinks.map((link) => (
+                <a
                   key={link.name}
                   href={link.url}
-                  className="w-12 h-12 bg-[var(--color-surface-light)] hover:bg-[var(--color-surface-lighter)] rounded-xl flex items-center justify-center transition-colors group"
+                  className="w-12 h-12 bg-[var(--color-surface-light)] hover:bg-[var(--color-surface-lighter)] rounded-xl flex items-center justify-center transition-all group hover:scale-110 hover:-translate-y-0.5 active:scale-95"
                   title={link.name}
                   aria-label={link.name}
-                  variants={socialItemVariants}
-                  transition={shouldAnimate ? { delay: index * 0.05 } : { duration: 0 }}
-                  whileHover={shouldAnimate ? { scale: 1.1, y: -2 } : undefined}
-                  whileTap={shouldAnimate ? { scale: 0.95 } : undefined}
                 >
                   <link.Icon className="w-5 h-5 text-[var(--color-text-muted)] group-hover:text-[var(--color-text)] transition-colors" />
-                </M.a>
+                </a>
               ))}
             </div>
-            <M.a
+            <a
               href="https://x.com/search?q=%23flyingWithRats"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block mt-6 text-accent hover:text-accent-dark transition-colors font-medium"
-              variants={hashtagVariants}
-              transition={shouldAnimate ? undefined : { duration: 0 }}
             >
               #flyingWithRats
-            </M.a>
-          </M.div>
+            </a>
+          </FadeInView>
         </div>
       </div>
     </section>

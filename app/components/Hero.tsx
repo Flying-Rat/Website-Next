@@ -1,15 +1,34 @@
 "use client";
 
 import Image from "next/image";
+import type { CSSProperties } from "react";
+import { useEffect, useState } from "react";
 import { useAnimationsEnabled } from "../hooks/useAnimationsEnabled";
 import { useTranslation } from "../i18n";
-import { M } from "./Motion";
 
 const trustedStudios = ["Meta", "Red Hook Studios", "3D Realms", "Bohemia Incubator"];
 
 export function Hero() {
   const { t } = useTranslation();
   const shouldAnimate = useAnimationsEnabled();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setMounted(true), 50);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const getStyle = (delayMs: number): CSSProperties => {
+    if (!shouldAnimate) {
+      return {};
+    }
+    const isVisible = mounted;
+    return {
+      opacity: isVisible ? 1 : 0,
+      transform: isVisible ? "none" : "translateY(30px)",
+      transition: `opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${delayMs}ms, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${delayMs}ms`,
+    };
+  };
 
   return (
     <section
@@ -36,67 +55,40 @@ export function Hero() {
 
       <div className="container mx-auto px-6 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
-          <M.h1
+          <h1
             className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-4 md:mb-6"
-            initial={shouldAnimate ? { opacity: 0, y: 30 } : { opacity: 1, y: 0 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={
-              shouldAnimate ? { duration: 0.8, ease: [0.16, 1, 0.3, 1] } : { duration: 0 }
-            }
+            style={getStyle(0)}
           >
             <span className="gradient-text">{t("hero.tagline")}</span>
-          </M.h1>
+          </h1>
 
-          <M.p
+          <p
             className="text-lg sm:text-xl md:text-2xl text-[var(--color-text-secondary)] mb-8 md:mb-12 max-w-2xl mx-auto"
-            initial={shouldAnimate ? { opacity: 0, y: 30 } : { opacity: 1, y: 0 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={
-              shouldAnimate
-                ? { duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.1 }
-                : { duration: 0 }
-            }
+            style={getStyle(100)}
           >
             {t("hero.subtitle")}
-          </M.p>
+          </p>
 
-          <M.div
-            className="flex flex-col sm:flex-row gap-4 justify-center"
-            initial={shouldAnimate ? { opacity: 0, y: 30 } : { opacity: 1, y: 0 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={
-              shouldAnimate
-                ? { duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.2 }
-                : { duration: 0 }
-            }
-          >
-            <M.a
+          <div className="flex flex-col sm:flex-row gap-4 justify-center" style={getStyle(200)}>
+            <a
               href="#projects"
-              className="px-6 py-3 sm:px-8 sm:py-4 bg-accent hover:bg-accent-dark text-white font-semibold rounded-xl transition-colors transition-shadow hover:shadow-lg hover:shadow-accent/30"
-              whileHover={shouldAnimate ? { scale: 1.05 } : undefined}
-              whileTap={shouldAnimate ? { scale: 0.95 } : undefined}
+              className="px-6 py-3 sm:px-8 sm:py-4 bg-accent hover:bg-accent-dark text-white font-semibold rounded-xl transition-all hover:shadow-lg hover:shadow-accent/30 hover:scale-105 active:scale-95"
             >
               {t("hero.cta.projects")}
-            </M.a>
-            <M.a
+            </a>
+            <a
               href="#contact"
-              className="px-6 py-3 sm:px-8 sm:py-4 border border-[var(--color-text-muted)] hover:border-accent text-[var(--color-text)] font-semibold rounded-xl transition-colors backdrop-blur-sm"
-              whileHover={shouldAnimate ? { scale: 1.05 } : undefined}
-              whileTap={shouldAnimate ? { scale: 0.95 } : undefined}
+              className="px-6 py-3 sm:px-8 sm:py-4 border border-[var(--color-text-muted)] hover:border-accent text-[var(--color-text)] font-semibold rounded-xl transition-all backdrop-blur-sm hover:scale-105 active:scale-95"
             >
               {t("hero.cta.contact")}
-            </M.a>
-          </M.div>
+            </a>
+          </div>
         </div>
       </div>
 
-      <M.div
+      <div
         className="absolute bottom-24 md:bottom-28 left-1/2 -translate-x-1/2 w-full px-6"
-        initial={shouldAnimate ? { opacity: 0, y: 30 } : { opacity: 1, y: 0 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={
-          shouldAnimate ? { duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.3 } : { duration: 0 }
-        }
+        style={getStyle(300)}
       >
         <div className="flex items-center justify-center gap-4 text-[11px] uppercase tracking-[0.35em] text-[var(--color-text-subtle)]">
           <span className="h-px w-10 bg-gradient-to-r from-transparent via-[var(--color-text)]/20 to-transparent" />
@@ -113,19 +105,14 @@ export function Hero() {
             </span>
           ))}
         </div>
-      </M.div>
+      </div>
 
-      <M.div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
-        animate={shouldAnimate ? { y: [0, 8, 0] } : undefined}
-        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+      <div
+        className={`absolute bottom-8 left-1/2 -translate-x-1/2 ${shouldAnimate ? "animate-bounce-slow" : ""}`}
       >
-        {/* Desktop Mouse */}
         <div className="hidden md:flex w-6 h-10 border-2 border-[var(--color-text-muted)] rounded-full justify-center pt-2">
           <div className="w-1 h-2 bg-accent rounded-full" />
         </div>
-
-        {/* Mobile Touch Indicator */}
         <div className="md:hidden text-[var(--color-text-muted)]">
           <svg
             width="24"
@@ -142,7 +129,7 @@ export function Hero() {
             <path d="M7 13l5 5 5-5" />
           </svg>
         </div>
-      </M.div>
+      </div>
     </section>
   );
 }

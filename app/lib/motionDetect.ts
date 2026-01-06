@@ -1,5 +1,5 @@
-const LIBREWOLF_UA = /LibreWolf/i;
+const PRIVACY_BROWSER_UA = /LibreWolf|Mullvad/i;
 
 export function isPrivacyBrowser(userAgent: string) {
-  return LIBREWOLF_UA.test(userAgent);
+  return PRIVACY_BROWSER_UA.test(userAgent);
 }
