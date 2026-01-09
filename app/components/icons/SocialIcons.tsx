@@ -237,7 +237,7 @@ export const socialLinks = [
   {
     name: "YouTube",
     Icon: YouTubeIcon,
-    url: "https://www.youtube.com/channel/UC00SEDeDnkKrvnfVtjUf7CQ/featured",
+    url: "https://www.youtube.com/@flyingratstudio/featured",
   },
   { name: "Twitch", Icon: TwitchIcon, url: "https://www.twitch.tv/flyingratstudio" },
   { name: "Instagram", Icon: InstagramIcon, url: "https://instagram.com/flyingrat.studio" },
