@@ -38,9 +38,9 @@ export function Footer() {
               <span className="opacity-30">|</span>
               <Link
                 href="/press"
-                className="hover:text-[var(--color-text-muted)] transition-colors"
+                className="hover:text-[var(--color-text-muted)] transition-colors inline-flex items-center gap-1"
               >
-                {t("footer.press")}
+                {t("footer.press")} 📰
               </Link>
             </div>
             <p className="text-[var(--color-text-subtle)] text-[10px] opacity-50">

@@ -83,6 +83,12 @@ html.light .avatar-ring:hover {
     0 8px 24px rgba(250, 85, 101, 0.25);
 }
 
+.surface-card {
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  background: var(--color-surface);
+}
+
 html.light .gradient-text {
   background: linear-gradient(135deg, #000000 0%, var(--color-accent) 50%, #000000 100%);
   background-size: 200% auto;
