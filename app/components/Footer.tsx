@@ -31,7 +31,13 @@ export function Footer() {
               © {year} {t("footer.rights")}
             </span>
           </div>
-          <p className="text-[var(--color-text-subtle)] text-sm">{t("footer.cookies")}</p>
+          <div className="flex flex-col items-center md:items-end gap-1">
+            <p className="text-[var(--color-text-subtle)] text-sm">{t("footer.cookies")}</p>
+            <p className="text-[var(--color-text-subtle)] text-[10px] opacity-50">
+              GADEN ALPHA s.r.o. | IČO: 09949194 | DIČ: CZ09949194 | Polní 21, 252 64 Velké Přílepy
+              | Zapsáno u MS v Praze, C 345227
+            </p>
+          </div>
         </div>
       </div>
     </footer>
