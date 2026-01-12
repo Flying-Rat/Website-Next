@@ -74,9 +74,113 @@
   },
   "footer": {
     "rights": "All rights reserved.",
-    "cookies": "No cookies here, we ate them all. 🍪"
+    "cookies": "No cookies here, we ate them all. 🍪",
+    "press": "Press"
   },
   "techStack": {
     "title": "Our stack"
+  },
+  "pressKit": {
+    "title": "Press Kit",
+    "subtitle": "Download official Flying Rat Studio logos and brand assets for press and media use.",
+    "backHome": "Back to Home",
+    "logos": {
+      "title": "Logo Downloads",
+      "description": "Our logo is available in multiple formats and color variants. All files are in RGB color space. Choose the version that works best for your background.",
+      "center": "Centered Logo",
+      "horizontal": "Horizontal Logo",
+      "downloadAll": "Download All Logos",
+      "downloadAllDesc": "Get all logo files in one ZIP archive."
+    },
+    "colors": {
+      "title": "Brand Colors",
+      "description": "Our primary brand colors. Click to copy hex code.",
+      "copied": "Copied!",
+      "primary": "Primary",
+      "dark": "Dark",
+      "black": "Black",
+      "white": "White"
+    },
+    "guidelines": {
+      "title": "Usage Guidelines",
+      "do": {
+        "title": "Do",
+        "item1": "Use the logo in its original proportions",
+        "item2": "Maintain adequate clear space around the logo",
+        "item3": "Use the appropriate color variant for your background",
+        "item4": "Use a clean, high-contrast background"
+      },
+      "dont": {
+        "title": "Don't",
+        "item1": "Stretch, distort, or rotate the logo",
+        "item2": "Change the logo colors",
+        "item3": "Add effects like shadows or outlines",
+        "item4": "Place the logo on busy or low-contrast backgrounds",
+        "item5": "Crop the logo or use it as a pattern",
+        "item6": "Place the logo on gradients or textured surfaces"
+      }
+    },
+    "about": {
+      "title": "About Flying Rat Studio",
+      "boilerplate": "Flying Rat Studio is a Prague-based game development team specializing in gameplay systems, performance optimization, rendering pipelines, and porting to PlayStation, Xbox, Switch, and handhelds. The studio works hands-on with Unreal, Unity, and Godot, and is comfortable with proprietary engines built in C/C++ and Rust. Flying Rat Studio also provides in-house QA, release management, backend services, and custom AI models to help teams ship reliably across platforms.",
+      "copyButton": "Copy",
+      "copied": "Copied!"
+    },
+    "factSheet": {
+      "title": "Fact Sheet",
+      "foundedLabel": "Founded",
+      "foundedValue": "2022",
+      "hqLabel": "HQ",
+      "hqValue": "Bubenská 1477/1, 170 00 Praha 7-Holešovice",
+      "teamSizeLabel": "Team Size",
+      "teamSizeValue": "30+ people",
+      "legalEntityLabel": "Legal Entity",
+      "legalEntityName": "GADEN ALPHA s.r.o.",
+      "legalEntityIds": "IČO: 09949194 | DIČ: CZ09949194",
+      "legalEntityAddress": "Polní 21, 252 64 Velké Přílepy",
+      "legalEntityRegistry": "Zapsáno u MS v Praze, C 345227",
+      "contactLabel": "Press Contact"
+    },
+    "brandName": {
+      "title": "Brand Name",
+      "description": "Our official name is \"Flying Rat Studio\" - always use the full name in press materials.",
+      "correct": "Correct",
+      "incorrect": "Incorrect",
+      "examples": {
+        "right1": "Flying Rat Studio",
+        "wrong1": "Flying Rat",
+        "wrong2": "FlyingRat",
+        "wrong3": "flying rat studio",
+        "wrong4": "FRS"
+      }
+    },
+    "clearSpace": {
+      "title": "Clear Space",
+      "description": "Always maintain a minimum clear space around the logo equal to the height of the 'F' in the wordmark. This ensures the logo remains legible and impactful."
+    },
+    "contact": {
+      "title": "Need Something Else?",
+      "description": "If you need additional assets, different formats, or have questions about brand usage, please get in touch."
+    },
+    "logoColors": {
+      "black": "Black",
+      "gray": "Gray",
+      "white": "White"
+    },
+    "formats": {
+      "svg": "SVG",
+      "png": "PNG",
+      "zip": "ZIP"
+    },
+    "nav": {
+      "about": "About",
+      "facts": "Facts",
+      "logos": "Logos",
+      "colors": "Colors",
+      "guidelines": "Guides",
+      "brand": "Name"
+    },
+    "toggleTheme": "Toggle theme",
+    "martyAlt": "Marty from Flying Rat Studio"
   }
 }

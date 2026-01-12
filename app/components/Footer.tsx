@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useTranslation } from "../i18n";
 
 const year = new Date().getFullYear();
@@ -32,7 +33,16 @@ export function Footer() {
             </span>
           </div>
           <div className="flex flex-col items-center md:items-end gap-1">
-            <p className="text-[var(--color-text-subtle)] text-sm">{t("footer.cookies")}</p>
+            <div className="flex items-center gap-3 text-[var(--color-text-subtle)] text-sm">
+              <p>{t("footer.cookies")}</p>
+              <span className="opacity-30">|</span>
+              <Link
+                href="/press"
+                className="hover:text-[var(--color-text-muted)] transition-colors"
+              >
+                {t("footer.press")}
+              </Link>
+            </div>
             <p className="text-[var(--color-text-subtle)] text-[10px] opacity-50">
               GADEN ALPHA s.r.o. | IČO: 09949194 | DIČ: CZ09949194 | Polní 21, 252 64 Velké Přílepy
               | Zapsáno u MS v Praze, C 345227

@@ -74,9 +74,113 @@
   },
   "footer": {
     "rights": "Všechna práva vyhrazena.",
-    "cookies": "Žádné cookies tu nejsou, všechny jsme snědli. 🍪"
+    "cookies": "Žádné cookies tu nejsou, všechny jsme snědli. 🍪",
+    "press": "Pro média"
   },
   "techStack": {
     "title": "Náš stack"
+  },
+  "pressKit": {
+    "title": "Pro média",
+    "subtitle": "Stáhněte si oficiální loga a brand assety Flying Rat Studia pro tisk a média.",
+    "backHome": "Zpět na hlavní stránku",
+    "logos": {
+      "title": "Ke stažení",
+      "description": "Naše logo je k dispozici v několika formátech a barevných variantách. Všechny soubory jsou v barevném prostoru RGB. Vyberte si verzi, která nejlépe odpovídá vašemu pozadí.",
+      "center": "Centrované logo",
+      "horizontal": "Horizontální logo",
+      "downloadAll": "Stáhnout všechna loga",
+      "downloadAllDesc": "Všechny soubory log v jednom ZIP archivu."
+    },
+    "colors": {
+      "title": "Barvy značky",
+      "description": "Primární barvy naší značky. Kliknutím zkopírujete hex kód.",
+      "copied": "Zkopírováno!",
+      "primary": "Primární",
+      "dark": "Tmavá",
+      "black": "Černá",
+      "white": "Bílá"
+    },
+    "guidelines": {
+      "title": "Pravidla použití",
+      "do": {
+        "title": "Ano",
+        "item1": "Používejte logo v původních proporcích",
+        "item2": "Zachovejte dostatečný volný prostor kolem loga",
+        "item3": "Použijte vhodnou barevnou variantu pro vaše pozadí",
+        "item4": "Používejte čisté pozadí s dobrým kontrastem"
+      },
+      "dont": {
+        "title": "Ne",
+        "item1": "Nenatahujte, nezkreslujte ani neotáčejte logo",
+        "item2": "Neměňte barvy loga",
+        "item3": "Nepřidávejte efekty jako stíny nebo obrysy",
+        "item4": "Neumisťujte logo na rušná nebo málo kontrastní pozadí",
+        "item5": "Neořezávejte logo ani ho nepoužívejte jako vzor",
+        "item6": "Neumisťujte logo na gradienty nebo texturované povrchy"
+      }
+    },
+    "about": {
+      "title": "O Flying Rat Studio",
+      "boilerplate": "Flying Rat Studio je pražský tým pro vývoj her specializující se na herní systémy, optimalizaci výkonu, renderingové pipeline a portování na PlayStation, Xbox, Switch a handheldy. Studio pracuje přímo v enginech Unreal, Unity a Godot a dobře se orientuje i v proprietárních technologiích na bázi C/C++ a Rustu. Flying Rat Studio poskytuje také interní QA, release management, backendové služby a vlastní AI modely, aby týmy spolehlivě shipovaly napříč platformami.",
+      "copyButton": "Kopírovat",
+      "copied": "Zkopírováno!"
+    },
+    "factSheet": {
+      "title": "Základní fakta",
+      "foundedLabel": "Založeno",
+      "foundedValue": "2022",
+      "hqLabel": "Sídlo",
+      "hqValue": "Bubenská 1477/1, 170 00 Praha 7-Holešovice",
+      "teamSizeLabel": "Velikost týmu",
+      "teamSizeValue": "30+ lidí",
+      "legalEntityLabel": "Právní subjekt",
+      "legalEntityName": "GADEN ALPHA s.r.o.",
+      "legalEntityIds": "IČO: 09949194 | DIČ: CZ09949194",
+      "legalEntityAddress": "Polní 21, 252 64 Velké Přílepy",
+      "legalEntityRegistry": "Zapsáno u MS v Praze, C 345227",
+      "contactLabel": "Kontakt pro média"
+    },
+    "brandName": {
+      "title": "Název značky",
+      "description": "Náš oficiální název je \"Flying Rat Studio\" - v tiskových materiálech vždy používejte celý název.",
+      "correct": "Správně",
+      "incorrect": "Špatně",
+      "examples": {
+        "right1": "Flying Rat Studio",
+        "wrong1": "Flying Rat",
+        "wrong2": "FlyingRat",
+        "wrong3": "flying rat studio",
+        "wrong4": "FRS"
+      }
+    },
+    "clearSpace": {
+      "title": "Ochranná zóna",
+      "description": "Vždy dodržujte minimální volný prostor kolem loga odpovídající výšce písmene 'F' ve slovní značce. To zajistí čitelnost a působivost loga."
+    },
+    "contact": {
+      "title": "Potřebujete něco jiného?",
+      "description": "Pokud potřebujete další materiály, jiné formáty nebo máte dotazy ohledně použití značky, neváhejte nás kontaktovat."
+    },
+    "logoColors": {
+      "black": "Černá",
+      "gray": "Šedá",
+      "white": "Bílá"
+    },
+    "formats": {
+      "svg": "SVG",
+      "png": "PNG",
+      "zip": "ZIP"
+    },
+    "nav": {
+      "about": "O nás",
+      "facts": "Fakta",
+      "logos": "Loga",
+      "colors": "Barvy",
+      "guidelines": "Pravidla",
+      "brand": "Název"
+    },
+    "toggleTheme": "Přepnout motiv",
+    "martyAlt": "Marty z Flying Rat Studia"
   }
 }
