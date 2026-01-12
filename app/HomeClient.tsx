@@ -8,6 +8,7 @@ import {
   Hero,
   Projects,
   ScrollProgress,
+  TechStack,
   WhatWeDo,
 } from "./components";
 import { AnimationGateProvider } from "./hooks/useAnimationsEnabled";
@@ -24,6 +25,7 @@ export function HomeClient({ initialShouldAnimate }: { initialShouldAnimate: boo
         <Hero />
         <About />
         <WhatWeDo />
+        <TechStack />
         <Projects />
         <Contact />
       </main>

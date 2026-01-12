@@ -6,4 +6,5 @@ export { Hero } from "./Hero";
 export { Projects } from "./Projects";
 export { RetroScene } from "./RetroScene";
 export { ScrollProgress } from "./ScrollProgress";
+export { TechStack } from "./TechStack";
 export { WhatWeDo } from "./WhatWeDo";

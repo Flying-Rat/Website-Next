@@ -75,5 +75,8 @@
   "footer": {
     "rights": "Všechna práva vyhrazena.",
     "cookies": "Žádné cookies tu nejsou, všechny jsme snědli. 🍪"
+  },
+  "techStack": {
+    "title": "Náš stack"
   }
 }
