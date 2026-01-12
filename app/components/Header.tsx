@@ -116,7 +116,7 @@ export function Header() {
               <button
                 type="button"
                 onClick={() => setLanguage("en")}
-                className={`px-1.5 py-1 rounded transition-all active:scale-95 ${currentLang === "en" ? "text-[var(--color-text)]" : "hover:text-[var(--color-text)]"}`}
+                className={`px-1.5 py-1 rounded transition-all active:scale-95 cursor-pointer ${currentLang === "en" ? "text-[var(--color-text)]" : "hover:text-[var(--color-text)]"}`}
               >
                 EN
               </button>
@@ -124,7 +124,7 @@ export function Header() {
               <button
                 type="button"
                 onClick={() => setLanguage("cs")}
-                className={`px-1.5 py-1 rounded transition-all active:scale-95 ${currentLang === "cs" ? "text-[var(--color-text)]" : "hover:text-[var(--color-text)]"}`}
+                className={`px-1.5 py-1 rounded transition-all active:scale-95 cursor-pointer ${currentLang === "cs" ? "text-[var(--color-text)]" : "hover:text-[var(--color-text)]"}`}
               >
                 CS
               </button>
@@ -132,7 +132,7 @@ export function Header() {
             <button
               type="button"
               onClick={toggleTheme}
-              className="p-1.5 rounded-lg hover:text-[var(--color-text)] hover:bg-[var(--color-surface-light)] transition-all hover:scale-110 active:scale-90"
+              className="p-1.5 rounded-lg hover:text-[var(--color-text)] hover:bg-[var(--color-surface-light)] transition-all hover:scale-110 active:scale-90 cursor-pointer"
               aria-label="Toggle theme"
             >
               {themeMounted &&
@@ -194,7 +194,7 @@ export function Header() {
                   setLanguage("en");
                   setIsMobileMenuOpen(false);
                 }}
-                className={`px-1.5 py-1 rounded transition-colors ${currentLang === "en" ? "text-[var(--color-text)]" : "hover:text-[var(--color-text)]"}`}
+                className={`px-1.5 py-1 rounded transition-colors cursor-pointer ${currentLang === "en" ? "text-[var(--color-text)]" : "hover:text-[var(--color-text)]"}`}
               >
                 EN
               </button>
@@ -205,7 +205,7 @@ export function Header() {
                   setLanguage("cs");
                   setIsMobileMenuOpen(false);
                 }}
-                className={`px-1.5 py-1 rounded transition-colors ${currentLang === "cs" ? "text-[var(--color-text)]" : "hover:text-[var(--color-text)]"}`}
+                className={`px-1.5 py-1 rounded transition-colors cursor-pointer ${currentLang === "cs" ? "text-[var(--color-text)]" : "hover:text-[var(--color-text)]"}`}
               >
                 CS
               </button>
@@ -213,7 +213,7 @@ export function Header() {
             <button
               type="button"
               onClick={toggleTheme}
-              className="p-1.5 rounded-lg hover:text-[var(--color-text)] hover:bg-[var(--color-surface-light)] transition-colors"
+              className="p-1.5 rounded-lg hover:text-[var(--color-text)] hover:bg-[var(--color-surface-light)] transition-colors cursor-pointer"
               aria-label="Toggle theme"
             >
               {themeMounted &&
