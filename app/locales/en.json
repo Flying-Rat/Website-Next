@@ -3,6 +3,7 @@
     "about": "About",
     "whatWeDo": "What We Do",
     "projects": "Projects",
+    "jobs": "Jobs",
     "blog": "Tech Blog",
     "contact": "Contact",
     "toggleMenu": "Toggle menu"
@@ -75,10 +76,125 @@
   "footer": {
     "rights": "All rights reserved.",
     "cookies": "No cookies here, we ate them all. 🍪",
+    "jobs": "Jobs",
     "press": "Press Kit"
   },
   "techStack": {
     "title": "Our stack"
+  },
+  "jobs": {
+    "title": "Join the Team",
+    "subtitle": {
+      "intro": "We work on games people actually play - Beat Saber, Darkest Dungeon, titles you'll find on Steam and console storefronts. Our 30+ person team in Prague tackles hard technical problems and ships quality work for studios worldwide.",
+      "culture": "No crunch culture, no endless meetings, no corporate nonsense. Just solid engineering, real ownership, and projects worth talking about. If that sounds like your kind of place, keep reading."
+    },
+    "perks": [
+      "Chill & friendly crew",
+      "Board games",
+      "Movie nights",
+      "Arcade machines",
+      "Foosball battles",
+      "Fresh fruits & snacks",
+      "Cutting-edge tech",
+      "Global AAA projects",
+      "Real ownership",
+      "No micromanagement",
+      "Learn from seniors"
+    ],
+    "location": "On-site, Prague",
+    "apply": "Apply",
+    "copyLink": "Copy link",
+    "levels": {
+      "junior": "Junior",
+      "medior": "Medior",
+      "senior": "Senior"
+    },
+    "status": "No rush to fill seats, but great people always catch our attention. See yourself in any of these? Say hi.",
+    "martyAlt": "Marty from Flying Rat Studio",
+    "sections": {
+      "engineering": "Engineering",
+      "qa": "QA",
+      "marketing": "Marketing",
+      "it": "IT"
+    },
+    "contact": {
+      "title": "Don't See Your Role?",
+      "description": "We're always looking for talented people. Send us your CV and tell us what you're passionate about."
+    },
+    "positions": {
+      "unrealEngineer": {
+        "title": "Unreal Engineer",
+        "description": "Work on AAA titles using Unreal Engine. You'll tackle gameplay systems, optimize performance, and help ship to PC and consoles. Experience with Blueprints and C++ required. You'll collaborate directly with partner studios on projects that millions of players will enjoy.",
+        "points": [
+          "2+ yrs Unreal (Blueprints & C++)",
+          "Gameplay systems implementation",
+          "Profiling & optimization",
+          "Console experience a plus"
+        ]
+      },
+      "unityEngineer": {
+        "title": "Unity Engineer",
+        "description": "Build and ship games across multiple platforms using Unity. From mobile to console ports, you'll work on diverse projects requiring strong C# skills and understanding of Unity's rendering and physics systems. Experience with platform-specific optimizations is a plus.",
+        "points": [
+          "2+ yrs Unity (C#)",
+          "Rendering & physics knowledge",
+          "Platform-specific debugging",
+          "Console/VR experience a plus"
+        ]
+      },
+      "cppRustEngineer": {
+        "title": "C/C++ or Rust Engineer",
+        "description": "Dive deep into engine-level work. You'll optimize rendering pipelines, implement low-level systems, and solve the hardest technical challenges in game development. Experience with proprietary engines, graphics APIs, or systems programming required. This role is for engineers who love the metal.",
+        "points": [
+          "5+ yrs C/C++ or Rust",
+          "Low-level optimization & profiling",
+          "Engine architecture & systems design",
+          "Graphics APIs a plus"
+        ]
+      },
+      "backendEngineer": {
+        "title": "Backend Engineer",
+        "description": "Build the services that power games. You'll work on APIs, game backends, and cloud infrastructure on AWS and Azure. We care about reliability, clean architecture, and systems that scale. If you like solving real problems without the enterprise bloat, this is your spot.",
+        "points": [
+          "2+ yrs backend development",
+          "AWS or Azure experience",
+          "Node.js, Go, or Python",
+          "SQL & NoSQL databases",
+          "Docker & containerization"
+        ]
+      },
+      "qaEngineer": {
+        "title": "QA Engineer",
+        "description": "Keep quality high across platforms. You'll work directly with engineers, catch issues early, run platform compliance checks, and help us ship builds that pass certification first time. We value sharp eyes, clear bug reports, and people who understand both the player and the tech side.",
+        "points": [
+          "2+ yrs in game QA",
+          "Console certification experience",
+          "Bug tracking & test case management",
+          "Scripting or automation a plus"
+        ]
+      },
+      "marketingManager": {
+        "title": "Marketing Manager",
+        "description": "Shape how Flying Rat Studio connects with the game development world. You'll craft our messaging, manage social presence, coordinate with partner studios on announcements, and help grow our reputation as a go-to technical partner. Experience in games or tech B2B marketing preferred.",
+        "points": [
+          "2+ yrs B2B/games marketing",
+          "Social & content strategy",
+          "Partner coordination",
+          "Campaign tracking & analytics"
+        ]
+      },
+      "juniorIt": {
+        "title": "IT Specialist",
+        "description": "Keep our 30+ person team running smoothly. You'll manage workstations, handle UniFi/Ubiquiti networking, support dev environments, and maintain our Dell EMC servers with VMware ESXi virtualization. We use Synology for storage and run various Linux distributions for VMs. A great opportunity to grow your IT skills in a fast-paced game development environment.",
+        "points": [
+          "Networking basics (UniFi/Ubiquiti)",
+          "Windows & Linux administration",
+          "VMware/Synology experience a plus",
+          "HW & SW troubleshooting",
+          "Eager to learn & grow"
+        ]
+      }
+    }
   },
   "pressKit": {
     "title": "Press Kit",

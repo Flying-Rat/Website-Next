@@ -3,6 +3,7 @@
     "about": "O nás",
     "whatWeDo": "Co děláme",
     "projects": "Projekty",
+    "jobs": "Kariéra",
     "blog": "Tech Blog",
     "contact": "Kontakt",
     "toggleMenu": "Přepnout menu"
@@ -75,10 +76,125 @@
   "footer": {
     "rights": "Všechna práva vyhrazena.",
     "cookies": "Žádné cookies tu nejsou, všechny jsme snědli. 🍪",
+    "jobs": "Kariéra",
     "press": "Pro média"
   },
   "techStack": {
     "title": "Náš stack"
+  },
+  "jobs": {
+    "title": "Přidej se k nám",
+    "subtitle": {
+      "intro": "Děláme na hrách, které lidi fakt hrají - Beat Saber, Darkest Dungeon, tituly ze Steamu i konzolí. Náš 30+ členný tým v Praze řeší těžké technické problémy a dodává kvalitní práci pro studia po celém světě.",
+      "culture": "Žádný crunch, žádné nekonečné meetingy, žádné korporátní nesmysly. Poctivý engineering, reálná zodpovědnost a projekty, o kterých stojí za to mluvit. Pokud ti to sedí, čti dál."
+    },
+    "perks": [
+      "Pohodová parta",
+      "Deskovky",
+      "Filmové večery",
+      "Arkádové automaty",
+      "Fotbálek",
+      "Čerstvé ovoce & svačiny",
+      "Nejnovější technologie",
+      "Globální AAA projekty",
+      "Reálná zodpovědnost",
+      "Žádný micromanagement",
+      "Uč se od seniorů"
+    ],
+    "location": "Na místě, Praha",
+    "apply": "Přihlásit se",
+    "copyLink": "Kopírovat odkaz",
+    "levels": {
+      "junior": "Junior",
+      "medior": "Medior",
+      "senior": "Senior"
+    },
+    "status": "Nespěcháme s nabíráním, ale šikovní lidi nás vždycky zaujmou. Vidíš se v něčem z toho? Ozvi se.",
+    "martyAlt": "Marty z Flying Rat Studia",
+    "sections": {
+      "engineering": "Engineering",
+      "qa": "QA",
+      "marketing": "Marketing",
+      "it": "IT"
+    },
+    "contact": {
+      "title": "Nevidíš svou pozici?",
+      "description": "Stále hledáme talentované lidi. Pošli nám CV a napiš, co tě baví."
+    },
+    "positions": {
+      "unrealEngineer": {
+        "title": "Unreal Engineer",
+        "description": "Pracuj na AAA titulech v Unreal Enginu. Budeš řešit herní systémy, optimalizovat výkon a pomáhat s vydáním na PC a konzole. Vyžadujeme zkušenosti s Blueprinty a C++. Budeš spolupracovat přímo s partnerskými studii na projektech, které si zahrají miliony hráčů.",
+        "points": [
+          "2+ roky s Unreal (Blueprints & C++)",
+          "Implementace herních systémů",
+          "Profilování a optimalizace",
+          "Zkušenosti s konzolemi výhodou"
+        ]
+      },
+      "unityEngineer": {
+        "title": "Unity Engineer",
+        "description": "Vyvíjej a vydávej hry na různé platformy v Unity. Od mobilů po konzolové porty budeš pracovat na rozmanitých projektech vyžadujících silné C# znalosti a porozumění renderingu a fyzice v Unity. Zkušenosti s optimalizací pro specifické platformy jsou výhodou.",
+        "points": [
+          "2+ roky s Unity (C#)",
+          "Znalost renderingu a fyziky",
+          "Debugging platform-specific issues",
+          "Konzole/VR zkušenosti výhodou"
+        ]
+      },
+      "cppRustEngineer": {
+        "title": "C/C++ nebo Rust Engineer",
+        "description": "Ponoř se do práce na úrovni enginu. Budeš optimalizovat renderovací pipeline, implementovat nízkoúrovňové systémy a řešit nejtěžší technické výzvy ve vývoji her. Vyžadujeme zkušenosti s proprietárními enginy, grafickými API nebo systémovým programováním. Tato role je pro inženýry, kteří milují práci blízko hardwaru.",
+        "points": [
+          "5+ let v C/C++ nebo Rust",
+          "Low-level optimalizace a profilování",
+          "Architektura enginu a návrh systémů",
+          "Grafická API výhodou"
+        ]
+      },
+      "backendEngineer": {
+        "title": "Backend Engineer",
+        "description": "Stavěj služby, které pohání hry. Budeš pracovat na API, herních backendech a cloudové infrastruktuře na AWS a Azure. Záleží nám na spolehlivosti, čisté architektuře a systémech, které škálují. Pokud rád řešíš reálné problémy bez enterprise balastu, tohle je tvoje místo.",
+        "points": [
+          "2+ roky backend vývoje",
+          "Zkušenosti s AWS nebo Azure",
+          "Node.js, Go nebo Python",
+          "SQL a NoSQL databáze",
+          "Docker a kontejnerizace"
+        ]
+      },
+      "qaEngineer": {
+        "title": "QA Engineer",
+        "description": "Udržuj kvalitu napříč platformami. Budeš pracovat přímo s inženýry, chytat problémy včas, provádět compliance kontroly a pomáhat shipovat buildy, které projdou certifikací napoprvé. Ceníme si bystrého oka, jasných bug reportů a lidí, kteří rozumí hráčům i technice.",
+        "points": [
+          "2+ roky v herním QA",
+          "Zkušenosti s certifikací konzolí",
+          "Bug tracking a správa test cases",
+          "Skriptování nebo automatizace výhodou"
+        ]
+      },
+      "marketingManager": {
+        "title": "Marketing Manager",
+        "description": "Formuj způsob, jakým se Flying Rat Studio propojuje se světem herního vývoje. Budeš tvořit naše sdělení, spravovat sociální sítě, koordinovat oznámení s partnerskými studii a pomáhat budovat naši reputaci jako spolehlivého technického partnera. Preferujeme zkušenosti s marketingem v herním průmyslu nebo B2B tech sektoru.",
+        "points": [
+          "2+ roky v B2B/herním marketingu",
+          "Sociální sítě a obsahová strategie",
+          "Koordinace s partnerskými studii",
+          "Sledování metrik a analytika"
+        ]
+      },
+      "juniorIt": {
+        "title": "IT Specialista",
+        "description": "Udržuj náš 30+ členný tým v chodu. Budeš spravovat pracovní stanice, řešit UniFi/Ubiquiti síťování, podporovat vývojová prostředí a udržovat naše Dell EMC servery s VMware ESXi virtualizací. Používáme Synology pro úložiště a provozujeme různé linuxové distribuce pro VM. Skvělá příležitost rozvíjet IT dovednosti v rychlém prostředí herního vývoje.",
+        "points": [
+          "Základy síťování (UniFi/Ubiquiti)",
+          "Administrace Windows a Linux",
+          "VMware/Synology zkušenosti výhodou",
+          "Řešení HW a SW problémů",
+          "Chuť se učit a růst"
+        ]
+      }
+    }
   },
   "pressKit": {
     "title": "Pro média",

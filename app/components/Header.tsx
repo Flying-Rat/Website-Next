@@ -12,6 +12,7 @@ const navSections = [
   { href: "#about", key: "nav.about" },
   { href: "#what-we-do", key: "nav.whatWeDo" },
   { href: "#projects", key: "nav.projects" },
+  { href: "/jobs", key: "nav.jobs" },
   { href: "#contact", key: "nav.contact" },
   { href: "https://tech.flying-rat.studio/", key: "nav.blog" },
 ];
