@@ -86,19 +86,14 @@
     "title": "Join the Team",
     "subtitle": {
       "intro": "We work on games people actually play - Beat Saber, Darkest Dungeon, titles you'll find on Steam and console storefronts. Our 30+ person team in Prague tackles hard technical problems and ships quality work for studios worldwide.",
-      "culture": "No crunch culture, no endless meetings, no corporate nonsense. Just solid engineering, real ownership, and projects worth talking about. If that sounds like your kind of place, keep reading."
+      "culture": "No crunch culture, no endless meetings. Just solid engineering, real ownership, and projects worth talking about. If that sounds like your kind of place, keep reading."
     },
     "perks": [
-      "Chill & friendly crew",
+      "Friendly crew",
       "Board games",
       "Movie nights",
-      "Arcade machines",
-      "Foosball battles",
-      "Fresh fruits & snacks",
+      "Foosball",
       "Cutting-edge tech",
-      "Global AAA projects",
-      "Real ownership",
-      "No micromanagement",
       "Learn from seniors"
     ],
     "location": "On-site, Prague",
@@ -111,6 +106,9 @@
     },
     "status": "No rush to fill seats, but great people always catch our attention. See yourself in any of these? Say hi.",
     "martyAlt": "Marty from Flying Rat Studio",
+    "team": {
+      "imageAlt": "Flying Rat Studio team at Bubenska headquarters"
+    },
     "sections": {
       "engineering": "Engineering",
       "qa": "QA",

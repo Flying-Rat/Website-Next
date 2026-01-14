@@ -3,9 +3,10 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
+import { FadeInView } from "../components/FadeInView";
 import { Footer } from "../components/Footer";
 import { MailIcon } from "../components/icons";
-import { PressHeader } from "../components/PressHeader";
+import { PageHeader } from "../components/PageHeader";
 import { SocialLinks } from "../components/SocialLinks";
 import { useTranslation } from "../i18n";
 
@@ -137,32 +138,64 @@ export default function JobsPage() {
 
   return (
     <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] flex flex-col">
-      <PressHeader navItems={jobsNavItems} />
+      <PageHeader navItems={jobsNavItems} />
 
       <main className="pt-24 flex-1">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">{t("jobs.title")}</h1>
-            <div className="text-lg text-[var(--color-text-secondary)] mb-6 space-y-4">
+            <div className="text-lg text-[var(--color-text-secondary)] mb-8 space-y-4">
               <p>{t("jobs.subtitle.intro")}</p>
               <p>{t("jobs.subtitle.culture")}</p>
             </div>
-            <div className="flex flex-wrap gap-2 mb-8">
-              {(t("jobs.perks", { returnObjects: true }) as string[]).map((perk) => (
-                <span
-                  key={perk}
-                  className="px-3 py-1.5 text-sm text-[var(--color-text-muted)] border border-[var(--color-border)] rounded-full bg-[var(--color-surface)]/40 hover:border-accent/30 hover:text-[var(--color-text-secondary)] transition-colors"
-                >
-                  {perk}
-                </span>
-              ))}
-            </div>
+          </div>
+        </div>
 
+        <FadeInView animation="scale" className="mb-10">
+          <div className="relative overflow-hidden">
+            <div className="container mx-auto px-6">
+              <div className="max-w-4xl mx-auto">
+                <div className="relative rounded-2xl overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent z-10" />
+
+                  <Image
+                    src="/images/team-2.jpg"
+                    alt={t("jobs.team.imageAlt")}
+                    width={1920}
+                    height={1080}
+                    className="w-full h-[260px] md:h-[340px] object-cover object-[center_80%] scale-110"
+                    priority
+                  />
+
+                  <div className="absolute bottom-0 left-0 right-0 z-20 p-4 md:p-5">
+                    <div className="flex flex-wrap gap-2 justify-center">
+                      {(t("jobs.perks", { returnObjects: true }) as string[]).map((perk) => (
+                        <span
+                          key={perk}
+                          className="px-3 py-1.5 text-sm text-white/90 border border-white/20 rounded-full bg-white/10 backdrop-blur-sm"
+                        >
+                          {perk}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </FadeInView>
+
+        <div className="container mx-auto px-6">
+          <div className="max-w-4xl mx-auto">
             <div className="flex items-start gap-4 px-5 py-4 rounded-2xl border border-yellow-500/30 bg-yellow-500/10 mb-12">
               <span className="w-3 h-3 mt-1 rounded-full bg-yellow-500 shrink-0 animate-pulse" />
               <p className="text-[var(--color-text-secondary)]">{t("jobs.status")}</p>
             </div>
+          </div>
+        </div>
 
+        <div className="container mx-auto px-6">
+          <div className="max-w-4xl mx-auto">
             {sections.map((section) => (
               <section key={section.id} id={section.id} className="mb-16 scroll-mt-28">
                 <h2 className="text-2xl font-semibold mb-6">{t(`jobs.sections.${section.key}`)}</h2>

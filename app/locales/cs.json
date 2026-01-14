@@ -86,19 +86,14 @@
     "title": "Přidej se k nám",
     "subtitle": {
       "intro": "Děláme na hrách, které lidi fakt hrají - Beat Saber, Darkest Dungeon, tituly ze Steamu i konzolí. Náš 30+ členný tým v Praze řeší těžké technické problémy a dodává kvalitní práci pro studia po celém světě.",
-      "culture": "Žádný crunch, žádné nekonečné meetingy, žádné korporátní nesmysly. Poctivý engineering, reálná zodpovědnost a projekty, o kterých stojí za to mluvit. Pokud ti to sedí, čti dál."
+      "culture": "Žádný crunch, žádné nekonečné meetingy. Poctivý engineering, reálná zodpovědnost a projekty, o kterých stojí za to mluvit. Pokud ti to sedí, čti dál."
     },
     "perks": [
-      "Pohodová parta",
+      "Skvělá parta",
       "Deskovky",
       "Filmové večery",
-      "Arkádové automaty",
       "Fotbálek",
-      "Čerstvé ovoce & svačiny",
       "Nejnovější technologie",
-      "Globální AAA projekty",
-      "Reálná zodpovědnost",
-      "Žádný micromanagement",
       "Uč se od seniorů"
     ],
     "location": "Na místě, Praha",
@@ -111,6 +106,9 @@
     },
     "status": "Nespěcháme s nabíráním, ale šikovní lidi nás vždycky zaujmou. Vidíš se v něčem z toho? Ozvi se.",
     "martyAlt": "Marty z Flying Rat Studia",
+    "team": {
+      "imageAlt": "Tým Flying Rat Studia v sídle na Bubenské"
+    },
     "sections": {
       "engineering": "Engineering",
       "qa": "QA",

@@ -3,7 +3,7 @@ export { Contact } from "./Contact";
 export { Footer } from "./Footer";
 export { Header } from "./Header";
 export { Hero } from "./Hero";
-export { PressHeader } from "./PressHeader";
+export { PageHeader } from "./PageHeader";
 export { Projects } from "./Projects";
 export { RetroScene } from "./RetroScene";
 export { ScrollProgress } from "./ScrollProgress";

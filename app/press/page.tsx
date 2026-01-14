@@ -5,7 +5,7 @@ import { useState } from "react";
 
 import { Footer } from "../components/Footer";
 import { ExternalLinkIcon, MailIcon } from "../components/icons";
-import { PressHeader } from "../components/PressHeader";
+import { PageHeader } from "../components/PageHeader";
 import { SocialLinks } from "../components/SocialLinks";
 import { useTranslation } from "../i18n";
 
@@ -226,7 +226,7 @@ export default function PressKitPage() {
 
   return (
     <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] flex flex-col">
-      <PressHeader navItems={pressNavItems} />
+      <PageHeader navItems={pressNavItems} />
 
       <main className="pt-24 flex-1">
         <div className="container mx-auto px-6">

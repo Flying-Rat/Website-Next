@@ -8,13 +8,13 @@ import { useTheme } from "../hooks/useTheme";
 import { useLanguage, useTranslation } from "../i18n";
 import { MoonIcon, SunIcon } from "./icons";
 
-type PressNavItem = {
+type PageNavItem = {
   id: string;
   label: string;
 };
 
-type PressHeaderProps = {
-  navItems: PressNavItem[];
+type PageHeaderProps = {
+  navItems: PageNavItem[];
 };
 
 function ArrowLeftIcon({ className }: { className?: string }) {
@@ -32,7 +32,7 @@ function ArrowLeftIcon({ className }: { className?: string }) {
   );
 }
 
-export function PressHeader({ navItems }: PressHeaderProps) {
+export function PageHeader({ navItems }: PageHeaderProps) {
   const { t } = useTranslation();
   const [currentLang, setLanguage] = useLanguage();
   const { resolvedTheme, toggleTheme, mounted: themeMounted } = useTheme();
