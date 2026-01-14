@@ -156,7 +156,7 @@ export default function JobsPage() {
             <div className="container mx-auto px-6">
               <div className="max-w-4xl mx-auto">
                 <div className="relative rounded-2xl overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent z-10" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent z-10" />
 
                   <Image
                     src="/images/team-2.jpg"
@@ -172,7 +172,7 @@ export default function JobsPage() {
                       {(t("jobs.perks", { returnObjects: true }) as string[]).map((perk) => (
                         <span
                           key={perk}
-                          className="px-3 py-1.5 text-sm text-white/90 border border-white/20 rounded-full bg-white/10 backdrop-blur-sm"
+                          className="px-2.5 py-1 md:px-3 md:py-1.5 text-xs md:text-sm font-medium text-white border border-white/30 rounded-full bg-black/40 backdrop-blur-sm shadow-sm"
                         >
                           {perk}
                         </span>

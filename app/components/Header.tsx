@@ -150,7 +150,7 @@ export function Header() {
 
         <button
           type="button"
-          className="md:hidden p-2"
+          className="md:hidden p-2 shrink-0"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           aria-label={t("nav.toggleMenu")}
           aria-expanded={isMobileMenuOpen}
@@ -170,7 +170,7 @@ export function Header() {
       </div>
 
       <div
-        className={`md:hidden glass mt-2 mx-4 rounded-lg overflow-hidden transition-all duration-300 ${isMobileMenuOpen ? "max-h-96 opacity-100 p-4" : "max-h-0 opacity-0 p-0"}`}
+        className={`md:hidden glass mt-2 mx-4 rounded-lg overflow-hidden transition-all duration-300 ${isMobileMenuOpen ? "max-h-[70vh] opacity-100 p-4" : "max-h-0 opacity-0 p-0"}`}
       >
         <nav className="flex flex-col gap-4">
           {navSections.map((item) => {
