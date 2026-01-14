@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+
 import { Footer } from "../components/Footer";
 import { ExternalLinkIcon, MailIcon } from "../components/icons";
 import { PressHeader } from "../components/PressHeader";

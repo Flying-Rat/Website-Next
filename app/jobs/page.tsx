@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
+
 import { Footer } from "../components/Footer";
 import { MailIcon } from "../components/icons";
 import { PressHeader } from "../components/PressHeader";
@@ -22,23 +23,17 @@ const sections = [
   {
     id: "qa",
     key: "qa",
-    positions: [
-      { key: "qaEngineer", level: "medior" },
-    ],
+    positions: [{ key: "qaEngineer", level: "medior" }],
   },
   {
     id: "marketing",
     key: "marketing",
-    positions: [
-      { key: "marketingManager", level: "medior" },
-    ],
+    positions: [{ key: "marketingManager", level: "medior" }],
   },
   {
     id: "it",
     key: "it",
-    positions: [
-      { key: "juniorIt", level: "junior" },
-    ],
+    positions: [{ key: "juniorIt", level: "junior" }],
   },
 ];
 
@@ -170,9 +165,7 @@ export default function JobsPage() {
 
             {sections.map((section) => (
               <section key={section.id} id={section.id} className="mb-16 scroll-mt-28">
-                <h2 className="text-2xl font-semibold mb-6">
-                  {t(`jobs.sections.${section.key}`)}
-                </h2>
+                <h2 className="text-2xl font-semibold mb-6">{t(`jobs.sections.${section.key}`)}</h2>
                 <div className="space-y-4">
                   {section.positions.map((position, index) => {
                     const title = t(`jobs.positions.${position.key}.title`);
@@ -196,8 +189,12 @@ export default function JobsPage() {
                           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
                             <div className="flex-1">
                               <div className="flex flex-wrap items-center gap-3 mb-3">
-                                <h3 className="text-xl font-semibold group-hover:text-accent transition-colors duration-300">{title}</h3>
-                                <span className={`px-2.5 py-1 text-xs font-medium border rounded-full ${levelColors[position.level as keyof typeof levelColors]}`}>
+                                <h3 className="text-xl font-semibold group-hover:text-accent transition-colors duration-300">
+                                  {title}
+                                </h3>
+                                <span
+                                  className={`px-2.5 py-1 text-xs font-medium border rounded-full ${levelColors[position.level as keyof typeof levelColors]}`}
+                                >
                                   {t(`jobs.levels.${position.level}`)}
                                 </span>
                                 <button
@@ -230,7 +227,11 @@ export default function JobsPage() {
                             {t(`jobs.positions.${position.key}.description`)}
                           </p>
                           <ul className="flex flex-wrap gap-2.5">
-                            {(t(`jobs.positions.${position.key}.points`, { returnObjects: true }) as string[]).map((point) => (
+                            {(
+                              t(`jobs.positions.${position.key}.points`, {
+                                returnObjects: true,
+                              }) as string[]
+                            ).map((point) => (
                               <li
                                 key={point}
                                 className="text-sm text-[var(--color-text-muted)] bg-[var(--color-surface-light)]/80 border border-[var(--color-border)] px-3.5 py-1.5 rounded-full transition-colors group-hover:border-accent/20"

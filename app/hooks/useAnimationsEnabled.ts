@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+
 import {
   createContext,
   createElement,
@@ -7,6 +8,7 @@ import {
   useMemo,
   useState,
 } from "react";
+
 import { isPrivacyBrowser } from "../lib/motionDetect";
 
 function getShouldAnimate() {

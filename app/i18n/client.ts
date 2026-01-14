@@ -3,8 +3,8 @@
 import i18next from "i18next";
 import { useSyncExternalStore } from "react";
 import { initReactI18next, useTranslation as useTranslationOrg } from "react-i18next";
-import csCommon from "../locales/cs.json";
 
+import csCommon from "../locales/cs.json";
 import enCommon from "../locales/en.json";
 import { fallbackLng, getOptions, type Language, languages } from "./settings";
 

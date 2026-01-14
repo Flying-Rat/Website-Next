@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+
 import { useAnimationsEnabled } from "../hooks/useAnimationsEnabled";
 import { useTheme } from "../hooks/useTheme";
 import { useLanguage, useTranslation } from "../i18n";

@@ -1,8 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import type { CSSProperties } from "react";
+
+import Image from "next/image";
 import { useEffect, useState } from "react";
+
 import { useAnimationsEnabled } from "../hooks/useAnimationsEnabled";
 import { useTranslation } from "../i18n";
 

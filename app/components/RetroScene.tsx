@@ -2,6 +2,7 @@
 
 import { memo, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+
 import { useTheme } from "../hooks/useTheme";
 
 const CANVAS_SIZE = 220;

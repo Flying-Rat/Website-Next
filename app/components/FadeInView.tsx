@@ -1,7 +1,9 @@
 "use client";
 
 import type { CSSProperties, ReactNode } from "react";
+
 import { useEffect, useRef, useState } from "react";
+
 import { useAnimationsEnabled } from "../hooks/useAnimationsEnabled";
 
 type Animation = "up" | "left" | "right" | "scale";

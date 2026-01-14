@@ -7,8 +7,11 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "biome check .",
-    "fix": "biome check --write .",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
+    "fix": "oxlint --fix && oxfmt",
     "clean": "bun pm cache rm && rm -rf node_modules bun.lock && bun install"
   },
   "dependencies": {
@@ -28,13 +31,14 @@
     "zod": "^4.3.5"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.3.11",
     "@types/minimatch": "^6.0.0",
     "@types/node": "^25.0.3",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@types/uuid": "^11.0.0",
     "eslint-plugin-react-hooks": "^7.0.1",
+    "oxfmt": "^0.24.0",
+    "oxlint": "^1.39.0",
     "typescript": "^5.9.3"
   }
 }

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+
 import { useTranslation } from "../i18n";
 
 const year = new Date().getFullYear();
@@ -52,7 +53,10 @@ export function Footer() {
             </div>
             <p className="text-[var(--color-text-subtle)] text-[10px] opacity-50 text-center md:text-right max-w-xs md:max-w-none">
               GADEN ALPHA s.r.o. | IČO: 09949194 | DIČ: CZ09949194
-              <span className="hidden md:inline"> | Polní 21, 252 64 Velké Přílepy | Zapsáno u MS v Praze, C 345227</span>
+              <span className="hidden md:inline">
+                {" "}
+                | Polní 21, 252 64 Velké Přílepy | Zapsáno u MS v Praze, C 345227
+              </span>
             </p>
           </div>
         </div>

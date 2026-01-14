@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+
 import { useAnimationsEnabled } from "../hooks/useAnimationsEnabled";
 
 export function ScrollProgress() {

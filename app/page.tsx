@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+
 import { HomeClient } from "./HomeClient";
 import { isPrivacyBrowser } from "./lib/motionDetect";
 

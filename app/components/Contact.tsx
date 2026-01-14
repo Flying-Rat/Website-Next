@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+
 import { useTranslation } from "../i18n";
 import { FadeInView } from "./FadeInView";
 import { MailIcon } from "./icons";
