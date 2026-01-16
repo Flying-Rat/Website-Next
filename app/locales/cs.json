@@ -105,6 +105,37 @@
       "senior": "Senior"
     },
     "status": "Nespěcháme s nabíráním, ale šikovní lidi nás vždycky zaujmou. Vidíš se v něčem z toho? Ozvi se.",
+    "hiringProcess": {
+      "title": "Tvoje cesta k nám",
+      "description": "Krátké, jednoduché, bez tlaku. Takhle to u nás obvykle chodí.",
+      "note": "Jsme flexibilní - kroky se můžou lišit podle role.",
+      "steps": [
+        {
+          "title": "Napiš Martymu",
+          "description": "Pošli co nejvíc info: CV, GitHub, portfolio, cokoliv, co ukáže, jak přemýšlíš."
+        },
+        {
+          "title": "Ozveme se",
+          "description": "Když to bude dávat smysl, ozveme se zpátky."
+        },
+        {
+          "title": "Malý úkol",
+          "description": "Jednoduchý task, ne na znalosti, spíš na způsob uvažování."
+        },
+        {
+          "title": "Review",
+          "description": "Projdeme, co od tebe máme, a probereme to."
+        },
+        {
+          "title": "Setkání v HQ",
+          "description": "Když to bude dávat smysl, potkáme se u nás v Praze."
+        },
+        {
+          "title": "Když to klapne",
+          "description": "Když je to oboustranné ano, vítej na palubě."
+        }
+      ]
+    },
     "martyAlt": "Marty z Flying Rat Studia",
     "team": {
       "imageAlt": "Tým Flying Rat Studia v sídle na Bubenské"

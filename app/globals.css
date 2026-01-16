@@ -294,6 +294,58 @@ html.crt-mode .scroll-progress-bar {
   }
 }
 
+@keyframes timeline-scanline {
+  0% {
+    transform: translateY(-80%);
+    opacity: 0;
+  }
+
+  12% {
+    opacity: 0.9;
+  }
+
+  88% {
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translateY(200%);
+    opacity: 0;
+  }
+}
+
+.timeline-scanline {
+  animation: timeline-scanline 4.5s linear infinite;
+  will-change: transform, opacity;
+}
+
+html.light .timeline-connector {
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--color-accent) 85%, #000000 15%),
+    color-mix(in srgb, var(--color-accent) 55%, #000000 15%),
+    transparent
+  );
+  box-shadow: 0 0 20px rgba(250, 85, 101, 0.35);
+}
+
+html.light .timeline-scanline {
+  background-image: linear-gradient(
+    180deg,
+    transparent,
+    color-mix(in srgb, var(--color-accent) 75%, #ffffff 25%),
+    transparent
+  );
+  opacity: 0.85;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .timeline-scanline {
+    animation: none;
+    opacity: 0.4;
+  }
+}
+
 .gradient-text {
   background: linear-gradient(
     135deg,

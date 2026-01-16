@@ -105,6 +105,37 @@
       "senior": "Senior"
     },
     "status": "No rush to fill seats, but great people always catch our attention. See yourself in any of these? Say hi.",
+    "hiringProcess": {
+      "title": "Your way in",
+      "description": "Short, simple, no pressure. Here's how it usually goes.",
+      "note": "We keep it flexible - steps can vary by role.",
+      "steps": [
+        {
+          "title": "Write Marty",
+          "description": "Send as much as you can: CV, GitHub, portfolio, anything that shows how you think."
+        },
+        {
+          "title": "We get back to you",
+          "description": "If it feels like a fit, we'll get back to you."
+        },
+        {
+          "title": "Small task",
+          "description": "A simple task, not to test trivia, just to see your approach."
+        },
+        {
+          "title": "Review",
+          "description": "We review what you sent and talk it through."
+        },
+        {
+          "title": "Meet at HQ",
+          "description": "If it makes sense, we'll meet at HQ in Prague."
+        },
+        {
+          "title": "If it clicks",
+          "description": "If it's a mutual yes, welcome aboard."
+        }
+      ]
+    },
     "martyAlt": "Marty from Flying Rat Studio",
     "team": {
       "imageAlt": "Flying Rat Studio team at Bubenska headquarters"

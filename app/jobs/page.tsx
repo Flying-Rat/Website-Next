@@ -111,6 +111,9 @@ export default function JobsPage() {
     id: section.id,
     label: t(`jobs.sections.${section.key}`),
   }));
+  const hiringSteps = t("jobs.hiringProcess.steps", {
+    returnObjects: true,
+  }) as { title: string; description: string }[];
 
   const handleCopyLink = async (anchorId: string) => {
     const url = `${window.location.origin}/jobs#${anchorId}`;
@@ -190,6 +193,74 @@ export default function JobsPage() {
             <div className="flex items-start gap-4 px-5 py-4 rounded-2xl border border-yellow-500/30 bg-yellow-500/10 mb-12">
               <span className="w-3 h-3 mt-1 rounded-full bg-yellow-500 shrink-0 animate-pulse" />
               <p className="text-[var(--color-text-secondary)]">{t("jobs.status")}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="pb-16">
+          <div className="container mx-auto px-6">
+            <div className="max-w-4xl mx-auto">
+              <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
+                <div>
+                  <h2 className="text-2xl sm:text-3xl font-bold">
+                    {t("jobs.hiringProcess.title")}
+                  </h2>
+                  <p className="text-[var(--color-text-muted)] mt-2 max-w-2xl">
+                    {t("jobs.hiringProcess.description")}
+                  </p>
+                </div>
+              </div>
+
+              <div className="relative">
+                <div className="space-y-8 relative z-10">
+                  {hiringSteps.map((step, index) => {
+                    const isLeft = index % 2 === 0;
+                    const isLast = index === hiringSteps.length - 1;
+                    return (
+                      <div
+                        key={step.title}
+                        className={`relative flex flex-col md:flex-row ${
+                          isLeft ? "md:justify-start" : "md:justify-end"
+                        }`}
+                      >
+                        {!isLast && (
+                          <div className="timeline-connector absolute left-[19px] sm:left-[27px] md:left-1/2 top-[30px] -translate-x-1/2 w-1.5 h-[calc(100%+2rem)] bg-gradient-to-r from-accent/90 via-accent/60 to-transparent shadow-[0_0_24px_rgba(250,85,101,0.45)] overflow-hidden">
+                            <span className="timeline-scanline absolute left-0 right-0 top-0 h-16 bg-gradient-to-b from-transparent via-accent/50 to-transparent opacity-80 blur-[1px]" />
+                          </div>
+                        )}
+                        <span className="absolute left-[19px] sm:left-[27px] md:left-1/2 top-6 -translate-x-1/2 w-3 h-3 rounded-full bg-accent ring-2 ring-accent/30 shadow-[0_0_24px_rgba(250,85,101,0.35)] z-10" />
+                        <span
+                          className={`absolute left-[19px] sm:left-[27px] md:left-1/2 top-[30px] h-px w-8 md:w-12 ${
+                            isLeft
+                              ? "md:-translate-x-full bg-gradient-to-l from-accent/70 to-transparent"
+                              : "md:translate-x-0 bg-gradient-to-r from-accent/70 to-transparent"
+                          }`}
+                        />
+                        <div
+                          className={`pl-12 sm:pl-14 md:pl-0 md:w-[calc(50%-1.5rem)] ${
+                            isLeft ? "md:pr-10" : "md:pl-10"
+                          }`}
+                        >
+                          <div className="rounded-2xl border border-[var(--color-border)] border-white/10 bg-[var(--color-surface)]/70 bg-gradient-to-br from-white/5 via-transparent to-accent/5 backdrop-blur-md p-6 shadow-[0_18px_40px_rgba(0,0,0,0.18)] transition-transform hover:-translate-y-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-accent text-white font-semibold text-sm">
+                                {String(index + 1).padStart(2, "0")}
+                              </span>
+                              <h3 className="text-lg font-semibold">{step.title}</h3>
+                            </div>
+                            <p className="text-[var(--color-text-secondary)] leading-relaxed">
+                              {step.description}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <p className="text-[var(--color-text-subtle)] text-sm mt-6 italic">
+                  * {t("jobs.hiringProcess.note")}
+                </p>
+              </div>
             </div>
           </div>
         </div>
