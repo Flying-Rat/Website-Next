@@ -16,15 +16,13 @@ export function About() {
   const shouldAnimate = useAnimationsEnabled();
 
   return (
-    <section id="about" className="py-16 md:py-32 relative">
+    <section id="about" className="section-pad relative">
       <div className="container mx-auto px-6">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
             <FadeInView animation="left">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6">
-                {t("about.title")}
-              </h2>
-              <div className="space-y-3 md:space-y-4 text-[var(--color-text-muted)] text-base md:text-lg">
+              <h2 className="section-title mb-4 md:mb-6">{t("about.title")}</h2>
+              <div className="section-subtitle space-y-3 md:space-y-4">
                 <p>{t("about.description1")}</p>
                 <p>{t("about.description2")}</p>
               </div>

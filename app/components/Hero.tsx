@@ -97,12 +97,12 @@ export function Hero() {
           <span>{t("hero.trustedBy")}</span>
           <span className="h-px w-10 bg-gradient-to-r from-transparent via-[var(--color-text)]/20 to-transparent" />
         </div>
-        <div className="mt-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs md:text-sm text-[var(--color-text-secondary)]">
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-x-0 gap-y-2 text-xs md:text-sm text-[var(--color-text-secondary)]">
           {trustedStudios.map((studio, index) => (
-            <span key={studio} className="flex items-center gap-2">
+            <span key={studio} className="inline-flex items-center">
               <span className="hover:text-[var(--color-text)] transition-colors">{studio}</span>
               {index < trustedStudios.length - 1 && (
-                <span className="text-[var(--color-text-subtle)]">•</span>
+                <span className="mx-3 w-3 text-center text-[var(--color-text-subtle)]">•</span>
               )}
             </span>
           ))}

@@ -28,7 +28,7 @@ function WhatWeDoCard({
 
   return (
     <FadeInView animation="up" delay={index * 0.05} margin="-50px">
-      <div className="group relative overflow-hidden rounded-2xl sm:rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)]/40 backdrop-blur-xl p-5 sm:p-8 transition-colors duration-500 hover:border-accent/20 hover:bg-[var(--color-surface)]/60 h-full">
+      <div className="card-hover group relative overflow-hidden rounded-2xl sm:rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)]/40 backdrop-blur-xl p-5 sm:p-8 transition-colors duration-500 hover:border-accent/20 hover:bg-[var(--color-surface)]/60 h-full">
         <div className="absolute inset-0 rounded-2xl sm:rounded-3xl border border-[var(--color-border)]/50 pointer-events-none" />
         <div className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-500 bg-gradient-to-br from-accent/30 via-accent/5 to-transparent" />
 
@@ -59,7 +59,7 @@ export function WhatWeDo() {
   const { t } = useTranslation();
 
   return (
-    <section id="what-we-do" className="py-16 md:py-32 relative overflow-hidden">
+    <section id="what-we-do" className="section-pad relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-accent/5 blur-[120px] rounded-full" />
         <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-[var(--color-text)]/5 blur-[100px] rounded-full" />
@@ -67,12 +67,8 @@ export function WhatWeDo() {
 
       <div className="container mx-auto px-6 relative z-10">
         <FadeInView animation="up" className="max-w-3xl mx-auto text-center mb-10 md:mb-16">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4">
-            {t("whatWeDo.title")}
-          </h2>
-          <p className="text-[var(--color-text-muted)] text-base md:text-lg max-w-2xl mx-auto">
-            {t("whatWeDo.subtitle")}
-          </p>
+          <h2 className="section-title mb-3 md:mb-4">{t("whatWeDo.title")}</h2>
+          <p className="section-subtitle max-w-2xl mx-auto">{t("whatWeDo.subtitle")}</p>
         </FadeInView>
 
         <div className="grid md:grid-cols-2 gap-4 md:gap-6 lg:gap-8">

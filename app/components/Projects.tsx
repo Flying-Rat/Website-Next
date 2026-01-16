@@ -18,7 +18,7 @@ export const Projects = () => {
   }, []);
 
   return (
-    <section id="projects" className="py-16 md:py-32 bg-[var(--color-surface)] relative">
+    <section id="projects" className="section-pad bg-[var(--color-surface)] relative">
       <div className="absolute inset-0 opacity-5">
         <div className="w-full h-full pattern-dots" />
       </div>
@@ -26,12 +26,8 @@ export const Projects = () => {
       <div className="container mx-auto px-6 relative z-10">
         <div className="max-w-6xl mx-auto">
           <FadeInView animation="up" className="text-center mb-10 md:mb-16">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4">
-              {t("projects.title")}
-            </h2>
-            <p className="text-[var(--color-text-muted)] text-base md:text-lg max-w-2xl mx-auto">
-              {t("projects.subtitle")}
-            </p>
+            <h2 className="section-title mb-3 md:mb-4">{t("projects.title")}</h2>
+            <p className="section-subtitle max-w-2xl mx-auto">{t("projects.subtitle")}</p>
           </FadeInView>
 
           <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
