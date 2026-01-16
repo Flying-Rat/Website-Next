@@ -109,11 +109,11 @@ export function Hero() {
         </div>
       </div>
 
-      <div
-        className={`absolute bottom-8 left-1/2 -translate-x-1/2 ${shouldAnimate ? "animate-bounce-slow" : ""}`}
-      >
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
         <div className="hidden md:flex w-6 h-10 border-2 border-[var(--color-text-muted)] rounded-full justify-center pt-2">
-          <div className="w-1 h-2 bg-accent rounded-full" />
+          <div
+            className={`w-1 h-2 bg-accent rounded-full ${shouldAnimate ? "animate-scroll-wheel" : ""}`}
+          />
         </div>
         <div className="md:hidden text-[var(--color-text-muted)]">
           <svg

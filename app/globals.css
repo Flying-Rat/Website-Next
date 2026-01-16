@@ -597,11 +597,31 @@ a {
   }
 }
 
+@keyframes scroll-wheel {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.35;
+  }
+  50% {
+    transform: translateY(6px);
+    opacity: 1;
+  }
+}
+
 .animate-bounce-slow {
   animation: bounce-slow 1.5s ease-in-out infinite;
 }
 
+.animate-scroll-wheel {
+  animation: scroll-wheel 1.4s ease-in-out infinite;
+}
+
 html.no-motion .animate-bounce-slow {
+  animation: none;
+}
+
+html.no-motion .animate-scroll-wheel {
   animation: none;
 }
 
@@ -609,6 +629,7 @@ html.no-motion .animate-bounce-slow {
   .timeline-scanline,
   .status-online,
   .animate-bounce-slow,
+  .animate-scroll-wheel,
   .warning-dot {
     animation: none;
   }
