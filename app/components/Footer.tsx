@@ -2,13 +2,17 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 import { useTranslation } from "../i18n";
 
-const year = new Date().getFullYear();
-
 export function Footer() {
   const { t } = useTranslation();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   return (
     <footer className="py-8 border-t border-[var(--color-border)]">
@@ -29,8 +33,8 @@ export function Footer() {
               height={30}
               className="logo-light h-6 w-auto opacity-70"
             />
-            <span className="text-[var(--color-text-muted)] text-sm">
-              © {year} {t("footer.rights")}
+            <span suppressHydrationWarning className="text-[var(--color-text-muted)] text-sm">
+              © {isClient ? new Date().getFullYear() : 2026} {t("footer.rights")}
             </span>
           </div>
           <div className="flex flex-col items-center gap-3 md:items-end md:gap-1">
@@ -51,7 +55,10 @@ export function Footer() {
                 {t("footer.press")} 📰
               </Link>
             </div>
-            <p className="text-[var(--color-text-subtle)] text-[10px] opacity-50 text-center md:text-right max-w-xs md:max-w-none">
+            <p
+              suppressHydrationWarning
+              className="text-[var(--color-text-subtle)] text-[10px] opacity-50 text-center md:text-right max-w-xs md:max-w-none"
+            >
               GADEN ALPHA s.r.o. | IČO: 09949194 | DIČ: CZ09949194
               <span className="hidden md:inline">
                 {" "}

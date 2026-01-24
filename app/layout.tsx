@@ -31,6 +31,12 @@ export const metadata: Metadata = {
     "Flying Rat",
   ],
   authors: [{ name: "Flying Rat Studio" }],
+  formatDetection: {
+    telephone: false,
+    date: false,
+    email: false,
+    address: false,
+  },
   openGraph: {
     title: "Flying Rat Studio | Game Development Studio",
     description: "Prague-based game development studio crafting gameplay that feels amazing.",
