@@ -6,7 +6,7 @@ export { Header } from "./Header";
 export { Hero } from "./Hero";
 export { PageHeader } from "./PageHeader";
 export { Projects } from "./Projects";
-export { RetroScene } from "./RetroScene";
+export { CubeScene } from "./CubeScene";
 export { ScrollProgress } from "./ScrollProgress";
 export { SecondaryPageShell } from "./SecondaryPageShell";
 export { TechStack } from "./TechStack";

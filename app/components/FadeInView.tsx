@@ -13,6 +13,8 @@ interface FadeInViewProps {
   delay?: number;
   margin?: string;
   className?: string;
+  /** Animate transform only — skips opacity so backdrop-filter children work during the slide */
+  slideOnly?: boolean;
 }
 
 const transforms: Record<Animation, string> = {
@@ -28,6 +30,7 @@ export function FadeInView({
   delay = 0,
   margin = "-100px",
   className = "",
+  slideOnly = false,
 }: FadeInViewProps) {
   const ref = useRef<HTMLDivElement | null>(null);
   const shouldAnimate = useAnimationsEnabled();
@@ -67,10 +70,11 @@ export function FadeInView({
 
   const style: CSSProperties = shouldAnimate
     ? {
-        opacity: isVisible ? 1 : 0,
+        opacity: slideOnly ? 1 : isVisible ? 1 : 0,
         transform: isVisible ? "none" : transforms[animation],
-        transition:
-          "opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1)",
+        transition: slideOnly
+          ? "transform 0.7s cubic-bezier(0.16, 1, 0.3, 1)"
+          : "opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1)",
       }
     : {};
 
