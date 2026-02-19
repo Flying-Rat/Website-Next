@@ -105,7 +105,7 @@
       "medior": "Medior",
       "senior": "Senior"
     },
-    "status": "Nespěcháme s nabíráním, ale šikovní lidi nás vždycky zaujmou. Vidíš se v něčem z toho? Ozvi se.",
+    "status": "Tým aktivně rozrůstáme - vidíš se v něčem z toho? Ozvi se.",
     "hiringProcess": {
       "title": "Tvoje cesta k nám",
       "description": "Krátké, jednoduché, bez tlaku. Takhle to u nás obvykle chodí.",
@@ -170,6 +170,16 @@
           "Znalost renderingu a fyziky",
           "Debugging platform-specific issues",
           "Konzole/VR zkušenosti výhodou"
+        ]
+      },
+      "cppMediorEngineer": {
+        "title": "C/C++ Engineer",
+        "description": "Pracuj na herních systémech a výkonu v C/C++. Budeš implementovat gameplay funkce, optimalizovat kritické cesty a pomáhat vydávat tituly na PC a konzole. Potřebujeme solidní C/C++ a zkušenosti s herními nebo real-time systémy. Skvělý krok pro inženýry, kteří chtějí mít na starosti smysluplnou technickou práci.",
+        "points": [
+          "2+ roky C/C++",
+          "Zkušenosti s hrami nebo real-time systémy",
+          "Debugging a profilování",
+          "Konzole nebo cross-platform výhodou"
         ]
       },
       "cppRustEngineer": {

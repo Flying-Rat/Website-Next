@@ -1,8 +1,7 @@
 "use client";
 
-import type { ReactNode } from "react";
-
 import Image from "next/image";
+import type { ReactNode } from "react";
 
 import { useTranslation } from "../i18n";
 import { FadeInView } from "./FadeInView";

@@ -105,7 +105,7 @@
       "medior": "Medior",
       "senior": "Senior"
     },
-    "status": "No rush to fill seats, but great people always catch our attention. See yourself in any of these? Say hi.",
+    "status": "We're actively growing the team - see yourself in any of these? Say hi.",
     "hiringProcess": {
       "title": "Your way in",
       "description": "Short, simple, no pressure. Here's how it usually goes.",
@@ -170,6 +170,16 @@
           "Rendering & physics knowledge",
           "Platform-specific debugging",
           "Console/VR experience a plus"
+        ]
+      },
+      "cppMediorEngineer": {
+        "title": "C/C++ Engineer",
+        "description": "Work on game systems and performance in C/C++. You'll implement gameplay features, optimize code paths, and help ship titles on PC and consoles. Solid C/C++ skills and experience with game or real-time systems required. A great step for engineers ready to own meaningful technical work.",
+        "points": [
+          "2+ yrs C/C++",
+          "Game or real-time systems experience",
+          "Debugging & profiling",
+          "Console or cross-platform a plus"
         ]
       },
       "cppRustEngineer": {
