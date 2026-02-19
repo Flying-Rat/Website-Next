@@ -49,10 +49,10 @@ const fragmentShader = /* glsl */ `
   uniform float uOpacity;
   uniform float uTime;
   uniform float uProximity;
+  uniform float uEdgeGlow;
   varying vec3 vNormal;
   varying vec3 vViewPosition;
 
-  // Rodrigues rotation around (1,1,1) axis — cheap hue shift
   vec3 hueShift(vec3 c, float shift) {
     float cosA = cos(shift);
     float sinA = sin(shift);
@@ -71,10 +71,20 @@ const fragmentShader = /* glsl */ `
     vec3 color = mix(uColor * 0.65, rimColor, fresnel);
     color = mix(color, uHoverColor, uProximity);
 
+    vec3 lightDir = normalize(vec3(0.5, 0.8, 0.6));
+    float diffuse = max(0.0, dot(vNormal, lightDir)) * 0.35 + 0.65;
+    vec3 halfVec  = normalize(lightDir + viewDir);
+    float spec    = pow(max(0.0, dot(vNormal, halfVec)), 40.0) * 0.28;
+    color = color * diffuse + spec * (uColor * 0.5 + 0.35);
+
     float explodeT = smoothstep(0.0, 1.0, uProximity);
+
+    float innerGlow = (1.0 - fresnel) * explodeT * 0.22 * (1.0 - uEdgeGlow);
+    color += uHoverColor * innerGlow;
+
     vec3 nDeriv = fwidth(vNormal);
     float edge = smoothstep(0.3, 0.7, length(nDeriv) * 8.0);
-    color += uHoverColor * edge * explodeT * 0.6;
+    color += uHoverColor * edge * explodeT * 0.6 * uEdgeGlow;
 
     gl_FragColor = vec4(color, uOpacity * (0.45 + fresnel * 0.55));
   }
@@ -109,9 +119,63 @@ interface CubeData {
 }
 
 interface ParticleData {
-  mesh: THREE.Mesh;
   basePosition: THREE.Vector3;
   phase: number;
+}
+
+type ShapeType = "box" | "octahedron" | "tetrahedron" | "torus";
+
+function toFlatNormals(geo: THREE.BufferGeometry): THREE.BufferGeometry {
+  // Unshare vertices so each triangle owns its own vertices,
+  // then recompute — giving every vertex its triangle's face normal.
+  // This makes the explode effect separate faces cleanly instead of inflating.
+  const flat = geo.toNonIndexed();
+  flat.computeVertexNormals();
+  geo.dispose();
+  return flat;
+}
+
+function createShapeGeometry(
+  type: ShapeType,
+  size: number,
+  wireframe: boolean,
+  subdivisions: number,
+): THREE.BufferGeometry {
+  const isMobileSub = subdivisions <= 6;
+  switch (type) {
+    case "octahedron": {
+      const geo = new THREE.OctahedronGeometry(size * 0.62, wireframe ? 0 : isMobileSub ? 1 : 2);
+      return wireframe ? geo : toFlatNormals(geo);
+    }
+    case "tetrahedron": {
+      const geo = new THREE.TetrahedronGeometry(size * 0.72, wireframe ? 0 : isMobileSub ? 1 : 2);
+      return wireframe ? geo : toFlatNormals(geo);
+    }
+    case "torus":
+      return new THREE.TorusGeometry(
+        size * 0.38,
+        size * 0.13,
+        wireframe ? 6 : isMobileSub ? 7 : 9,
+        wireframe ? 12 : isMobileSub ? 16 : 22,
+      );
+    default:
+      return wireframe
+        ? createRoundedBoxGeometry(size, size, size, size * 0.08, 2)
+        : new THREE.BoxGeometry(size, size, size, subdivisions, subdivisions, subdivisions);
+  }
+}
+
+function edgeCreaseAngle(type: ShapeType): number {
+  if (type === "tetrahedron") {
+    return 20;
+  }
+  if (type === "octahedron") {
+    return 30;
+  }
+  if (type === "torus") {
+    return 15;
+  }
+  return 40;
 }
 
 function createRoundedBoxGeometry(
@@ -185,7 +249,11 @@ export const CubeScene = memo(function CubeScene({
     const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
     camera.position.set(0, 0, 10);
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "low-power" });
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true,
+      powerPreference: "low-power",
+    });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x000000, 0);
     renderer.domElement.style.display = "block";
@@ -201,11 +269,15 @@ export const CubeScene = memo(function CubeScene({
 
     const cubes: CubeData[] = [];
     const placedCubes: { pos: THREE.Vector3; size: number }[] = [];
-    const cubeCount = isMobile ? 4 + Math.floor(Math.random() * 2) : 7 + Math.floor(Math.random() * 3);
+    const cubeCount = isMobile
+      ? 4 + Math.floor(Math.random() * 2)
+      : 9 + Math.floor(Math.random() * 3);
 
     const checkOverlap = (pos: THREE.Vector3, size: number): boolean => {
       for (const placed of placedCubes) {
-        if (pos.distanceTo(placed.pos) < (size + placed.size) * 0.85) return true;
+        if (pos.distanceTo(placed.pos) < (size + placed.size) * 0.85) {
+          return true;
+        }
       }
       return false;
     };
@@ -214,6 +286,18 @@ export const CubeScene = memo(function CubeScene({
       const size = i === 0 ? 1.2 + Math.random() * 0.2 : 0.5 + Math.random() * 0.4;
       const isWireframe = i > 1 && Math.random() < 0.4;
       const isAccent = i === 0 || Math.random() < 0.5;
+
+      const shapeRoll = Math.random();
+      const shapeType: ShapeType =
+        i === 0
+          ? "box"
+          : shapeRoll < 0.4
+            ? "box"
+            : shapeRoll < 0.62
+              ? "octahedron"
+              : shapeRoll < 0.82
+                ? "tetrahedron"
+                : "torus";
 
       let position = new THREE.Vector3();
       let attempts = 0;
@@ -235,15 +319,15 @@ export const CubeScene = memo(function CubeScene({
         Math.min(1, cubeColor.b * 1.0 + 0.1),
       );
 
-      let geometry: THREE.BufferGeometry;
       let material: THREE.Material;
       let edges: THREE.LineSegments | null = null;
 
+      const geometry = createShapeGeometry(shapeType, size, isWireframe, subdivisions);
+
       if (isWireframe) {
-        geometry = createRoundedBoxGeometry(size, size, size, size * 0.08, 2);
         material = new THREE.MeshBasicMaterial({ visible: false });
         edges = new THREE.LineSegments(
-          new THREE.EdgesGeometry(geometry, 40),
+          new THREE.EdgesGeometry(geometry, edgeCreaseAngle(shapeType)),
           new THREE.LineBasicMaterial({
             color: cubeColor,
             transparent: true,
@@ -252,7 +336,8 @@ export const CubeScene = memo(function CubeScene({
         );
         edges.position.copy(position);
       } else {
-        geometry = new THREE.BoxGeometry(size, size, size, subdivisions, subdivisions, subdivisions);
+        const explosionScale =
+          shapeType === "torus" ? 0.08 + Math.random() * 0.06 : 0.28 + Math.random() * 0.18;
         material = new THREE.ShaderMaterial({
           vertexShader,
           fragmentShader,
@@ -262,9 +347,10 @@ export const CubeScene = memo(function CubeScene({
             uHoverColor: { value: hoverColor },
             uOpacity: { value: isAccent ? 0.82 : 0.68 },
             uAmplitude: { value: 0.035 + Math.random() * 0.035 },
-            uExplosion: { value: size * (0.28 + Math.random() * 0.18) },
+            uExplosion: { value: size * explosionScale },
             uProximity: { value: 0 },
             uBoost: { value: 0 },
+            uEdgeGlow: { value: shapeType === "box" ? 1.0 : 0.0 },
           },
           transparent: true,
           depthWrite: false,
@@ -305,28 +391,34 @@ export const CubeScene = memo(function CubeScene({
     }
 
     const particles: ParticleData[] = [];
-    const particleGeometry = new THREE.CircleGeometry(0.03, 8);
-    const particleCount = isMobile ? 4 + Math.floor(Math.random() * 3) : 8 + Math.floor(Math.random() * 6);
+    const particleCount = isMobile
+      ? 4 + Math.floor(Math.random() * 3)
+      : 12 + Math.floor(Math.random() * 6);
+
+    const particlePositions = new Float32Array(particleCount * 3);
+    const particleGeometry = new THREE.BufferGeometry();
+    particleGeometry.setAttribute("position", new THREE.BufferAttribute(particlePositions, 3));
+    const particleMaterial = new THREE.PointsMaterial({
+      color: accent,
+      size: 0.06,
+      transparent: true,
+      opacity: 0.4,
+      depthWrite: false,
+      sizeAttenuation: true,
+    });
+    const particlePoints = new THREE.Points(particleGeometry, particleMaterial);
+    scene.add(particlePoints);
 
     for (let i = 0; i < particleCount; i++) {
-      const isAccentParticle = Math.random() < 0.3;
-      const particle = new THREE.Mesh(
-        particleGeometry,
-        new THREE.MeshBasicMaterial({
-          color: isAccentParticle ? accent : steel,
-          transparent: true,
-          opacity: isAccentParticle ? 0.5 : 0.3,
-          side: THREE.DoubleSide,
-        }),
-      );
       const basePos = new THREE.Vector3(
         (Math.random() - 0.5) * 20,
         (Math.random() - 0.5) * 8,
         (Math.random() - 0.5) * 3 - 2,
       );
-      particle.position.copy(basePos);
-      scene.add(particle);
-      particles.push({ mesh: particle, basePosition: basePos, phase: Math.random() * Math.PI * 2 });
+      particlePositions[i * 3] = basePos.x;
+      particlePositions[i * 3 + 1] = basePos.y;
+      particlePositions[i * 3 + 2] = basePos.z;
+      particles.push({ basePosition: basePos, phase: Math.random() * Math.PI * 2 });
     }
     const cubeMeshes = cubes.map((cube) => cube.mesh);
 
@@ -334,7 +426,10 @@ export const CubeScene = memo(function CubeScene({
     const constellationPositions = new Float32Array(maxPairs * 2 * 3);
     const constellationColors = new Float32Array(maxPairs * 2 * 3);
     const constellationGeometry = new THREE.BufferGeometry();
-    constellationGeometry.setAttribute("position", new THREE.BufferAttribute(constellationPositions, 3));
+    constellationGeometry.setAttribute(
+      "position",
+      new THREE.BufferAttribute(constellationPositions, 3),
+    );
     constellationGeometry.setAttribute("color", new THREE.BufferAttribute(constellationColors, 3));
     const constellationMesh = new THREE.LineSegments(
       constellationGeometry,
@@ -357,7 +452,9 @@ export const CubeScene = memo(function CubeScene({
     handleResize();
     let resizeTimer: ReturnType<typeof setTimeout> | null = null;
     const resizeObserver = new ResizeObserver(() => {
-      if (resizeTimer) clearTimeout(resizeTimer);
+      if (resizeTimer) {
+        clearTimeout(resizeTimer);
+      }
       resizeTimer = setTimeout(handleResize, 100);
     });
     resizeObserver.observe(container);
@@ -380,7 +477,9 @@ export const CubeScene = memo(function CubeScene({
     const _pointerNDC = new THREE.Vector2();
 
     const animate = (time: number) => {
-      if (!running) return;
+      if (!running) {
+        return;
+      }
 
       const elapsed = time - lastFrameTime;
       if (elapsed < frameInterval) {
@@ -401,8 +500,10 @@ export const CubeScene = memo(function CubeScene({
       camera.position.y += (-pointerY * 1.6 - camera.position.y) * (1 - Math.pow(0.96, dtNorm));
       if (boostRef.current) {
         const shake = 0.18 * dtNorm;
-        camera.position.x += (Math.sin(t * 47) * 0.5 + Math.sin(t * 31) * 0.35 + Math.sin(t * 19) * 0.2) * shake;
-        camera.position.y += (Math.cos(t * 53) * 0.45 + Math.cos(t * 37) * 0.3 + Math.cos(t * 23) * 0.15) * shake;
+        camera.position.x +=
+          (Math.sin(t * 47) * 0.5 + Math.sin(t * 31) * 0.35 + Math.sin(t * 19) * 0.2) * shake;
+        camera.position.y +=
+          (Math.cos(t * 53) * 0.45 + Math.cos(t * 37) * 0.3 + Math.cos(t * 23) * 0.15) * shake;
         camera.position.z += (Math.sin(t * 41) * 0.15 + Math.cos(t * 29) * 0.1) * shake;
       }
       camera.lookAt(0, 0, 0);
@@ -445,7 +546,10 @@ export const CubeScene = memo(function CubeScene({
           const u = cube.mesh.material.uniforms;
           u.uTime.value = t * speedMultiplier;
           u.uProximity.value = proximity;
-          u.uBoost.value += ((boostRef.current ? 1 : 0) - u.uBoost.value) * (boostRef.current ? 0.12 : 0.06) * dtNorm;
+          u.uBoost.value +=
+            ((boostRef.current ? 1 : 0) - u.uBoost.value) *
+            (boostRef.current ? 0.12 : 0.06) *
+            dtNorm;
         }
 
         if (cube.edges && cube.baseColor && cube.hoverColor) {
@@ -471,11 +575,20 @@ export const CubeScene = memo(function CubeScene({
             const base = pairIdx * 6;
             const pa = cubes[a].mesh.position;
             const pb = cubes[b].mesh.position;
-            constellationPositions[base]     = pa.x; constellationPositions[base + 1] = pa.y; constellationPositions[base + 2] = pa.z;
-            constellationPositions[base + 3] = pb.x; constellationPositions[base + 4] = pb.y; constellationPositions[base + 5] = pb.z;
-            const ca = cubes[a].color, cb = cubes[b].color;
-            constellationColors[base]     = ca.r * strength; constellationColors[base + 1] = ca.g * strength; constellationColors[base + 2] = ca.b * strength;
-            constellationColors[base + 3] = cb.r * strength; constellationColors[base + 4] = cb.g * strength; constellationColors[base + 5] = cb.b * strength;
+            constellationPositions[base] = pa.x;
+            constellationPositions[base + 1] = pa.y;
+            constellationPositions[base + 2] = pa.z;
+            constellationPositions[base + 3] = pb.x;
+            constellationPositions[base + 4] = pb.y;
+            constellationPositions[base + 5] = pb.z;
+            const ca = cubes[a].color,
+              cb = cubes[b].color;
+            constellationColors[base] = ca.r * strength;
+            constellationColors[base + 1] = ca.g * strength;
+            constellationColors[base + 2] = ca.b * strength;
+            constellationColors[base + 3] = cb.r * strength;
+            constellationColors[base + 4] = cb.g * strength;
+            constellationColors[base + 5] = cb.b * strength;
             pairIdx++;
           }
         }
@@ -485,19 +598,24 @@ export const CubeScene = memo(function CubeScene({
       constellationGeometry.attributes.color.needsUpdate = true;
 
       const particleBoost = boostRef.current ? 2.5 : 1;
-      for (const particle of particles) {
+      const posAttr = particleGeometry.attributes.position as THREE.BufferAttribute;
+      for (let pi = 0; pi < particles.length; pi++) {
+        const particle = particles[pi];
         const px = Math.sin(t * 0.5 + particle.phase) * 0.5;
         const py = Math.cos(t * 0.4 + particle.phase) * 0.5;
         const pz = Math.sin(t * 0.3 + particle.phase) * 0.3;
         const chaos = boostRef.current
-          ? (Math.sin(t * 6 + particle.phase) * 0.8 + Math.cos(t * 4 + particle.phase * 2) * 0.5)
+          ? Math.sin(t * 6 + particle.phase) * 0.8 + Math.cos(t * 4 + particle.phase * 2) * 0.5
           : 0;
-        particle.mesh.position.x = particle.basePosition.x + px * particleBoost + chaos * 0.3;
-        particle.mesh.position.y = particle.basePosition.y + py * particleBoost + chaos * 0.25;
-        particle.mesh.position.z = particle.basePosition.z + pz * particleBoost + chaos * 0.2;
-        (particle.mesh.material as THREE.MeshBasicMaterial).opacity =
-          0.2 + ((particle.mesh.position.z + 6) / 12) * 0.5;
+        posAttr.setXYZ(
+          pi,
+          particle.basePosition.x + px * particleBoost + chaos * 0.3,
+          particle.basePosition.y + py * particleBoost + chaos * 0.25,
+          particle.basePosition.z + pz * particleBoost + chaos * 0.2,
+        );
       }
+      posAttr.needsUpdate = true;
+      particleMaterial.opacity = boostRef.current ? 0.65 : 0.4;
 
       renderer.render(scene, camera);
       animationFrame = requestAnimationFrame(animate);
@@ -511,7 +629,9 @@ export const CubeScene = memo(function CubeScene({
 
     const updateRunning = () => {
       const shouldRun = allowMotion && visible && inView;
-      if (shouldRun === running) return;
+      if (shouldRun === running) {
+        return;
+      }
       running = shouldRun;
       if (running) {
         animationFrame = requestAnimationFrame(animate);
@@ -566,9 +686,13 @@ export const CubeScene = memo(function CubeScene({
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("pointerleave", handlePointerLeave);
       resizeObserver.disconnect();
-      if (resizeTimer) clearTimeout(resizeTimer);
+      if (resizeTimer) {
+        clearTimeout(resizeTimer);
+      }
       observer?.disconnect();
-      if (animationFrame) cancelAnimationFrame(animationFrame);
+      if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+      }
 
       grid.geometry.dispose();
       (grid.material as THREE.Material).dispose();
@@ -583,13 +707,12 @@ export const CubeScene = memo(function CubeScene({
           (cube.edges.material as THREE.Material).dispose();
         }
       }
-      for (const particle of particles) {
-        particle.mesh.geometry.dispose();
-        (particle.mesh.material as THREE.Material).dispose();
-      }
       particleGeometry.dispose();
+      particleMaterial.dispose();
       renderer.dispose();
-      if (container.contains(renderer.domElement)) container.removeChild(renderer.domElement);
+      if (container.contains(renderer.domElement)) {
+        container.removeChild(renderer.domElement);
+      }
     };
   }, [resolvedTheme, shouldAnimate]);
 
@@ -605,7 +728,9 @@ export const CubeScene = memo(function CubeScene({
       boostRef.current = true;
       setEasterActive(true);
       document.documentElement.classList.add("crt-mode");
-      if (timerRef.current) window.clearTimeout(timerRef.current);
+      if (timerRef.current) {
+        window.clearTimeout(timerRef.current);
+      }
       timerRef.current = window.setTimeout(() => {
         boostRef.current = false;
         setEasterActive(false);
@@ -615,7 +740,9 @@ export const CubeScene = memo(function CubeScene({
 
     const handleKeyDown = (event: KeyboardEvent) => {
       const key = event.key.toLowerCase();
-      if (!EASTER_SET.has(key)) return;
+      if (!EASTER_SET.has(key)) {
+        return;
+      }
 
       const next = [...keysRef.current, key].slice(-EASTER_SEQUENCE.length);
       keyIdRef.current += 1;
@@ -625,7 +752,9 @@ export const CubeScene = memo(function CubeScene({
       const matches =
         next.length === EASTER_SEQUENCE.length &&
         next.every((value, idx) => value === EASTER_SEQUENCE[idx]);
-      if (matches) triggerEaster();
+      if (matches) {
+        triggerEaster();
+      }
       keysRef.current = matches ? [] : next;
       keyEntriesRef.current = matches ? [] : nextEntries;
       setInputKeys(matches ? [] : nextEntries);
@@ -634,7 +763,9 @@ export const CubeScene = memo(function CubeScene({
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
-      if (timerRef.current) window.clearTimeout(timerRef.current);
+      if (timerRef.current) {
+        window.clearTimeout(timerRef.current);
+      }
       setEasterActive(false);
       document.documentElement.classList.remove("crt-mode");
       boostRef.current = false;
