@@ -132,8 +132,8 @@ export default function JobsPage() {
 
       <div className="container mx-auto px-6">
         <div className="max-w-4xl mx-auto">
-          <div className="warning-glow flex items-start gap-4 px-5 py-4 rounded-2xl border border-green-500/30 bg-green-500/10 mb-12">
-            <span className="warning-dot w-3 h-3 mt-1 rounded-full bg-green-500 shrink-0" />
+          <div className="jobs-banner flex items-start gap-4 px-5 py-4 rounded-2xl border border-green-500/30 bg-green-500/10 mb-12">
+            <span className="jobs-banner-dot w-3 h-3 mt-1 rounded-full bg-green-500 shrink-0" />
             <p className="text-[var(--color-text-secondary)]">{t("jobs.status")}</p>
           </div>
         </div>

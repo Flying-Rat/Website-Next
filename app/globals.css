@@ -177,10 +177,6 @@ html.no-motion *::after {
   transition-delay: 0ms;
 }
 
-html.no-motion .crt-overlay {
-  animation: none;
-}
-
 @media (max-width: 768px) {
   ::-webkit-scrollbar {
     display: none;
@@ -205,6 +201,10 @@ body {
     animation-iteration-count: 1;
     transition-duration: 0.01ms;
   }
+}
+
+html.no-motion .crt-overlay {
+  animation: none;
 }
 
 html.crt-mode body {
@@ -321,31 +321,31 @@ html.crt-mode .scroll-progress-bar {
   }
 }
 
-.warning-glow {
-  box-shadow: 0 0 18px rgba(234, 179, 8, 0.12);
+.jobs-banner {
+  box-shadow: 0 0 18px rgba(34, 197, 94, 0.12);
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .warning-glow {
-    animation: warning-pulse 4s ease-in-out infinite;
+  .jobs-banner {
+    animation: jobs-banner-pulse 4s ease-in-out infinite;
   }
 }
 
-@keyframes warning-pulse {
+@keyframes jobs-banner-pulse {
   0%,
   100% {
-    background-color: rgba(234, 179, 8, 0.08);
-    border-color: rgba(234, 179, 8, 0.18);
+    background-color: rgba(34, 197, 94, 0.08);
+    border-color: rgba(34, 197, 94, 0.18);
   }
 
   50% {
-    background-color: rgba(234, 179, 8, 0.16);
-    border-color: rgba(234, 179, 8, 0.28);
+    background-color: rgba(34, 197, 94, 0.16);
+    border-color: rgba(34, 197, 94, 0.28);
   }
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .warning-dot {
+  .jobs-banner-dot {
     animation: pulse-online 2s ease-in-out infinite;
   }
 }
@@ -657,7 +657,7 @@ html.no-motion .animate-scroll-wheel {
   .status-online,
   .animate-bounce-slow,
   .animate-scroll-wheel,
-  .warning-dot {
+  .jobs-banner-dot {
     animation: none;
   }
 }
