@@ -5,7 +5,6 @@ import { createPortal } from "react-dom";
 import * as THREE from "three";
 
 import { useTheme } from "../hooks/useTheme";
-import { vertexShader, fragmentShader } from "./ShapeScene/shapeSceneShaders";
 import {
   EASTER_SEQUENCE,
   EASTER_SET,
@@ -15,6 +14,7 @@ import {
   createShapeGeometry,
   edgeCreaseAngle,
 } from "./ShapeScene/shapeSceneGeometry";
+import { vertexShader, fragmentShader } from "./ShapeScene/shapeSceneShaders";
 
 export const ShapeScene = memo(function ShapeScene({
   label,

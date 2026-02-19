@@ -103,8 +103,14 @@ export function createShapeGeometry(
 }
 
 export function edgeCreaseAngle(type: ShapeType): number {
-  if (type === "tetrahedron") return 20;
-  if (type === "octahedron") return 30;
-  if (type === "torus") return 15;
+  if (type === "tetrahedron") {
+    return 20;
+  }
+  if (type === "octahedron") {
+    return 30;
+  }
+  if (type === "torus") {
+    return 15;
+  }
   return 40;
 }

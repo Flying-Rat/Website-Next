@@ -2,8 +2,8 @@
 
 import { useAnimationsEnabled } from "../hooks/useAnimationsEnabled";
 import { useTranslation } from "../i18n";
-import { ShapeScene } from "./ShapeScene";
 import { FadeInView } from "./FadeInView";
+import { ShapeScene } from "./ShapeScene";
 
 const aboutStats = [
   { value: "8+", key: "about.stats.projects" },
