@@ -5,146 +5,18 @@ import { createPortal } from "react-dom";
 import * as THREE from "three";
 
 import { useTheme } from "../hooks/useTheme";
+import {
+  EASTER_SEQUENCE,
+  EASTER_SET,
+  type ShapeData,
+  type ParticleData,
+  type ShapeType,
+  createShapeGeometry,
+  edgeCreaseAngle,
+} from "./ShapeScene/shapeSceneGeometry";
+import { vertexShader, fragmentShader } from "./ShapeScene/shapeSceneShaders";
 
-const vertexShader = /* glsl */ `
-  uniform float uTime;
-  uniform float uAmplitude;
-  uniform float uExplosion;
-  uniform float uProximity;
-  uniform float uBoost;
-  varying vec3 vNormal;
-  varying vec3 vViewPosition;
-
-  void main() {
-    vNormal = normalize(normalMatrix * normal);
-
-    float wave =
-      sin(position.x * 4.2 + uTime * 1.1) *
-      cos(position.y * 3.7 + uTime * 0.75) *
-      sin(position.z * 3.1 + uTime * 0.55);
-
-    float explodeT = smoothstep(0.0, 1.0, uProximity);
-    float waveAmp = uAmplitude * (0.2 + (1.0 - explodeT) * 0.4);
-    float tremble = 1.0 + sin(uTime * 7.0) * 0.04 * explodeT;
-    float explodeAmt = explodeT * uExplosion * tremble;
-
-    float boost = smoothstep(0.0, 1.0, uBoost);
-    float chaos = sin(position.x * 8.0 + uTime * 12.0) * sin(position.y * 7.0 + uTime * 9.0) * sin(position.z * 6.0 + uTime * 11.0);
-    float chaosAmp = 0.25 * boost;
-
-    vec3 displaced = position
-      + normal * wave * waveAmp
-      + normal * explodeAmt
-      + normal * chaos * chaosAmp;
-
-    vec4 mvPosition = modelViewMatrix * vec4(displaced, 1.0);
-    vViewPosition = -mvPosition.xyz;
-    gl_Position = projectionMatrix * mvPosition;
-  }
-`;
-
-const fragmentShader = /* glsl */ `
-  uniform vec3 uColor;
-  uniform vec3 uHoverColor;
-  uniform float uOpacity;
-  uniform float uTime;
-  uniform float uProximity;
-  varying vec3 vNormal;
-  varying vec3 vViewPosition;
-
-  // Rodrigues rotation around (1,1,1) axis — cheap hue shift
-  vec3 hueShift(vec3 c, float shift) {
-    float cosA = cos(shift);
-    float sinA = sin(shift);
-    return c * cosA +
-           cross(vec3(0.57735), c) * sinA +
-           vec3(0.57735) * dot(vec3(0.57735), c) * (1.0 - cosA);
-  }
-
-  void main() {
-    vec3 viewDir = normalize(vViewPosition);
-    float fresnel = pow(1.0 - abs(dot(viewDir, vNormal)), 2.0);
-
-    float hueAngle = fresnel * 0.6 + uTime * 0.08;
-    vec3 rimColor = hueShift(uColor + vec3(0.35), hueAngle);
-
-    vec3 color = mix(uColor * 0.65, rimColor, fresnel);
-    color = mix(color, uHoverColor, uProximity);
-
-    float explodeT = smoothstep(0.0, 1.0, uProximity);
-    vec3 nDeriv = fwidth(vNormal);
-    float edge = smoothstep(0.3, 0.7, length(nDeriv) * 8.0);
-    color += uHoverColor * edge * explodeT * 0.6;
-
-    gl_FragColor = vec4(color, uOpacity * (0.45 + fresnel * 0.55));
-  }
-`;
-
-const EASTER_SEQUENCE = [
-  "arrowup",
-  "arrowup",
-  "arrowdown",
-  "arrowdown",
-  "arrowleft",
-  "arrowright",
-  "arrowleft",
-  "arrowright",
-  "b",
-  "a",
-];
-const EASTER_SET = new Set(EASTER_SEQUENCE);
-
-interface CubeData {
-  mesh: THREE.Mesh;
-  edges: THREE.LineSegments | null;
-  rotationSpeed: THREE.Vector3;
-  floatOffset: number;
-  floatSpeed: number;
-  basePosition: THREE.Vector3;
-  scale: number;
-  hoverStrength: number;
-  color: THREE.Color;
-  baseColor?: THREE.Color;
-  hoverColor?: THREE.Color;
-}
-
-interface ParticleData {
-  mesh: THREE.Mesh;
-  basePosition: THREE.Vector3;
-  phase: number;
-}
-
-function createRoundedBoxGeometry(
-  width: number,
-  height: number,
-  depth: number,
-  radius: number,
-  segments: number,
-): THREE.BufferGeometry {
-  const shape = new THREE.Shape();
-  const eps = 0.00001;
-  const r = radius - eps;
-
-  shape.absarc(eps, eps, eps, -Math.PI / 2, -Math.PI, true);
-  shape.absarc(eps, height - r * 2, eps, Math.PI, Math.PI / 2, true);
-  shape.absarc(width - r * 2, height - r * 2, eps, Math.PI / 2, 0, true);
-  shape.absarc(width - r * 2, eps, eps, 0, -Math.PI / 2, true);
-
-  const geometry = new THREE.ExtrudeGeometry(shape, {
-    depth: depth - radius * 2,
-    bevelEnabled: true,
-    bevelSegments: segments,
-    steps: 1,
-    bevelSize: radius,
-    bevelThickness: radius,
-    curveSegments: segments,
-  });
-
-  geometry.center();
-  return geometry;
-}
-
-export const CubeScene = memo(function CubeScene({
+export const ShapeScene = memo(function ShapeScene({
   label,
   shouldAnimate,
   className,
@@ -206,11 +78,11 @@ export const CubeScene = memo(function CubeScene({
       const view = getViewSizeAtZ(0);
       const halfWidth = view.width * 0.5;
       const halfHeight = view.height * 0.5;
-      const cubeX = Math.max(1.2, halfWidth - (isMobile ? 1.0 : 1.6) - cameraParallax);
-      const cubeY = Math.max(1.0, halfHeight - (isMobile ? 1.2 : 1.5));
+      const shapeX = Math.max(1.2, halfWidth - (isMobile ? 1.0 : 1.6) - cameraParallax);
+      const shapeY = Math.max(1.0, halfHeight - (isMobile ? 1.2 : 1.5));
       const particleX = Math.max(1.6, halfWidth - (isMobile ? 0.35 : 0.8));
       const particleY = Math.max(1.3, halfHeight - (isMobile ? 0.5 : 0.9));
-      return { cubeX, cubeY, particleX, particleY };
+      return { shapeX, shapeY, particleX, particleY };
     };
     const syncViewport = () => {
       const rect = container.getBoundingClientRect();
@@ -231,14 +103,14 @@ export const CubeScene = memo(function CubeScene({
     grid.rotation.x = Math.PI * 0.08;
     scene.add(grid);
 
-    const cubes: CubeData[] = [];
-    const placedCubes: { pos: THREE.Vector3; size: number }[] = [];
-    const cubeCount = isMobile
+    const shapes: ShapeData[] = [];
+    const placedShapes: { pos: THREE.Vector3; size: number }[] = [];
+    const shapeCount = isMobile
       ? 4 + Math.floor(Math.random() * 2)
-      : 7 + Math.floor(Math.random() * 3);
+      : 9 + Math.floor(Math.random() * 3);
 
     const checkOverlap = (pos: THREE.Vector3, size: number): boolean => {
-      for (const placed of placedCubes) {
+      for (const placed of placedShapes) {
         if (pos.distanceTo(placed.pos) < (size + placed.size) * 0.85) {
           return true;
         }
@@ -246,68 +118,75 @@ export const CubeScene = memo(function CubeScene({
       return false;
     };
 
-    for (let i = 0; i < cubeCount; i++) {
+    for (let i = 0; i < shapeCount; i++) {
       const size = i === 0 ? 1.2 + Math.random() * 0.2 : 0.5 + Math.random() * 0.4;
       const isWireframe = i > 1 && Math.random() < 0.4;
       const isAccent = i === 0 || Math.random() < 0.5;
+
+      const shapeRoll = Math.random();
+      const shapeType: ShapeType =
+        i === 0
+          ? "box"
+          : shapeRoll < 0.4
+            ? "box"
+            : shapeRoll < 0.62
+              ? "octahedron"
+              : shapeRoll < 0.82
+                ? "tetrahedron"
+                : "torus";
 
       let position = new THREE.Vector3();
       let attempts = 0;
       do {
         position.set(
-          (Math.random() * 2 - 1) * spawnBounds.cubeX,
-          (Math.random() * 2 - 1) * spawnBounds.cubeY,
+          (Math.random() * 2 - 1) * spawnBounds.shapeX,
+          (Math.random() * 2 - 1) * spawnBounds.shapeY,
           (Math.random() - 0.5) * 2,
         );
         attempts++;
       } while (checkOverlap(position, size) && attempts < 50);
 
-      placedCubes.push({ pos: position.clone(), size });
+      placedShapes.push({ pos: position.clone(), size });
 
-      const cubeColor = isAccent ? accent : steel;
+      const shapeColor = isAccent ? accent : steel;
       const hoverColor = new THREE.Color(
-        Math.min(1, cubeColor.r * 1.5 + 0.35),
-        Math.min(1, cubeColor.g * 1.3 + 0.22),
-        Math.min(1, cubeColor.b * 1.0 + 0.1),
+        Math.min(1, shapeColor.r * 1.5 + 0.35),
+        Math.min(1, shapeColor.g * 1.3 + 0.22),
+        Math.min(1, shapeColor.b * 1.0 + 0.1),
       );
 
-      let geometry: THREE.BufferGeometry;
       let material: THREE.Material;
       let edges: THREE.LineSegments | null = null;
 
+      const geometry = createShapeGeometry(shapeType, size, isWireframe, subdivisions);
+
       if (isWireframe) {
-        geometry = createRoundedBoxGeometry(size, size, size, size * 0.08, 2);
         material = new THREE.MeshBasicMaterial({ visible: false });
         edges = new THREE.LineSegments(
-          new THREE.EdgesGeometry(geometry, 40),
+          new THREE.EdgesGeometry(geometry, edgeCreaseAngle(shapeType)),
           new THREE.LineBasicMaterial({
-            color: cubeColor,
+            color: shapeColor,
             transparent: true,
             opacity: isAccent ? 0.65 : 0.5,
           }),
         );
         edges.position.copy(position);
       } else {
-        geometry = new THREE.BoxGeometry(
-          size,
-          size,
-          size,
-          subdivisions,
-          subdivisions,
-          subdivisions,
-        );
+        const explosionScale =
+          shapeType === "torus" ? 0.08 + Math.random() * 0.06 : 0.28 + Math.random() * 0.18;
         material = new THREE.ShaderMaterial({
           vertexShader,
           fragmentShader,
           uniforms: {
             uTime: { value: 0 },
-            uColor: { value: cubeColor.clone() },
+            uColor: { value: shapeColor.clone() },
             uHoverColor: { value: hoverColor },
             uOpacity: { value: isAccent ? 0.82 : 0.68 },
             uAmplitude: { value: 0.035 + Math.random() * 0.035 },
-            uExplosion: { value: size * (0.28 + Math.random() * 0.18) },
+            uExplosion: { value: size * explosionScale },
             uProximity: { value: 0 },
             uBoost: { value: 0 },
+            uEdgeGlow: { value: shapeType === "box" ? 1.0 : 0.0 },
           },
           transparent: true,
           depthWrite: false,
@@ -329,7 +208,7 @@ export const CubeScene = memo(function CubeScene({
         scene.add(edges);
       }
 
-      cubes.push({
+      shapes.push({
         mesh,
         edges,
         rotationSpeed: new THREE.Vector3(
@@ -342,38 +221,42 @@ export const CubeScene = memo(function CubeScene({
         basePosition: position.clone(),
         scale: size,
         hoverStrength: 0,
-        color: cubeColor.clone(),
-        ...(edges && { baseColor: cubeColor.clone(), hoverColor }),
+        color: shapeColor.clone(),
+        ...(edges && { baseColor: shapeColor.clone(), hoverColor }),
       });
     }
 
     const particles: ParticleData[] = [];
-    const particleGeometry = new THREE.CircleGeometry(0.03, 8);
     const particleCount = isMobile
       ? 4 + Math.floor(Math.random() * 3)
-      : 8 + Math.floor(Math.random() * 6);
+      : 12 + Math.floor(Math.random() * 6);
+
+    const particlePositions = new Float32Array(particleCount * 3);
+    const particleGeometry = new THREE.BufferGeometry();
+    particleGeometry.setAttribute("position", new THREE.BufferAttribute(particlePositions, 3));
+    const particleMaterial = new THREE.PointsMaterial({
+      color: accent,
+      size: 0.06,
+      transparent: true,
+      opacity: 0.4,
+      depthWrite: false,
+      sizeAttenuation: true,
+    });
+    const particlePoints = new THREE.Points(particleGeometry, particleMaterial);
+    scene.add(particlePoints);
 
     for (let i = 0; i < particleCount; i++) {
-      const isAccentParticle = Math.random() < 0.3;
-      const particle = new THREE.Mesh(
-        particleGeometry,
-        new THREE.MeshBasicMaterial({
-          color: isAccentParticle ? accent : steel,
-          transparent: true,
-          opacity: isAccentParticle ? 0.5 : 0.3,
-          side: THREE.DoubleSide,
-        }),
-      );
       const basePos = new THREE.Vector3(
         (Math.random() * 2 - 1) * spawnBounds.particleX,
         (Math.random() * 2 - 1) * spawnBounds.particleY,
         (Math.random() - 0.5) * 3 - 2,
       );
-      particle.position.copy(basePos);
-      scene.add(particle);
-      particles.push({ mesh: particle, basePosition: basePos, phase: Math.random() * Math.PI * 2 });
+      particlePositions[i * 3] = basePos.x;
+      particlePositions[i * 3 + 1] = basePos.y;
+      particlePositions[i * 3 + 2] = basePos.z;
+      particles.push({ basePosition: basePos, phase: Math.random() * Math.PI * 2 });
     }
-    const cubeMeshes = cubes.map((cube) => cube.mesh);
+    const shapeMeshes = shapes.map((shape) => shape.mesh);
 
     const maxPairs = 36;
     const constellationPositions = new Float32Array(maxPairs * 2 * 3);
@@ -399,20 +282,21 @@ export const CubeScene = memo(function CubeScene({
       syncViewport();
       spawnBounds = getSpawnBounds();
 
-      for (const cube of cubes) {
-        const limitX = Math.max(0.8, spawnBounds.cubeX - cube.scale * 0.5);
-        const limitY = Math.max(0.7, spawnBounds.cubeY - cube.scale * 0.5);
-        cube.basePosition.x = THREE.MathUtils.clamp(cube.basePosition.x, -limitX, limitX);
-        cube.basePosition.y = THREE.MathUtils.clamp(cube.basePosition.y, -limitY, limitY);
-        cube.mesh.position.x = cube.basePosition.x;
-        cube.mesh.position.y = cube.basePosition.y;
-        if (cube.edges) {
-          cube.edges.position.x = cube.basePosition.x;
-          cube.edges.position.y = cube.basePosition.y;
+      for (const shape of shapes) {
+        const limitX = Math.max(0.8, spawnBounds.shapeX - shape.scale * 0.5);
+        const limitY = Math.max(0.7, spawnBounds.shapeY - shape.scale * 0.5);
+        shape.basePosition.x = THREE.MathUtils.clamp(shape.basePosition.x, -limitX, limitX);
+        shape.basePosition.y = THREE.MathUtils.clamp(shape.basePosition.y, -limitY, limitY);
+        shape.mesh.position.x = shape.basePosition.x;
+        shape.mesh.position.y = shape.basePosition.y;
+        if (shape.edges) {
+          shape.edges.position.x = shape.basePosition.x;
+          shape.edges.position.y = shape.basePosition.y;
         }
       }
 
-      for (const particle of particles) {
+      for (let pi = 0; pi < particles.length; pi++) {
+        const particle = particles[pi];
         particle.basePosition.x = THREE.MathUtils.clamp(
           particle.basePosition.x,
           -spawnBounds.particleX,
@@ -423,7 +307,10 @@ export const CubeScene = memo(function CubeScene({
           -spawnBounds.particleY,
           spawnBounds.particleY,
         );
+        particlePositions[pi * 3] = particle.basePosition.x;
+        particlePositions[pi * 3 + 1] = particle.basePosition.y;
       }
+      particleGeometry.attributes.position.needsUpdate = true;
     };
 
     handleResize();
@@ -463,7 +350,6 @@ export const CubeScene = memo(function CubeScene({
         animationFrame = requestAnimationFrame(animate);
         return;
       }
-      // Normalize dt to 60 fps reference so lerp rates are frame-rate independent
       const dtNorm = Math.min(elapsed / 16.667, 3);
       lastFrameTime = time;
 
@@ -473,10 +359,8 @@ export const CubeScene = memo(function CubeScene({
       pointerX += (targetPointerX - pointerX) * (1 - Math.pow(0.9, dtNorm));
       pointerY += (targetPointerY - pointerY) * (1 - Math.pow(0.9, dtNorm));
 
-      camera.position.x +=
-        (pointerX * cameraParallax - camera.position.x) * (1 - Math.pow(0.96, dtNorm));
-      camera.position.y +=
-        (-pointerY * cameraParallax - camera.position.y) * (1 - Math.pow(0.96, dtNorm));
+      camera.position.x += (pointerX * cameraParallax - camera.position.x) * (1 - Math.pow(0.96, dtNorm));
+      camera.position.y += (-pointerY * cameraParallax - camera.position.y) * (1 - Math.pow(0.96, dtNorm));
       if (boostRef.current) {
         const shake = 0.18 * dtNorm;
         camera.position.x +=
@@ -490,39 +374,39 @@ export const CubeScene = memo(function CubeScene({
       _pointerNDC.set(pointerX, -pointerY);
       _raycaster.setFromCamera(_pointerNDC, camera);
 
-      for (const cube of cubes) {
-        cube.mesh.rotation.x += cube.rotationSpeed.x * speedMultiplier * dtNorm;
-        cube.mesh.rotation.y += cube.rotationSpeed.y * speedMultiplier * dtNorm;
-        cube.mesh.rotation.z += cube.rotationSpeed.z * speedMultiplier * dtNorm;
+      for (const shape of shapes) {
+        shape.mesh.rotation.x += shape.rotationSpeed.x * speedMultiplier * dtNorm;
+        shape.mesh.rotation.y += shape.rotationSpeed.y * speedMultiplier * dtNorm;
+        shape.mesh.rotation.z += shape.rotationSpeed.z * speedMultiplier * dtNorm;
 
-        const floatX = Math.sin(t * cube.floatSpeed + cube.floatOffset) * 0.1;
-        const floatY = Math.sin(t * cube.floatSpeed * 1.3 + cube.floatOffset) * 0.15;
-        const floatZ = Math.cos(t * cube.floatSpeed * 0.7 + cube.floatOffset) * 0.08;
+        const floatX = Math.sin(t * shape.floatSpeed + shape.floatOffset) * 0.1;
+        const floatY = Math.sin(t * shape.floatSpeed * 1.3 + shape.floatOffset) * 0.15;
+        const floatZ = Math.cos(t * shape.floatSpeed * 0.7 + shape.floatOffset) * 0.08;
         const boost = boostRef.current ? 1 : 0;
         const chaosX = boost * (Math.sin(t * 8) * 0.15 + Math.cos(t * 11) * 0.1);
         const chaosY = boost * (Math.cos(t * 9) * 0.12 + Math.sin(t * 13) * 0.08);
         const chaosZ = boost * (Math.sin(t * 7) * 0.08);
-        cube.mesh.position.x = cube.basePosition.x + floatX + chaosX;
-        cube.mesh.position.y = cube.basePosition.y + floatY + chaosY;
-        cube.mesh.position.z = cube.basePosition.z + floatZ + chaosZ;
-        if (cube.edges) {
-          cube.edges.position.copy(cube.mesh.position);
-          cube.edges.rotation.copy(cube.mesh.rotation);
+        shape.mesh.position.x = shape.basePosition.x + floatX + chaosX;
+        shape.mesh.position.y = shape.basePosition.y + floatY + chaosY;
+        shape.mesh.position.z = shape.basePosition.z + floatZ + chaosZ;
+        if (shape.edges) {
+          shape.edges.position.copy(shape.mesh.position);
+          shape.edges.rotation.copy(shape.mesh.rotation);
         }
       }
       scene.updateMatrixWorld(true);
 
-      const hit = _raycaster.intersectObjects(cubeMeshes, false)[0];
+      const hit = _raycaster.intersectObjects(shapeMeshes, false)[0];
       const hoveredMesh = hit?.object ?? null;
 
-      for (const cube of cubes) {
-        const hoverTarget = hoveredMesh === cube.mesh ? 1 : 0;
-        const lerpRate = 1 - Math.pow(hoverTarget > cube.hoverStrength ? 0.945 : 0.965, dtNorm);
-        cube.hoverStrength += (hoverTarget - cube.hoverStrength) * lerpRate;
-        const proximity = cube.hoverStrength;
+      for (const shape of shapes) {
+        const hoverTarget = hoveredMesh === shape.mesh ? 1 : 0;
+        const lerpRate = 1 - Math.pow(hoverTarget > shape.hoverStrength ? 0.945 : 0.965, dtNorm);
+        shape.hoverStrength += (hoverTarget - shape.hoverStrength) * lerpRate;
+        const proximity = shape.hoverStrength;
 
-        if (cube.mesh.material instanceof THREE.ShaderMaterial) {
-          const u = cube.mesh.material.uniforms;
+        if (shape.mesh.material instanceof THREE.ShaderMaterial) {
+          const u = shape.mesh.material.uniforms;
           u.uTime.value = t * speedMultiplier;
           u.uProximity.value = proximity;
           u.uBoost.value +=
@@ -531,37 +415,37 @@ export const CubeScene = memo(function CubeScene({
             dtNorm;
         }
 
-        if (cube.edges && cube.baseColor && cube.hoverColor) {
-          (cube.edges.material as THREE.LineBasicMaterial).color.lerpColors(
-            cube.baseColor,
-            cube.hoverColor,
+        if (shape.edges && shape.baseColor && shape.hoverColor) {
+          (shape.edges.material as THREE.LineBasicMaterial).color.lerpColors(
+            shape.baseColor,
+            shape.hoverColor,
             proximity,
           );
         }
 
-        const scale = 1 + Math.sin(t * 2 + cube.floatOffset) * 0.02 + proximity * 0.18;
-        cube.mesh.scale.setScalar(scale);
-        cube.edges?.scale.setScalar(scale);
+        const scale = 1 + Math.sin(t * 2 + shape.floatOffset) * 0.02 + proximity * 0.18;
+        shape.mesh.scale.setScalar(scale);
+        shape.edges?.scale.setScalar(scale);
       }
 
       const maxConstellationDist = 5.5;
       let pairIdx = 0;
-      for (let a = 0; a < cubes.length; a++) {
-        for (let b = a + 1; b < cubes.length; b++) {
-          const dist = cubes[a].mesh.position.distanceTo(cubes[b].mesh.position);
+      for (let a = 0; a < shapes.length; a++) {
+        for (let b = a + 1; b < shapes.length; b++) {
+          const dist = shapes[a].mesh.position.distanceTo(shapes[b].mesh.position);
           if (dist < maxConstellationDist) {
             const strength = (1 - dist / maxConstellationDist) ** 2;
             const base = pairIdx * 6;
-            const pa = cubes[a].mesh.position;
-            const pb = cubes[b].mesh.position;
+            const pa = shapes[a].mesh.position;
+            const pb = shapes[b].mesh.position;
             constellationPositions[base] = pa.x;
             constellationPositions[base + 1] = pa.y;
             constellationPositions[base + 2] = pa.z;
             constellationPositions[base + 3] = pb.x;
             constellationPositions[base + 4] = pb.y;
             constellationPositions[base + 5] = pb.z;
-            const ca = cubes[a].color,
-              cb = cubes[b].color;
+            const ca = shapes[a].color,
+              cb = shapes[b].color;
             constellationColors[base] = ca.r * strength;
             constellationColors[base + 1] = ca.g * strength;
             constellationColors[base + 2] = ca.b * strength;
@@ -577,19 +461,24 @@ export const CubeScene = memo(function CubeScene({
       constellationGeometry.attributes.color.needsUpdate = true;
 
       const particleBoost = boostRef.current ? 2.5 : 1;
-      for (const particle of particles) {
+      const posAttr = particleGeometry.attributes.position as THREE.BufferAttribute;
+      for (let pi = 0; pi < particles.length; pi++) {
+        const particle = particles[pi];
         const px = Math.sin(t * 0.5 + particle.phase) * 0.5;
         const py = Math.cos(t * 0.4 + particle.phase) * 0.5;
         const pz = Math.sin(t * 0.3 + particle.phase) * 0.3;
         const chaos = boostRef.current
           ? Math.sin(t * 6 + particle.phase) * 0.8 + Math.cos(t * 4 + particle.phase * 2) * 0.5
           : 0;
-        particle.mesh.position.x = particle.basePosition.x + px * particleBoost + chaos * 0.3;
-        particle.mesh.position.y = particle.basePosition.y + py * particleBoost + chaos * 0.25;
-        particle.mesh.position.z = particle.basePosition.z + pz * particleBoost + chaos * 0.2;
-        (particle.mesh.material as THREE.MeshBasicMaterial).opacity =
-          0.2 + ((particle.mesh.position.z + 6) / 12) * 0.5;
+        posAttr.setXYZ(
+          pi,
+          particle.basePosition.x + px * particleBoost + chaos * 0.3,
+          particle.basePosition.y + py * particleBoost + chaos * 0.25,
+          particle.basePosition.z + pz * particleBoost + chaos * 0.2,
+        );
       }
+      posAttr.needsUpdate = true;
+      particleMaterial.opacity = boostRef.current ? 0.65 : 0.4;
 
       renderer.render(scene, camera);
       animationFrame = requestAnimationFrame(animate);
@@ -673,19 +562,16 @@ export const CubeScene = memo(function CubeScene({
       constellationGeometry.dispose();
       (constellationMesh.material as THREE.Material).dispose();
 
-      for (const cube of cubes) {
-        cube.mesh.geometry.dispose();
-        (cube.mesh.material as THREE.Material).dispose();
-        if (cube.edges) {
-          cube.edges.geometry.dispose();
-          (cube.edges.material as THREE.Material).dispose();
+      for (const shape of shapes) {
+        shape.mesh.geometry.dispose();
+        (shape.mesh.material as THREE.Material).dispose();
+        if (shape.edges) {
+          shape.edges.geometry.dispose();
+          (shape.edges.material as THREE.Material).dispose();
         }
       }
-      for (const particle of particles) {
-        particle.mesh.geometry.dispose();
-        (particle.mesh.material as THREE.Material).dispose();
-      }
       particleGeometry.dispose();
+      particleMaterial.dispose();
       renderer.dispose();
       if (container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);

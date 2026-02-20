@@ -59,7 +59,7 @@ export function WhatWeDo() {
   const { t } = useTranslation();
 
   return (
-    <section id="what-we-do" className="section-pad relative overflow-hidden">
+    <section id="what-we-do" className="section-pad relative overflow-x-hidden">
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-accent/5 blur-[120px] rounded-full" />
         <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-[var(--color-text)]/5 blur-[100px] rounded-full" />

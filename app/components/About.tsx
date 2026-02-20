@@ -2,8 +2,8 @@
 
 import { useAnimationsEnabled } from "../hooks/useAnimationsEnabled";
 import { useTranslation } from "../i18n";
-import { CubeScene } from "./CubeScene";
 import { FadeInView } from "./FadeInView";
+import { ShapeScene } from "./ShapeScene";
 
 const aboutStats = [
   { value: "8+", key: "about.stats.projects" },
@@ -16,12 +16,9 @@ export function About() {
   const shouldAnimate = useAnimationsEnabled();
 
   return (
-    <section
-      id="about"
-      className="section-pad relative overflow-hidden bg-[var(--color-bg)] min-h-[560px]"
-    >
+    <section id="about" className="section-pad relative min-h-[560px]">
       <div className="absolute inset-0" aria-hidden="true">
-        <CubeScene
+        <ShapeScene
           label={t("about.focus.title")}
           shouldAnimate={shouldAnimate}
           className="h-full w-full"
