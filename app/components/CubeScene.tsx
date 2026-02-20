@@ -180,16 +180,48 @@ export const CubeScene = memo(function CubeScene({
     const steel = new THREE.Color(isLight ? 0x3a3a3a : 0xd8d8d8);
     const isMobile = window.innerWidth < 768 || "ontouchstart" in window;
     const subdivisions = isMobile ? 6 : 10;
+    const cameraParallax = isMobile ? 0.95 : 1.6;
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
     camera.position.set(0, 0, 10);
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "low-power" });
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true,
+      powerPreference: "low-power",
+    });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x000000, 0);
     renderer.domElement.style.display = "block";
     container.appendChild(renderer.domElement);
+
+    const getViewSizeAtZ = (worldZ = 0) => {
+      const distance = Math.abs(camera.position.z - worldZ);
+      const verticalFov = THREE.MathUtils.degToRad(camera.fov);
+      const height = 2 * Math.tan(verticalFov / 2) * distance;
+      return { width: height * camera.aspect, height };
+    };
+    const getSpawnBounds = () => {
+      const view = getViewSizeAtZ(0);
+      const halfWidth = view.width * 0.5;
+      const halfHeight = view.height * 0.5;
+      const cubeX = Math.max(1.2, halfWidth - (isMobile ? 1.0 : 1.6) - cameraParallax);
+      const cubeY = Math.max(1.0, halfHeight - (isMobile ? 1.2 : 1.5));
+      const particleX = Math.max(1.6, halfWidth - (isMobile ? 0.35 : 0.8));
+      const particleY = Math.max(1.3, halfHeight - (isMobile ? 0.5 : 0.9));
+      return { cubeX, cubeY, particleX, particleY };
+    };
+    const syncViewport = () => {
+      const rect = container.getBoundingClientRect();
+      const width = Math.max(1, rect.width);
+      const height = Math.max(1, rect.height);
+      renderer.setSize(width, height);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+    };
+    syncViewport();
+    let spawnBounds = getSpawnBounds();
 
     const gridColor = new THREE.Color(isLight ? 0x000000 : 0xffffff);
     const grid = new THREE.GridHelper(28, 28, gridColor, gridColor);
@@ -201,11 +233,15 @@ export const CubeScene = memo(function CubeScene({
 
     const cubes: CubeData[] = [];
     const placedCubes: { pos: THREE.Vector3; size: number }[] = [];
-    const cubeCount = isMobile ? 4 + Math.floor(Math.random() * 2) : 7 + Math.floor(Math.random() * 3);
+    const cubeCount = isMobile
+      ? 4 + Math.floor(Math.random() * 2)
+      : 7 + Math.floor(Math.random() * 3);
 
     const checkOverlap = (pos: THREE.Vector3, size: number): boolean => {
       for (const placed of placedCubes) {
-        if (pos.distanceTo(placed.pos) < (size + placed.size) * 0.85) return true;
+        if (pos.distanceTo(placed.pos) < (size + placed.size) * 0.85) {
+          return true;
+        }
       }
       return false;
     };
@@ -219,8 +255,8 @@ export const CubeScene = memo(function CubeScene({
       let attempts = 0;
       do {
         position.set(
-          (Math.random() - 0.5) * 16,
-          (Math.random() - 0.5) * 6,
+          (Math.random() * 2 - 1) * spawnBounds.cubeX,
+          (Math.random() * 2 - 1) * spawnBounds.cubeY,
           (Math.random() - 0.5) * 2,
         );
         attempts++;
@@ -252,7 +288,14 @@ export const CubeScene = memo(function CubeScene({
         );
         edges.position.copy(position);
       } else {
-        geometry = new THREE.BoxGeometry(size, size, size, subdivisions, subdivisions, subdivisions);
+        geometry = new THREE.BoxGeometry(
+          size,
+          size,
+          size,
+          subdivisions,
+          subdivisions,
+          subdivisions,
+        );
         material = new THREE.ShaderMaterial({
           vertexShader,
           fragmentShader,
@@ -306,7 +349,9 @@ export const CubeScene = memo(function CubeScene({
 
     const particles: ParticleData[] = [];
     const particleGeometry = new THREE.CircleGeometry(0.03, 8);
-    const particleCount = isMobile ? 4 + Math.floor(Math.random() * 3) : 8 + Math.floor(Math.random() * 6);
+    const particleCount = isMobile
+      ? 4 + Math.floor(Math.random() * 3)
+      : 8 + Math.floor(Math.random() * 6);
 
     for (let i = 0; i < particleCount; i++) {
       const isAccentParticle = Math.random() < 0.3;
@@ -320,8 +365,8 @@ export const CubeScene = memo(function CubeScene({
         }),
       );
       const basePos = new THREE.Vector3(
-        (Math.random() - 0.5) * 20,
-        (Math.random() - 0.5) * 8,
+        (Math.random() * 2 - 1) * spawnBounds.particleX,
+        (Math.random() * 2 - 1) * spawnBounds.particleY,
         (Math.random() - 0.5) * 3 - 2,
       );
       particle.position.copy(basePos);
@@ -334,7 +379,10 @@ export const CubeScene = memo(function CubeScene({
     const constellationPositions = new Float32Array(maxPairs * 2 * 3);
     const constellationColors = new Float32Array(maxPairs * 2 * 3);
     const constellationGeometry = new THREE.BufferGeometry();
-    constellationGeometry.setAttribute("position", new THREE.BufferAttribute(constellationPositions, 3));
+    constellationGeometry.setAttribute(
+      "position",
+      new THREE.BufferAttribute(constellationPositions, 3),
+    );
     constellationGeometry.setAttribute("color", new THREE.BufferAttribute(constellationColors, 3));
     const constellationMesh = new THREE.LineSegments(
       constellationGeometry,
@@ -348,16 +396,42 @@ export const CubeScene = memo(function CubeScene({
     scene.add(constellationMesh);
 
     const handleResize = () => {
-      const rect = container.getBoundingClientRect();
-      renderer.setSize(rect.width, rect.height);
-      camera.aspect = rect.width / rect.height;
-      camera.updateProjectionMatrix();
+      syncViewport();
+      spawnBounds = getSpawnBounds();
+
+      for (const cube of cubes) {
+        const limitX = Math.max(0.8, spawnBounds.cubeX - cube.scale * 0.5);
+        const limitY = Math.max(0.7, spawnBounds.cubeY - cube.scale * 0.5);
+        cube.basePosition.x = THREE.MathUtils.clamp(cube.basePosition.x, -limitX, limitX);
+        cube.basePosition.y = THREE.MathUtils.clamp(cube.basePosition.y, -limitY, limitY);
+        cube.mesh.position.x = cube.basePosition.x;
+        cube.mesh.position.y = cube.basePosition.y;
+        if (cube.edges) {
+          cube.edges.position.x = cube.basePosition.x;
+          cube.edges.position.y = cube.basePosition.y;
+        }
+      }
+
+      for (const particle of particles) {
+        particle.basePosition.x = THREE.MathUtils.clamp(
+          particle.basePosition.x,
+          -spawnBounds.particleX,
+          spawnBounds.particleX,
+        );
+        particle.basePosition.y = THREE.MathUtils.clamp(
+          particle.basePosition.y,
+          -spawnBounds.particleY,
+          spawnBounds.particleY,
+        );
+      }
     };
 
     handleResize();
     let resizeTimer: ReturnType<typeof setTimeout> | null = null;
     const resizeObserver = new ResizeObserver(() => {
-      if (resizeTimer) clearTimeout(resizeTimer);
+      if (resizeTimer) {
+        clearTimeout(resizeTimer);
+      }
       resizeTimer = setTimeout(handleResize, 100);
     });
     resizeObserver.observe(container);
@@ -380,7 +454,9 @@ export const CubeScene = memo(function CubeScene({
     const _pointerNDC = new THREE.Vector2();
 
     const animate = (time: number) => {
-      if (!running) return;
+      if (!running) {
+        return;
+      }
 
       const elapsed = time - lastFrameTime;
       if (elapsed < frameInterval) {
@@ -397,12 +473,16 @@ export const CubeScene = memo(function CubeScene({
       pointerX += (targetPointerX - pointerX) * (1 - Math.pow(0.9, dtNorm));
       pointerY += (targetPointerY - pointerY) * (1 - Math.pow(0.9, dtNorm));
 
-      camera.position.x += (pointerX * 1.6 - camera.position.x) * (1 - Math.pow(0.96, dtNorm));
-      camera.position.y += (-pointerY * 1.6 - camera.position.y) * (1 - Math.pow(0.96, dtNorm));
+      camera.position.x +=
+        (pointerX * cameraParallax - camera.position.x) * (1 - Math.pow(0.96, dtNorm));
+      camera.position.y +=
+        (-pointerY * cameraParallax - camera.position.y) * (1 - Math.pow(0.96, dtNorm));
       if (boostRef.current) {
         const shake = 0.18 * dtNorm;
-        camera.position.x += (Math.sin(t * 47) * 0.5 + Math.sin(t * 31) * 0.35 + Math.sin(t * 19) * 0.2) * shake;
-        camera.position.y += (Math.cos(t * 53) * 0.45 + Math.cos(t * 37) * 0.3 + Math.cos(t * 23) * 0.15) * shake;
+        camera.position.x +=
+          (Math.sin(t * 47) * 0.5 + Math.sin(t * 31) * 0.35 + Math.sin(t * 19) * 0.2) * shake;
+        camera.position.y +=
+          (Math.cos(t * 53) * 0.45 + Math.cos(t * 37) * 0.3 + Math.cos(t * 23) * 0.15) * shake;
         camera.position.z += (Math.sin(t * 41) * 0.15 + Math.cos(t * 29) * 0.1) * shake;
       }
       camera.lookAt(0, 0, 0);
@@ -445,7 +525,10 @@ export const CubeScene = memo(function CubeScene({
           const u = cube.mesh.material.uniforms;
           u.uTime.value = t * speedMultiplier;
           u.uProximity.value = proximity;
-          u.uBoost.value += ((boostRef.current ? 1 : 0) - u.uBoost.value) * (boostRef.current ? 0.12 : 0.06) * dtNorm;
+          u.uBoost.value +=
+            ((boostRef.current ? 1 : 0) - u.uBoost.value) *
+            (boostRef.current ? 0.12 : 0.06) *
+            dtNorm;
         }
 
         if (cube.edges && cube.baseColor && cube.hoverColor) {
@@ -471,11 +554,20 @@ export const CubeScene = memo(function CubeScene({
             const base = pairIdx * 6;
             const pa = cubes[a].mesh.position;
             const pb = cubes[b].mesh.position;
-            constellationPositions[base]     = pa.x; constellationPositions[base + 1] = pa.y; constellationPositions[base + 2] = pa.z;
-            constellationPositions[base + 3] = pb.x; constellationPositions[base + 4] = pb.y; constellationPositions[base + 5] = pb.z;
-            const ca = cubes[a].color, cb = cubes[b].color;
-            constellationColors[base]     = ca.r * strength; constellationColors[base + 1] = ca.g * strength; constellationColors[base + 2] = ca.b * strength;
-            constellationColors[base + 3] = cb.r * strength; constellationColors[base + 4] = cb.g * strength; constellationColors[base + 5] = cb.b * strength;
+            constellationPositions[base] = pa.x;
+            constellationPositions[base + 1] = pa.y;
+            constellationPositions[base + 2] = pa.z;
+            constellationPositions[base + 3] = pb.x;
+            constellationPositions[base + 4] = pb.y;
+            constellationPositions[base + 5] = pb.z;
+            const ca = cubes[a].color,
+              cb = cubes[b].color;
+            constellationColors[base] = ca.r * strength;
+            constellationColors[base + 1] = ca.g * strength;
+            constellationColors[base + 2] = ca.b * strength;
+            constellationColors[base + 3] = cb.r * strength;
+            constellationColors[base + 4] = cb.g * strength;
+            constellationColors[base + 5] = cb.b * strength;
             pairIdx++;
           }
         }
@@ -490,7 +582,7 @@ export const CubeScene = memo(function CubeScene({
         const py = Math.cos(t * 0.4 + particle.phase) * 0.5;
         const pz = Math.sin(t * 0.3 + particle.phase) * 0.3;
         const chaos = boostRef.current
-          ? (Math.sin(t * 6 + particle.phase) * 0.8 + Math.cos(t * 4 + particle.phase * 2) * 0.5)
+          ? Math.sin(t * 6 + particle.phase) * 0.8 + Math.cos(t * 4 + particle.phase * 2) * 0.5
           : 0;
         particle.mesh.position.x = particle.basePosition.x + px * particleBoost + chaos * 0.3;
         particle.mesh.position.y = particle.basePosition.y + py * particleBoost + chaos * 0.25;
@@ -511,7 +603,9 @@ export const CubeScene = memo(function CubeScene({
 
     const updateRunning = () => {
       const shouldRun = allowMotion && visible && inView;
-      if (shouldRun === running) return;
+      if (shouldRun === running) {
+        return;
+      }
       running = shouldRun;
       if (running) {
         animationFrame = requestAnimationFrame(animate);
@@ -566,9 +660,13 @@ export const CubeScene = memo(function CubeScene({
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("pointerleave", handlePointerLeave);
       resizeObserver.disconnect();
-      if (resizeTimer) clearTimeout(resizeTimer);
+      if (resizeTimer) {
+        clearTimeout(resizeTimer);
+      }
       observer?.disconnect();
-      if (animationFrame) cancelAnimationFrame(animationFrame);
+      if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+      }
 
       grid.geometry.dispose();
       (grid.material as THREE.Material).dispose();
@@ -589,7 +687,9 @@ export const CubeScene = memo(function CubeScene({
       }
       particleGeometry.dispose();
       renderer.dispose();
-      if (container.contains(renderer.domElement)) container.removeChild(renderer.domElement);
+      if (container.contains(renderer.domElement)) {
+        container.removeChild(renderer.domElement);
+      }
     };
   }, [resolvedTheme, shouldAnimate]);
 
@@ -605,7 +705,9 @@ export const CubeScene = memo(function CubeScene({
       boostRef.current = true;
       setEasterActive(true);
       document.documentElement.classList.add("crt-mode");
-      if (timerRef.current) window.clearTimeout(timerRef.current);
+      if (timerRef.current) {
+        window.clearTimeout(timerRef.current);
+      }
       timerRef.current = window.setTimeout(() => {
         boostRef.current = false;
         setEasterActive(false);
@@ -615,7 +717,9 @@ export const CubeScene = memo(function CubeScene({
 
     const handleKeyDown = (event: KeyboardEvent) => {
       const key = event.key.toLowerCase();
-      if (!EASTER_SET.has(key)) return;
+      if (!EASTER_SET.has(key)) {
+        return;
+      }
 
       const next = [...keysRef.current, key].slice(-EASTER_SEQUENCE.length);
       keyIdRef.current += 1;
@@ -625,7 +729,9 @@ export const CubeScene = memo(function CubeScene({
       const matches =
         next.length === EASTER_SEQUENCE.length &&
         next.every((value, idx) => value === EASTER_SEQUENCE[idx]);
-      if (matches) triggerEaster();
+      if (matches) {
+        triggerEaster();
+      }
       keysRef.current = matches ? [] : next;
       keyEntriesRef.current = matches ? [] : nextEntries;
       setInputKeys(matches ? [] : nextEntries);
@@ -634,7 +740,9 @@ export const CubeScene = memo(function CubeScene({
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
-      if (timerRef.current) window.clearTimeout(timerRef.current);
+      if (timerRef.current) {
+        window.clearTimeout(timerRef.current);
+      }
       setEasterActive(false);
       document.documentElement.classList.remove("crt-mode");
       boostRef.current = false;
