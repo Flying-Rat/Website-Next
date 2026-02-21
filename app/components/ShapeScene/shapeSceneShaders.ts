@@ -42,6 +42,8 @@ export const fragmentShader = /* glsl */ `
   uniform float uTime;
   uniform float uProximity;
   uniform float uEdgeGlow;
+  uniform vec3 uFogColor;
+  uniform float uFogDensity;
   varying vec3 vNormal;
   varying vec3 vViewPosition;
 
@@ -56,6 +58,8 @@ export const fragmentShader = /* glsl */ `
   void main() {
     vec3 viewDir = normalize(vViewPosition);
     float fresnel = pow(1.0 - abs(dot(viewDir, vNormal)), 2.0);
+    float breath = 0.92 + 0.08 * sin(uTime * 0.4);
+    fresnel *= breath;
 
     float hueAngle = fresnel * 0.6 + uTime * 0.08;
     vec3 rimColor = hueShift(uColor + vec3(0.35), hueAngle);
@@ -78,6 +82,11 @@ export const fragmentShader = /* glsl */ `
     float edge = smoothstep(0.3, 0.7, length(nDeriv) * 8.0);
     color += uHoverColor * edge * explodeT * 0.6 * uEdgeGlow;
 
-    gl_FragColor = vec4(color, uOpacity * (0.45 + fresnel * 0.55));
+    float fogDepth = length(vViewPosition);
+    float fogFactor = 1.0 - exp(-uFogDensity * uFogDensity * fogDepth * fogDepth);
+    color = mix(color, uFogColor, fogFactor);
+    float alpha = uOpacity * (0.45 + fresnel * 0.55) * (1.0 - fogFactor * 0.6);
+
+    gl_FragColor = vec4(color, alpha);
   }
 `;

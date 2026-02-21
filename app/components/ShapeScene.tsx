@@ -53,13 +53,15 @@ export const ShapeScene = memo(function ShapeScene({
     const isMobile = window.innerWidth < 768 || "ontouchstart" in window;
     const subdivisions = isMobile ? 6 : 10;
     const cameraParallax = isMobile ? 0.95 : 1.6;
+    const fogColor = new THREE.Color(isLight ? 0xf5f5f5 : 0x0a0a0a);
+    const fogDensity = 0.06;
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
     camera.position.set(0, 0, 10);
 
     const renderer = new THREE.WebGLRenderer({
-      antialias: true,
+      antialias: !isMobile,
       alpha: true,
       powerPreference: "low-power",
     });
@@ -97,8 +99,10 @@ export const ShapeScene = memo(function ShapeScene({
 
     const gridColor = new THREE.Color(isLight ? 0x000000 : 0xffffff);
     const grid = new THREE.GridHelper(28, 28, gridColor, gridColor);
-    (grid.material as THREE.LineBasicMaterial).transparent = true;
-    (grid.material as THREE.LineBasicMaterial).opacity = isLight ? 0.13 : 0.08;
+    const gridMat = grid.material as THREE.LineBasicMaterial;
+    gridMat.transparent = true;
+    const gridBaseOpacity = isLight ? 0.13 : 0.08;
+    gridMat.opacity = gridBaseOpacity;
     grid.position.set(0, -4, -2);
     grid.rotation.x = Math.PI * 0.08;
     scene.add(grid);
@@ -136,15 +140,41 @@ export const ShapeScene = memo(function ShapeScene({
                 : "torus";
 
       let position = new THREE.Vector3();
-      let attempts = 0;
-      do {
-        position.set(
-          (Math.random() * 2 - 1) * spawnBounds.shapeX,
-          (Math.random() * 2 - 1) * spawnBounds.shapeY,
-          (Math.random() - 0.5) * 2,
-        );
-        attempts++;
-      } while (checkOverlap(position, size) && attempts < 50);
+      if (isMobile) {
+        let attempts = 0;
+        do {
+          position.set(
+            (Math.random() * 2 - 1) * spawnBounds.shapeX,
+            (Math.random() * 2 - 1) * spawnBounds.shapeY,
+            (Math.random() - 0.5) * 2,
+          );
+          attempts++;
+        } while (checkOverlap(position, size) && attempts < 50);
+      } else {
+        // Mitchell's best-candidate: pick from 30 random throws the one
+        // that maximises minimum clearance from all already-placed shapes.
+        // The hero shape (i=0) is biased toward the centre.
+        const regionScale = i === 0 ? 0.55 : 1.0;
+        let bestScore = -Infinity;
+        for (let c = 0; c < 30; c++) {
+          const candidate = new THREE.Vector3(
+            ((Math.random() * 2 - 1) * regionScale + 0.1) * spawnBounds.shapeX,
+            (Math.random() * 2 - 1) * spawnBounds.shapeY * regionScale,
+            (Math.random() - 0.5) * 2,
+          );
+          let minClearance = Infinity;
+          for (const placed of placedShapes) {
+            minClearance = Math.min(
+              minClearance,
+              candidate.distanceTo(placed.pos) - placed.size - size,
+            );
+          }
+          if (minClearance > bestScore) {
+            bestScore = minClearance;
+            position.copy(candidate);
+          }
+        }
+      }
 
       placedShapes.push({ pos: position.clone(), size });
 
@@ -187,6 +217,8 @@ export const ShapeScene = memo(function ShapeScene({
             uProximity: { value: 0 },
             uBoost: { value: 0 },
             uEdgeGlow: { value: shapeType === "box" ? 1.0 : 0.0 },
+            uFogColor: { value: fogColor.clone() },
+            uFogDensity: { value: fogDensity },
           },
           transparent: true,
           depthWrite: false,
@@ -261,22 +293,62 @@ export const ShapeScene = memo(function ShapeScene({
     const maxPairs = 36;
     const constellationPositions = new Float32Array(maxPairs * 2 * 3);
     const constellationColors = new Float32Array(maxPairs * 2 * 3);
+    const constellationPairShapes = new Int32Array(maxPairs * 2);
     const constellationGeometry = new THREE.BufferGeometry();
     constellationGeometry.setAttribute(
       "position",
       new THREE.BufferAttribute(constellationPositions, 3),
     );
     constellationGeometry.setAttribute("color", new THREE.BufferAttribute(constellationColors, 3));
-    const constellationMesh = new THREE.LineSegments(
-      constellationGeometry,
-      new THREE.LineBasicMaterial({
-        vertexColors: true,
-        transparent: true,
-        opacity: 0.4,
-        depthWrite: false,
-      }),
-    );
+    const constellationMaterial = new THREE.LineDashedMaterial({
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.4,
+      depthWrite: false,
+      dashSize: 0.35,
+      gapSize: 0.25,
+    });
+    const constellationMesh = new THREE.LineSegments(constellationGeometry, constellationMaterial);
     scene.add(constellationMesh);
+
+    const dotCount = isMobile ? 2 : 6;
+    const dotPositions = new Float32Array(dotCount * 3);
+    const dotGeometry = new THREE.BufferGeometry();
+    dotGeometry.setAttribute("position", new THREE.BufferAttribute(dotPositions, 3));
+    const dotColor = accent.clone().lerp(new THREE.Color(0xffffff), 0.2);
+    const dotCanvas = document.createElement("canvas");
+    dotCanvas.width = 32;
+    dotCanvas.height = 32;
+    const dotCtx = dotCanvas.getContext("2d")!;
+    const dotGradient = dotCtx.createRadialGradient(16, 16, 0, 16, 16, 16);
+    dotGradient.addColorStop(0, "rgba(255,255,255,1)");
+    dotGradient.addColorStop(0.45, "rgba(255,255,255,0.6)");
+    dotGradient.addColorStop(1, "rgba(255,255,255,0)");
+    dotCtx.fillStyle = dotGradient;
+    dotCtx.fillRect(0, 0, 32, 32);
+    const dotTexture = new THREE.CanvasTexture(dotCanvas);
+    const dotMaterial = new THREE.PointsMaterial({
+      color: dotColor,
+      size: 0.28,
+      map: dotTexture,
+      transparent: true,
+      opacity: 0.9,
+      depthWrite: false,
+      sizeAttenuation: true,
+      alphaTest: 0.01,
+    });
+    const dotPoints = new THREE.Points(dotGeometry, dotMaterial);
+    scene.add(dotPoints);
+
+    const dotTraversers = Array.from({ length: dotCount }, () => ({
+      shapeA: -1,
+      shapeB: -1,
+      t: Math.random(),
+      initialized: false,
+    }));
+    const dotSpeed = 0.18;
+    const _dotCandidatePairA = new Int32Array(maxPairs);
+    const _dotCandidatePairB = new Int32Array(maxPairs);
 
     const handleResize = () => {
       syncViewport();
@@ -359,8 +431,10 @@ export const ShapeScene = memo(function ShapeScene({
       pointerX += (targetPointerX - pointerX) * (1 - Math.pow(0.9, dtNorm));
       pointerY += (targetPointerY - pointerY) * (1 - Math.pow(0.9, dtNorm));
 
-      camera.position.x += (pointerX * cameraParallax - camera.position.x) * (1 - Math.pow(0.96, dtNorm));
-      camera.position.y += (-pointerY * cameraParallax - camera.position.y) * (1 - Math.pow(0.96, dtNorm));
+      camera.position.x +=
+        (pointerX * cameraParallax - camera.position.x) * (1 - Math.pow(0.96, dtNorm));
+      camera.position.y +=
+        (-pointerY * cameraParallax - camera.position.y) * (1 - Math.pow(0.96, dtNorm));
       if (boostRef.current) {
         const shake = 0.18 * dtNorm;
         camera.position.x +=
@@ -371,7 +445,7 @@ export const ShapeScene = memo(function ShapeScene({
       }
       camera.lookAt(0, 0, 0);
 
-      _pointerNDC.set(pointerX, -pointerY);
+      _pointerNDC.set(targetPointerX, -targetPointerY);
       _raycaster.setFromCamera(_pointerNDC, camera);
 
       for (const shape of shapes) {
@@ -394,7 +468,7 @@ export const ShapeScene = memo(function ShapeScene({
           shape.edges.rotation.copy(shape.mesh.rotation);
         }
       }
-      scene.updateMatrixWorld(true);
+      scene.updateMatrixWorld();
 
       const hit = _raycaster.intersectObjects(shapeMeshes, false)[0];
       const hoveredMesh = hit?.object ?? null;
@@ -429,15 +503,20 @@ export const ShapeScene = memo(function ShapeScene({
       }
 
       const maxConstellationDist = 5.5;
+      const maxConstellationDistSq = maxConstellationDist * maxConstellationDist;
       let pairIdx = 0;
       for (let a = 0; a < shapes.length; a++) {
         for (let b = a + 1; b < shapes.length; b++) {
-          const dist = shapes[a].mesh.position.distanceTo(shapes[b].mesh.position);
-          if (dist < maxConstellationDist) {
+          const pa = shapes[a].mesh.position;
+          const pb = shapes[b].mesh.position;
+          const dx = pa.x - pb.x;
+          const dy = pa.y - pb.y;
+          const dz = pa.z - pb.z;
+          const distSq = dx * dx + dy * dy + dz * dz;
+          if (distSq < maxConstellationDistSq) {
+            const dist = Math.sqrt(distSq);
             const strength = (1 - dist / maxConstellationDist) ** 2;
             const base = pairIdx * 6;
-            const pa = shapes[a].mesh.position;
-            const pb = shapes[b].mesh.position;
             constellationPositions[base] = pa.x;
             constellationPositions[base + 1] = pa.y;
             constellationPositions[base + 2] = pa.z;
@@ -452,6 +531,8 @@ export const ShapeScene = memo(function ShapeScene({
             constellationColors[base + 3] = cb.r * strength;
             constellationColors[base + 4] = cb.g * strength;
             constellationColors[base + 5] = cb.b * strength;
+            constellationPairShapes[pairIdx * 2] = a;
+            constellationPairShapes[pairIdx * 2 + 1] = b;
             pairIdx++;
           }
         }
@@ -459,6 +540,109 @@ export const ShapeScene = memo(function ShapeScene({
       constellationGeometry.setDrawRange(0, pairIdx * 2);
       constellationGeometry.attributes.position.needsUpdate = true;
       constellationGeometry.attributes.color.needsUpdate = true;
+      constellationMesh.computeLineDistances();
+      (constellationMaterial as THREE.LineDashedMaterial & { dashOffset: number }).dashOffset =
+        -t * 0.7;
+
+      if (pairIdx > 0) {
+        const dtSec = elapsed * 0.001;
+        const advance = dotSpeed * dtSec * speedMultiplier;
+
+        const pickRandomSegment = (dot: (typeof dotTraversers)[0]) => {
+          const seg = Math.floor(Math.random() * pairIdx);
+          dot.shapeA = constellationPairShapes[seg * 2];
+          dot.shapeB = constellationPairShapes[seg * 2 + 1];
+          if (Math.random() < 0.5) {
+            const tmp = dot.shapeA;
+            dot.shapeA = dot.shapeB;
+            dot.shapeB = tmp;
+          }
+        };
+
+        for (let d = 0; d < dotCount; d++) {
+          const dot = dotTraversers[d];
+
+          if (!dot.initialized) {
+            pickRandomSegment(dot);
+            dot.t = Math.random();
+            dot.initialized = true;
+          }
+
+          const posA = shapes[dot.shapeA].mesh.position;
+          const posB = shapes[dot.shapeB].mesh.position;
+          const ldx = posA.x - posB.x;
+          const ldy = posA.y - posB.y;
+          const ldz = posA.z - posB.z;
+          if (ldx * ldx + ldy * ldy + ldz * ldz >= maxConstellationDistSq) {
+            pickRandomSegment(dot);
+            dot.t = 0;
+          }
+
+          dot.t += advance;
+
+          if (dot.t >= 1) {
+            const arrivalNode = dot.shapeB;
+            let nCand = 0;
+            let nFiltered = 0;
+            for (let p = 0; p < pairIdx; p++) {
+              const sa = constellationPairShapes[p * 2];
+              const sb = constellationPairShapes[p * 2 + 1];
+              if (sa === arrivalNode || sb === arrivalNode) {
+                const fromNode = sa === arrivalNode ? sb : sa;
+                const isSamePair =
+                  (fromNode === dot.shapeA && arrivalNode === dot.shapeB) ||
+                  (fromNode === dot.shapeB && arrivalNode === dot.shapeA);
+                _dotCandidatePairA[nCand] = arrivalNode;
+                _dotCandidatePairB[nCand] = fromNode;
+                nCand++;
+                if (!isSamePair) {
+                  nFiltered++;
+                }
+              }
+            }
+            if (nCand > 0) {
+              let pick: number;
+              if (nFiltered > 0) {
+                let r = Math.floor(Math.random() * nFiltered);
+                pick = 0;
+                for (let ci = 0; ci < nCand; ci++) {
+                  const fromNode = _dotCandidatePairB[ci];
+                  const isSame =
+                    (fromNode === dot.shapeA && arrivalNode === dot.shapeB) ||
+                    (fromNode === dot.shapeB && arrivalNode === dot.shapeA);
+                  if (!isSame) {
+                    if (r === 0) {
+                      pick = ci;
+                      break;
+                    }
+                    r--;
+                  }
+                }
+              } else {
+                pick = Math.floor(Math.random() * nCand);
+              }
+              dot.shapeA = _dotCandidatePairA[pick];
+              dot.shapeB = _dotCandidatePairB[pick];
+            } else {
+              pickRandomSegment(dot);
+            }
+            dot.t = 0;
+          }
+
+          const pA = shapes[dot.shapeA].mesh.position;
+          const pB = shapes[dot.shapeB].mesh.position;
+          const s = dot.t;
+          dotPositions[d * 3] = pA.x + (pB.x - pA.x) * s;
+          dotPositions[d * 3 + 1] = pA.y + (pB.y - pA.y) * s;
+          dotPositions[d * 3 + 2] = pA.z + (pB.z - pA.z) * s;
+        }
+        dotGeometry.attributes.position.needsUpdate = true;
+      }
+      const dotPulseFreq = boostRef.current ? 4.2 : 2.8;
+      dotMaterial.opacity = 0.82 + 0.12 * Math.sin(t * dotPulseFreq);
+      dotMaterial.size = 0.28 + 0.05 * Math.sin(t * dotPulseFreq);
+
+      gridMat.opacity = gridBaseOpacity * (0.85 + 0.15 * Math.sin(t * 0.35));
 
       const particleBoost = boostRef.current ? 2.5 : 1;
       const posAttr = particleGeometry.attributes.position as THREE.BufferAttribute;
@@ -561,6 +745,9 @@ export const ShapeScene = memo(function ShapeScene({
       (grid.material as THREE.Material).dispose();
       constellationGeometry.dispose();
       (constellationMesh.material as THREE.Material).dispose();
+      dotGeometry.dispose();
+      dotTexture.dispose();
+      dotMaterial.dispose();
 
       for (const shape of shapes) {
         shape.mesh.geometry.dispose();
