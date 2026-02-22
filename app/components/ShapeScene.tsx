@@ -58,7 +58,8 @@ export const ShapeScene = memo(function ShapeScene({
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-    camera.position.set(0, 0, 10);
+    // Zoom out slightly on mobile to give more breathing room and reduce crowding
+    camera.position.set(0, 0, isMobile ? 14 : 10);
 
     const renderer = new THREE.WebGLRenderer({
       antialias: !isMobile,
@@ -84,6 +85,7 @@ export const ShapeScene = memo(function ShapeScene({
       const shapeY = Math.max(1.0, halfHeight - (isMobile ? 1.2 : 1.5));
       const particleX = Math.max(1.6, halfWidth - (isMobile ? 0.35 : 0.8));
       const particleY = Math.max(1.3, halfHeight - (isMobile ? 0.5 : 0.9));
+
       return { shapeX, shapeY, particleX, particleY };
     };
     const syncViewport = () => {
@@ -101,17 +103,34 @@ export const ShapeScene = memo(function ShapeScene({
     const grid = new THREE.GridHelper(28, 28, gridColor, gridColor);
     const gridMat = grid.material as THREE.LineBasicMaterial;
     gridMat.transparent = true;
-    const gridBaseOpacity = isLight ? 0.13 : 0.08;
+    const gridBaseOpacity = isLight ? 0.15 : 0.12;
     gridMat.opacity = gridBaseOpacity;
     grid.position.set(0, -4, -2);
     grid.rotation.x = Math.PI * 0.08;
     scene.add(grid);
 
     const shapes: ShapeData[] = [];
+
+    const auraCanvas = document.createElement("canvas");
+    auraCanvas.width = 128;
+    auraCanvas.height = 128;
+    const auraCtx = auraCanvas.getContext("2d")!;
+    const auraGradient = auraCtx.createRadialGradient(64, 64, 0, 64, 64, 64);
+    auraGradient.addColorStop(0, "rgba(255,255,255,1)");
+    auraGradient.addColorStop(0.3, "rgba(255,255,255,0.3)");
+    auraGradient.addColorStop(1, "rgba(255,255,255,0)");
+    auraCtx.fillStyle = auraGradient;
+    auraCtx.fillRect(0, 0, 128, 128);
+    const auraTexture = new THREE.CanvasTexture(auraCanvas);
+    const auraMaterialBase = new THREE.SpriteMaterial({
+      map: auraTexture,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+
     const placedShapes: { pos: THREE.Vector3; size: number }[] = [];
-    const shapeCount = isMobile
-      ? 4 + Math.floor(Math.random() * 2)
-      : 9 + Math.floor(Math.random() * 3);
+    const shapeCount = isMobile ? 2 + Math.floor(Math.random() * 2) : 9 + Math.floor(Math.random() * 3);
 
     const checkOverlap = (pos: THREE.Vector3, size: number): boolean => {
       for (const placed of placedShapes) {
@@ -145,15 +164,12 @@ export const ShapeScene = memo(function ShapeScene({
         do {
           position.set(
             (Math.random() * 2 - 1) * spawnBounds.shapeX,
-            (Math.random() * 2 - 1) * spawnBounds.shapeY,
+            (Math.random() * 1.2 - 0.2) * spawnBounds.shapeY,
             (Math.random() - 0.5) * 2,
           );
           attempts++;
         } while (checkOverlap(position, size) && attempts < 50);
       } else {
-        // Mitchell's best-candidate: pick from 30 random throws the one
-        // that maximises minimum clearance from all already-placed shapes.
-        // The hero shape (i=0) is biased toward the centre.
         const regionScale = i === 0 ? 0.55 : 1.0;
         let bestScore = -Infinity;
         for (let c = 0; c < 30; c++) {
@@ -197,7 +213,7 @@ export const ShapeScene = memo(function ShapeScene({
           new THREE.LineBasicMaterial({
             color: shapeColor,
             transparent: true,
-            opacity: isAccent ? 0.65 : 0.5,
+            opacity: isAccent ? 0.85 : 0.7,
           }),
         );
         edges.position.copy(position);
@@ -211,7 +227,7 @@ export const ShapeScene = memo(function ShapeScene({
             uTime: { value: 0 },
             uColor: { value: shapeColor.clone() },
             uHoverColor: { value: hoverColor },
-            uOpacity: { value: isAccent ? 0.82 : 0.68 },
+            uOpacity: { value: isAccent ? 0.95 : 0.85 },
             uAmplitude: { value: 0.035 + Math.random() * 0.035 },
             uExplosion: { value: size * explosionScale },
             uProximity: { value: 0 },
@@ -240,6 +256,12 @@ export const ShapeScene = memo(function ShapeScene({
         scene.add(edges);
       }
 
+      const auraMat = auraMaterialBase.clone();
+      auraMat.color.copy(shapeColor);
+      const aura = new THREE.Sprite(auraMat);
+      aura.position.copy(position);
+      scene.add(aura);
+
       shapes.push({
         mesh,
         edges,
@@ -254,14 +276,13 @@ export const ShapeScene = memo(function ShapeScene({
         scale: size,
         hoverStrength: 0,
         color: shapeColor.clone(),
+        aura,
         ...(edges && { baseColor: shapeColor.clone(), hoverColor }),
       });
     }
 
     const particles: ParticleData[] = [];
-    const particleCount = isMobile
-      ? 4 + Math.floor(Math.random() * 3)
-      : 12 + Math.floor(Math.random() * 6);
+    const particleCount = isMobile ? 2 + Math.floor(Math.random() * 2) : 12 + Math.floor(Math.random() * 6);
 
     const particlePositions = new Float32Array(particleCount * 3);
     const particleGeometry = new THREE.BufferGeometry();
@@ -270,7 +291,7 @@ export const ShapeScene = memo(function ShapeScene({
       color: accent,
       size: 0.06,
       transparent: true,
-      opacity: 0.4,
+      opacity: 0.65,
       depthWrite: false,
       sizeAttenuation: true,
     });
@@ -280,7 +301,7 @@ export const ShapeScene = memo(function ShapeScene({
     for (let i = 0; i < particleCount; i++) {
       const basePos = new THREE.Vector3(
         (Math.random() * 2 - 1) * spawnBounds.particleX,
-        (Math.random() * 2 - 1) * spawnBounds.particleY,
+        (isMobile ? Math.random() * 1.2 - 0.2 : Math.random() * 2 - 1) * spawnBounds.particleY,
         (Math.random() - 0.5) * 3 - 2,
       );
       particlePositions[i * 3] = basePos.x;
@@ -290,7 +311,7 @@ export const ShapeScene = memo(function ShapeScene({
     }
     const shapeMeshes = shapes.map((shape) => shape.mesh);
 
-    const maxPairs = 36;
+    const maxPairs = (shapeCount * (shapeCount - 1)) / 2;
     const constellationPositions = new Float32Array(maxPairs * 2 * 3);
     const constellationColors = new Float32Array(maxPairs * 2 * 3);
     const constellationPairShapes = new Int32Array(maxPairs * 2);
@@ -303,7 +324,7 @@ export const ShapeScene = memo(function ShapeScene({
     const constellationMaterial = new THREE.LineDashedMaterial({
       vertexColors: true,
       transparent: true,
-      opacity: 0.4,
+      opacity: 0.65,
       depthWrite: false,
       dashSize: 0.35,
       gapSize: 0.25,
@@ -428,13 +449,13 @@ export const ShapeScene = memo(function ShapeScene({
       const t = time * 0.001;
       const speedMultiplier = boostRef.current ? 2.5 : 1;
 
-      pointerX += (targetPointerX - pointerX) * (1 - Math.pow(0.9, dtNorm));
-      pointerY += (targetPointerY - pointerY) * (1 - Math.pow(0.9, dtNorm));
+      pointerX += (targetPointerX - pointerX) * (1 - Math.exp(-0.10536 * dtNorm));
+      pointerY += (targetPointerY - pointerY) * (1 - Math.exp(-0.10536 * dtNorm));
 
       camera.position.x +=
-        (pointerX * cameraParallax - camera.position.x) * (1 - Math.pow(0.96, dtNorm));
+        (pointerX * cameraParallax - camera.position.x) * (1 - Math.exp(-0.04082 * dtNorm));
       camera.position.y +=
-        (-pointerY * cameraParallax - camera.position.y) * (1 - Math.pow(0.96, dtNorm));
+        (-pointerY * cameraParallax - camera.position.y) * (1 - Math.exp(-0.04082 * dtNorm));
       if (boostRef.current) {
         const shake = 0.18 * dtNorm;
         camera.position.x +=
@@ -467,6 +488,9 @@ export const ShapeScene = memo(function ShapeScene({
           shape.edges.position.copy(shape.mesh.position);
           shape.edges.rotation.copy(shape.mesh.rotation);
         }
+        if (shape.aura) {
+          shape.aura.position.copy(shape.mesh.position);
+        }
       }
       scene.updateMatrixWorld();
 
@@ -475,7 +499,8 @@ export const ShapeScene = memo(function ShapeScene({
 
       for (const shape of shapes) {
         const hoverTarget = hoveredMesh === shape.mesh ? 1 : 0;
-        const lerpRate = 1 - Math.pow(hoverTarget > shape.hoverStrength ? 0.945 : 0.965, dtNorm);
+        const lerpRate =
+          1 - Math.exp((hoverTarget > shape.hoverStrength ? -0.05657 : -0.03562) * dtNorm);
         shape.hoverStrength += (hoverTarget - shape.hoverStrength) * lerpRate;
         const proximity = shape.hoverStrength;
 
@@ -500,6 +525,10 @@ export const ShapeScene = memo(function ShapeScene({
         const scale = 1 + Math.sin(t * 2 + shape.floatOffset) * 0.02 + proximity * 0.18;
         shape.mesh.scale.setScalar(scale);
         shape.edges?.scale.setScalar(scale);
+        if (shape.aura) {
+          shape.aura.scale.setScalar(shape.scale * 4.5 * scale);
+          shape.aura.material.opacity = (isLight ? 0.35 : 0.6) + proximity * 0.4;
+        }
       }
 
       const maxConstellationDist = 5.5;
@@ -515,7 +544,8 @@ export const ShapeScene = memo(function ShapeScene({
           const distSq = dx * dx + dy * dy + dz * dz;
           if (distSq < maxConstellationDistSq) {
             const dist = Math.sqrt(distSq);
-            const strength = (1 - dist / maxConstellationDist) ** 2;
+            const linearStrength = 1.0 - dist / maxConstellationDist;
+            const strength = linearStrength * linearStrength;
             const base = pairIdx * 6;
             constellationPositions[base] = pa.x;
             constellationPositions[base + 1] = pa.y;
@@ -756,7 +786,12 @@ export const ShapeScene = memo(function ShapeScene({
           shape.edges.geometry.dispose();
           (shape.edges.material as THREE.Material).dispose();
         }
+        if (shape.aura) {
+          shape.aura.material.dispose();
+        }
       }
+      auraTexture.dispose();
+      auraMaterialBase.dispose();
       particleGeometry.dispose();
       particleMaterial.dispose();
       renderer.dispose();

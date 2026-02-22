@@ -24,6 +24,7 @@ export interface ShapeData {
   scale: number;
   hoverStrength: number;
   color: THREE.Color;
+  aura?: THREE.Sprite;
   baseColor?: THREE.Color;
   hoverColor?: THREE.Color;
 }
@@ -36,7 +37,7 @@ export interface ParticleData {
 export type ShapeType = "box" | "octahedron" | "tetrahedron" | "torus";
 
 function toFlatNormals(geo: THREE.BufferGeometry): THREE.BufferGeometry {
-  const flat = geo.toNonIndexed();
+  const flat = geo.getIndex() ? geo.toNonIndexed() : geo.clone();
   flat.computeVertexNormals();
   geo.dispose();
   return flat;

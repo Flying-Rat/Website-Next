@@ -14,6 +14,7 @@ export const vertexShader = /* glsl */ `
       sin(position.x * 4.2 + uTime * 1.1) *
       cos(position.y * 3.7 + uTime * 0.75) *
       sin(position.z * 3.1 + uTime * 0.55);
+    wave += sin(position.x * 2.1 - uTime * 0.6) * 0.5;
 
     float explodeT = smoothstep(0.0, 1.0, uProximity);
     float waveAmp = uAmplitude * (0.2 + (1.0 - explodeT) * 0.4);
@@ -47,45 +48,56 @@ export const fragmentShader = /* glsl */ `
   varying vec3 vNormal;
   varying vec3 vViewPosition;
 
-  vec3 hueShift(vec3 c, float shift) {
-    float cosA = cos(shift);
-    float sinA = sin(shift);
-    return c * cosA +
-           cross(vec3(0.57735), c) * sinA +
-           vec3(0.57735) * dot(vec3(0.57735), c) * (1.0 - cosA);
+  vec3 cosinePalette(float t, vec3 a, vec3 b, vec3 c, vec3 d) {
+    return a + b * cos(6.28318 * (c * t + d));
   }
 
   void main() {
     vec3 viewDir = normalize(vViewPosition);
-    float fresnel = pow(1.0 - abs(dot(viewDir, vNormal)), 2.0);
+
+    float VdotN = abs(dot(viewDir, vNormal));
+    float fresnel = (1.0 - VdotN) * (1.0 - VdotN);
     float breath = 0.92 + 0.08 * sin(uTime * 0.4);
     fresnel *= breath;
 
-    float hueAngle = fresnel * 0.6 + uTime * 0.08;
-    vec3 rimColor = hueShift(uColor + vec3(0.35), hueAngle);
-
-    vec3 color = mix(uColor * 0.65, rimColor, fresnel);
-    color = mix(color, uHoverColor, uProximity);
+    float iridescenceT = VdotN * 0.5 + uTime * 0.05 + uProximity * 0.2;
+    vec3 iridescence = cosinePalette(iridescenceT, 
+                       vec3(0.5, 0.5, 0.5), 
+                       vec3(0.5, 0.5, 0.5), 
+                       vec3(1.0, 1.0, 1.0), 
+                       vec3(0.0, 0.33, 0.67));
+                       
+    vec3 color = mix(uColor * 0.85, iridescence * 1.2 + uColor * 0.3, fresnel);
+    color = mix(color, uHoverColor, uProximity * 0.8);
 
     vec3 lightDir = normalize(vec3(0.5, 0.8, 0.6));
-    float diffuse = max(0.0, dot(vNormal, lightDir)) * 0.35 + 0.65;
+    float diffuse = max(0.0, dot(vNormal, lightDir));
+    float ndotl = clamp(dot(viewDir, -lightDir), 0.0, 1.0);
+    float sss = ndotl * ndotl * 0.4;
+    
     vec3 halfVec  = normalize(lightDir + viewDir);
-    float spec    = pow(max(0.0, dot(vNormal, halfVec)), 40.0) * 0.28;
-    color = color * diffuse + spec * (uColor * 0.5 + 0.35);
+    float spec    = pow(max(0.0, dot(vNormal, halfVec)), 60.0) * 0.5;
+    
+    color = color * (diffuse * 0.5 + 0.7 + sss) + spec * mix(uColor, vec3(1.0), 0.5);
 
     float explodeT = smoothstep(0.0, 1.0, uProximity);
 
-    float innerGlow = (1.0 - fresnel) * explodeT * 0.22 * (1.0 - uEdgeGlow);
+    float innerGlow = (1.0 - fresnel) * explodeT * 0.3 * (1.0 - uEdgeGlow);
     color += uHoverColor * innerGlow;
 
     vec3 nDeriv = fwidth(vNormal);
     float edge = smoothstep(0.3, 0.7, length(nDeriv) * 8.0);
-    color += uHoverColor * edge * explodeT * 0.6 * uEdgeGlow;
+    color += (uHoverColor + vec3(0.5)) * edge * explodeT * 0.6 * uEdgeGlow;
 
     float fogDepth = length(vViewPosition);
     float fogFactor = 1.0 - exp(-uFogDensity * uFogDensity * fogDepth * fogDepth);
     color = mix(color, uFogColor, fogFactor);
-    float alpha = uOpacity * (0.45 + fresnel * 0.55) * (1.0 - fogFactor * 0.6);
+    
+    float alpha = uOpacity * (0.65 + fresnel * 0.45) * (1.0 - fogFactor * 0.6);
+
+    vec2 pos = gl_FragCoord.xy;
+    float dither = fract(sin(dot(pos, vec2(12.9898, 78.233))) * 43758.5453);
+    color += (dither - 0.5) / 255.0;
 
     gl_FragColor = vec4(color, alpha);
   }
