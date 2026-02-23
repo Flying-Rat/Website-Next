@@ -203,6 +203,17 @@
           "Docker a kontejnerizace"
         ]
       },
+      "pythonProgrammer": {
+        "title": "Python Programátor (Tooling & Integrace)",
+        "description": "Vytvářej interní nástroje a pipeline integrace, které zrychlí vývoj her. Budeš řešit automatizaci, datové workflow a integrace DCC nástrojů včetně Blenderu, Mayi, Houdini a Unreal Python tooling používaného art a produkčními týmy. Hledáme někoho, kdo umí převést komplexní produkční požadavky do spolehlivých skriptů a služeb.",
+        "points": [
+          "2+ roky vývoje v Pythonu",
+          "Tooling a automatizace pipeline",
+          "Zkušenost s Blender, Maya nebo Houdini Python API",
+          "CLI nástroje, packaging a debugging",
+          "Spolupráce s art, tech a produkcí"
+        ]
+      },
       "qaEngineer": {
         "title": "QA Engineer",
         "description": "Udržuj kvalitu napříč platformami. Budeš pracovat přímo s inženýry, chytat problémy včas, provádět compliance kontroly a pomáhat shipovat buildy, které projdou certifikací napoprvé. Ceníme si bystrého oka, jasných bug reportů a lidí, kteří rozumí hráčům i technice.",

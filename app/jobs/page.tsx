@@ -20,6 +20,7 @@ const sections = [
       { key: "cppMediorEngineer", level: "medior" },
       { key: "cppRustEngineer", level: "senior" },
       { key: "backendEngineer", level: "medior" },
+      { key: "pythonProgrammer", level: "medior" },
     ],
   },
   {

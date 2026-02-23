@@ -130,7 +130,9 @@ export const ShapeScene = memo(function ShapeScene({
     });
 
     const placedShapes: { pos: THREE.Vector3; size: number }[] = [];
-    const shapeCount = isMobile ? 2 + Math.floor(Math.random() * 2) : 9 + Math.floor(Math.random() * 3);
+    const shapeCount = isMobile
+      ? 2 + Math.floor(Math.random() * 2)
+      : 9 + Math.floor(Math.random() * 3);
 
     const checkOverlap = (pos: THREE.Vector3, size: number): boolean => {
       for (const placed of placedShapes) {
@@ -282,7 +284,9 @@ export const ShapeScene = memo(function ShapeScene({
     }
 
     const particles: ParticleData[] = [];
-    const particleCount = isMobile ? 2 + Math.floor(Math.random() * 2) : 12 + Math.floor(Math.random() * 6);
+    const particleCount = isMobile
+      ? 2 + Math.floor(Math.random() * 2)
+      : 12 + Math.floor(Math.random() * 6);
 
     const particlePositions = new Float32Array(particleCount * 3);
     const particleGeometry = new THREE.BufferGeometry();

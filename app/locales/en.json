@@ -203,6 +203,17 @@
           "Docker & containerization"
         ]
       },
+      "pythonProgrammer": {
+        "title": "Python Programmer (Tooling & Integrations)",
+        "description": "Build internal tools and pipeline integrations that speed up game development. You'll work on automation, data workflows, and DCC integrations, including Blender, Maya, Houdini, and Unreal Python tooling used by art and production teams. We need someone who can turn complex production requirements into reliable scripts and services.",
+        "points": [
+          "2+ yrs Python development",
+          "Tooling and pipeline automation",
+          "Blender, Maya, or Houdini Python API experience",
+          "CLI tools, packaging, and debugging",
+          "Cross-team collaboration (art, tech, production)"
+        ]
+      },
       "qaEngineer": {
         "title": "QA Engineer",
         "description": "Keep quality high across platforms. You'll work directly with engineers, catch issues early, run platform compliance checks, and help us ship builds that pass certification first time. We value sharp eyes, clear bug reports, and people who understand both the player and the tech side.",
