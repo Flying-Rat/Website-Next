@@ -44,6 +44,25 @@ export function MoonIcon({ className }: IconProps) {
   );
 }
 
+export function MonitorIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <title>System theme</title>
+      <rect x="2" y="3" width="20" height="14" rx="2" />
+      <line x1="8" y1="21" x2="16" y2="21" />
+      <line x1="12" y1="17" x2="12" y2="21" />
+    </svg>
+  );
+}
+
 export function ExternalLinkIcon({ className }: IconProps) {
   return (
     <svg
@@ -279,7 +298,7 @@ export function AiIcon({ className }: IconProps) {
   );
 }
 
-export function DiscordIcon({ className }: IconProps) {
+function DiscordIcon({ className }: IconProps) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="currentColor">
       <title>Discord</title>
@@ -288,7 +307,7 @@ export function DiscordIcon({ className }: IconProps) {
   );
 }
 
-export function XIcon({ className }: IconProps) {
+function XIcon({ className }: IconProps) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="currentColor">
       <title>X</title>
@@ -297,7 +316,7 @@ export function XIcon({ className }: IconProps) {
   );
 }
 
-export function YouTubeIcon({ className }: IconProps) {
+function YouTubeIcon({ className }: IconProps) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="currentColor">
       <title>YouTube</title>
@@ -306,7 +325,7 @@ export function YouTubeIcon({ className }: IconProps) {
   );
 }
 
-export function TwitchIcon({ className }: IconProps) {
+function TwitchIcon({ className }: IconProps) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="currentColor">
       <title>Twitch</title>
@@ -315,7 +334,7 @@ export function TwitchIcon({ className }: IconProps) {
   );
 }
 
-export function InstagramIcon({ className }: IconProps) {
+function InstagramIcon({ className }: IconProps) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="currentColor">
       <title>Instagram</title>
@@ -324,7 +343,7 @@ export function InstagramIcon({ className }: IconProps) {
   );
 }
 
-export function FacebookIcon({ className }: IconProps) {
+function FacebookIcon({ className }: IconProps) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="currentColor">
       <title>Facebook</title>
@@ -351,7 +370,7 @@ export function MailIcon({ className }: IconProps) {
   );
 }
 
-export function GitHubIcon({ className }: IconProps) {
+function GitHubIcon({ className }: IconProps) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="currentColor">
       <title>GitHub</title>
@@ -360,7 +379,7 @@ export function GitHubIcon({ className }: IconProps) {
   );
 }
 
-export function BlogIcon({ className }: IconProps) {
+function BlogIcon({ className }: IconProps) {
   return (
     <svg
       className={className}

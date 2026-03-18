@@ -6,7 +6,7 @@ import { initReactI18next, useTranslation as useTranslationOrg } from "react-i18
 
 import csCommon from "../locales/cs.json";
 import enCommon from "../locales/en.json";
-import { fallbackLng, getOptions, type Language, languages } from "./settings";
+import { fallbackLng, getOptions, type Language } from "./settings";
 
 const resources = {
   en: { common: enCommon },
@@ -56,5 +56,3 @@ export function useLanguage(): [Language, (lng: Language) => void] {
 }
 
 export const useTranslation = useTranslationOrg;
-
-export { languages };

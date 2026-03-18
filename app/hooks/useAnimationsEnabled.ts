@@ -5,7 +5,7 @@ import {
   useContext,
   useLayoutEffect,
   useMemo,
-  useState,
+  useSyncExternalStore,
 } from "react";
 
 import { isPrivacyBrowser } from "../lib/motionDetect";
@@ -18,6 +18,12 @@ function getShouldAnimate() {
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const ua = navigator.userAgent;
   return !(prefersReducedMotion || isPrivacyBrowser(ua));
+}
+
+function subscribeToReducedMotion(callback: () => void) {
+  const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+  mq.addEventListener("change", callback);
+  return () => mq.removeEventListener("change", callback);
 }
 
 const AnimationGateContext = createContext<{ initialShouldAnimate: boolean } | null>(null);
@@ -36,11 +42,12 @@ export function AnimationGateProvider({
 export function useAnimationsEnabled() {
   const context = useContext(AnimationGateContext);
   const initialShouldAnimate = context?.initialShouldAnimate ?? true;
-  const [shouldAnimate, setShouldAnimate] = useState(initialShouldAnimate);
 
-  useLayoutEffect(() => {
-    setShouldAnimate(getShouldAnimate());
-  }, []);
+  const shouldAnimate = useSyncExternalStore(
+    subscribeToReducedMotion,
+    () => getShouldAnimate(),
+    () => initialShouldAnimate,
+  );
 
   useLayoutEffect(() => {
     const root = document.documentElement;

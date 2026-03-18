@@ -3,6 +3,8 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 
+import { ThemeProvider } from "./components/ThemeProvider";
+
 import "./globals.css";
 
 const inter = Inter({
@@ -55,18 +57,11 @@ export const metadata: Metadata = {
   },
 };
 
-const themeScript = `(function(){var t=localStorage.getItem('theme');document.documentElement.classList.add(t&&t!=='system'?t:matchMedia('(prefers-color-scheme:light)').matches?'light':'dark')})()`;
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={inter.variable} suppressHydrationWarning>
-      <head>
-        {/* Required for FOUC prevention. */}
-        {/* oxlint-disable-next-line react/no-danger */}
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-      </head>
       <body className="bg-[var(--color-bg)] text-[var(--color-text)] antialiased transition-colors">
-        {children}
+        <ThemeProvider>{children}</ThemeProvider>
         <Analytics />
         <SpeedInsights />
       </body>

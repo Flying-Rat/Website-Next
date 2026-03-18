@@ -2,17 +2,21 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 import { useTranslation } from "../i18n";
 
+function emptySubscribe() {
+  return () => {};
+}
+
 export function Footer() {
   const { t } = useTranslation();
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  const isClient = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
 
   return (
     <footer className="py-8 border-t border-[var(--color-border)]">

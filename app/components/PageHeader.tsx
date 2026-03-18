@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { useAnimationsEnabled } from "../hooks/useAnimationsEnabled";
 import { useTheme } from "../hooks/useTheme";
 import { useLanguage, useTranslation } from "../i18n";
-import { MoonIcon, SunIcon } from "./icons";
+import { MonitorIcon, MoonIcon, SunIcon } from "./icons";
 
 type PageNavItem = {
   id: string;
@@ -35,7 +35,7 @@ function ArrowLeftIcon({ className }: { className?: string }) {
 export function PageHeader({ navItems }: PageHeaderProps) {
   const { t } = useTranslation();
   const [currentLang, setLanguage] = useLanguage();
-  const { resolvedTheme, toggleTheme, mounted: themeMounted } = useTheme();
+  const { theme, cycleTheme, mounted: themeMounted } = useTheme();
   const shouldAnimate = useAnimationsEnabled();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -46,12 +46,12 @@ export function PageHeader({ navItems }: PageHeaderProps) {
     return () => clearTimeout(timer);
   }, []);
 
+  const frameRef = useRef(0);
   useEffect(() => {
-    let frame = 0;
     let current = false;
 
     const update = () => {
-      frame = 0;
+      frameRef.current = 0;
       const next = window.scrollY > 50;
       if (next !== current) {
         current = next;
@@ -60,16 +60,16 @@ export function PageHeader({ navItems }: PageHeaderProps) {
     };
 
     const onScroll = () => {
-      if (frame === 0) {
-        frame = window.requestAnimationFrame(update);
+      if (frameRef.current === 0) {
+        frameRef.current = window.requestAnimationFrame(update);
       }
     };
 
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
-      if (frame) {
-        window.cancelAnimationFrame(frame);
+      if (frameRef.current !== 0) {
+        window.cancelAnimationFrame(frameRef.current);
       }
       window.removeEventListener("scroll", onScroll);
     };
@@ -135,15 +135,17 @@ export function PageHeader({ navItems }: PageHeaderProps) {
             </div>
             <button
               type="button"
-              onClick={toggleTheme}
+              onClick={cycleTheme}
               className="p-1.5 rounded-lg hover:text-[var(--color-text)] hover:bg-[var(--color-surface-light)] transition-all hover:scale-110 active:scale-90 cursor-pointer"
               aria-label={t("pressKit.toggleTheme")}
             >
               {themeMounted &&
-                (resolvedTheme === "dark" ? (
-                  <SunIcon className="w-4 h-4" />
-                ) : (
+                (theme === "dark" ? (
                   <MoonIcon className="w-4 h-4" />
+                ) : theme === "system" ? (
+                  <MonitorIcon className="w-4 h-4" />
+                ) : (
+                  <SunIcon className="w-4 h-4" />
                 ))}
             </button>
           </div>
@@ -210,15 +212,17 @@ export function PageHeader({ navItems }: PageHeaderProps) {
             </div>
             <button
               type="button"
-              onClick={toggleTheme}
+              onClick={cycleTheme}
               className="p-1.5 rounded-lg hover:text-[var(--color-text)] hover:bg-[var(--color-surface-light)] transition-colors cursor-pointer"
               aria-label={t("pressKit.toggleTheme")}
             >
               {themeMounted &&
-                (resolvedTheme === "dark" ? (
-                  <SunIcon className="w-4 h-4" />
-                ) : (
+                (theme === "dark" ? (
                   <MoonIcon className="w-4 h-4" />
+                ) : theme === "system" ? (
+                  <MonitorIcon className="w-4 h-4" />
+                ) : (
+                  <SunIcon className="w-4 h-4" />
                 ))}
             </button>
           </div>

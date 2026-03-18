@@ -6,21 +6,20 @@ import { useAnimationsEnabled } from "../hooks/useAnimationsEnabled";
 
 export function ScrollProgress() {
   const barRef = useRef<HTMLDivElement | null>(null);
+  const frameRef = useRef(0);
+  const lastRef = useRef(-1);
   const shouldAnimate = useAnimationsEnabled();
 
   useEffect(() => {
-    let frame = 0;
-    let last = -1;
-
     const updateProgress = () => {
-      frame = 0;
+      frameRef.current = 0;
       const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
       const maxScroll = scrollHeight - clientHeight;
       const next = maxScroll > 0 ? scrollTop / maxScroll : 0;
-      if (Math.abs(next - last) < 0.001) {
+      if (Math.abs(next - lastRef.current) < 0.001) {
         return;
       }
-      last = next;
+      lastRef.current = next;
       const bar = barRef.current;
       if (bar) {
         bar.style.transform = `scaleX(${next})`;
@@ -28,8 +27,8 @@ export function ScrollProgress() {
     };
 
     const requestUpdate = () => {
-      if (frame === 0) {
-        frame = window.requestAnimationFrame(updateProgress);
+      if (frameRef.current === 0) {
+        frameRef.current = window.requestAnimationFrame(updateProgress);
       }
     };
 
@@ -43,8 +42,8 @@ export function ScrollProgress() {
       window.addEventListener("resize", updateProgress);
     }
     return () => {
-      if (frame !== 0) {
-        window.cancelAnimationFrame(frame);
+      if (frameRef.current !== 0) {
+        window.cancelAnimationFrame(frameRef.current);
       }
       if (shouldAnimate) {
         window.removeEventListener("scroll", requestUpdate);

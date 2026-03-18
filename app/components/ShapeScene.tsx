@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useEffect, useRef, useState } from "react";
+import { memo, useEffect, useReducer, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import * as THREE from "three";
 
@@ -16,6 +16,26 @@ import {
 } from "./ShapeScene/shapeSceneGeometry";
 import { vertexShader, fragmentShader } from "./ShapeScene/shapeSceneShaders";
 
+type EasterState = {
+  active: boolean;
+  inputKeys: Array<{ id: string; key: string }>;
+};
+type EasterAction =
+  | { type: "activate" }
+  | { type: "deactivate" }
+  | { type: "keys"; keys: Array<{ id: string; key: string }> };
+
+function easterReducer(_state: EasterState, action: EasterAction): EasterState {
+  switch (action.type) {
+    case "activate":
+      return { active: true, inputKeys: [] };
+    case "deactivate":
+      return { active: false, inputKeys: [] };
+    case "keys":
+      return { active: _state.active, inputKeys: action.keys };
+  }
+}
+
 export const ShapeScene = memo(function ShapeScene({
   label,
   shouldAnimate,
@@ -27,8 +47,10 @@ export const ShapeScene = memo(function ShapeScene({
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const { resolvedTheme } = useTheme();
-  const [inputKeys, setInputKeys] = useState<Array<{ id: string; key: string }>>([]);
-  const [easterActive, setEasterActive] = useState(false);
+  const [{ active: easterActive, inputKeys }, dispatchEaster] = useReducer(easterReducer, {
+    active: false,
+    inputKeys: [],
+  });
   const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
   const boostRef = useRef(false);
   const keysRef = useRef<string[]>([]);
@@ -38,7 +60,7 @@ export const ShapeScene = memo(function ShapeScene({
   const easterEmail = "marty+levelup@flying-rat.studio";
 
   useEffect(() => {
-    setPortalTarget(document.body);
+    queueMicrotask(() => setPortalTarget(document.body));
   }, []);
 
   useEffect(() => {
@@ -567,7 +589,7 @@ export const ShapeScene = memo(function ShapeScene({
             constellationColors[base + 5] = cb.b * strength;
             constellationPairShapes[pairIdx * 2] = a;
             constellationPairShapes[pairIdx * 2 + 1] = b;
-            pairIdx++;
+            pairIdx += 1;
           }
         }
       }
@@ -807,7 +829,7 @@ export const ShapeScene = memo(function ShapeScene({
 
   useEffect(() => {
     if (!shouldAnimate) {
-      setEasterActive(false);
+      dispatchEaster({ type: "deactivate" });
       document.documentElement.classList.remove("crt-mode");
       boostRef.current = false;
       return;
@@ -815,14 +837,14 @@ export const ShapeScene = memo(function ShapeScene({
 
     const triggerEaster = () => {
       boostRef.current = true;
-      setEasterActive(true);
+      dispatchEaster({ type: "activate" });
       document.documentElement.classList.add("crt-mode");
       if (timerRef.current) {
         window.clearTimeout(timerRef.current);
       }
       timerRef.current = window.setTimeout(() => {
         boostRef.current = false;
-        setEasterActive(false);
+        dispatchEaster({ type: "deactivate" });
         document.documentElement.classList.remove("crt-mode");
       }, 5000);
     };
@@ -843,10 +865,15 @@ export const ShapeScene = memo(function ShapeScene({
         next.every((value, idx) => value === EASTER_SEQUENCE[idx]);
       if (matches) {
         triggerEaster();
+      } else {
+        keysRef.current = next;
+        keyEntriesRef.current = nextEntries;
+        dispatchEaster({ type: "keys", keys: nextEntries });
       }
-      keysRef.current = matches ? [] : next;
-      keyEntriesRef.current = matches ? [] : nextEntries;
-      setInputKeys(matches ? [] : nextEntries);
+      if (matches) {
+        keysRef.current = [];
+        keyEntriesRef.current = [];
+      }
     };
 
     window.addEventListener("keydown", handleKeyDown);
@@ -855,7 +882,7 @@ export const ShapeScene = memo(function ShapeScene({
       if (timerRef.current) {
         window.clearTimeout(timerRef.current);
       }
-      setEasterActive(false);
+      dispatchEaster({ type: "deactivate" });
       document.documentElement.classList.remove("crt-mode");
       boostRef.current = false;
     };

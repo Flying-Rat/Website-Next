@@ -1,13 +1,14 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import type { CSSProperties } from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { useAnimationsEnabled } from "../hooks/useAnimationsEnabled";
 import { useTheme } from "../hooks/useTheme";
 import { useLanguage, useTranslation } from "../i18n";
-import { ExternalLinkIcon, MoonIcon, SunIcon } from "./icons";
+import { ExternalLinkIcon, MonitorIcon, MoonIcon, SunIcon } from "./icons";
 
 const navSections = [
   { href: "#about", key: "nav.about" },
@@ -21,7 +22,7 @@ const navSections = [
 export function Header() {
   const [currentLang, setLanguage] = useLanguage();
   const { t } = useTranslation();
-  const { resolvedTheme, toggleTheme, mounted: themeMounted } = useTheme();
+  const { theme, cycleTheme, mounted: themeMounted } = useTheme();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const shouldAnimate = useAnimationsEnabled();
@@ -32,12 +33,12 @@ export function Header() {
     return () => clearTimeout(timer);
   }, []);
 
+  const frameRef = useRef<number>(0);
   useEffect(() => {
-    let frame = 0;
     let current = false;
 
     const update = () => {
-      frame = 0;
+      frameRef.current = 0;
       const next = window.scrollY > 50;
       if (next !== current) {
         current = next;
@@ -46,16 +47,16 @@ export function Header() {
     };
 
     const onScroll = () => {
-      if (frame === 0) {
-        frame = window.requestAnimationFrame(update);
+      if (frameRef.current === 0) {
+        frameRef.current = window.requestAnimationFrame(update);
       }
     };
 
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
-      if (frame) {
-        window.cancelAnimationFrame(frame);
+      if (frameRef.current !== 0) {
+        window.cancelAnimationFrame(frameRef.current);
       }
       window.removeEventListener("scroll", onScroll);
     };
@@ -76,7 +77,7 @@ export function Header() {
       style={headerStyle}
     >
       <div className="container mx-auto px-6 flex items-center justify-between">
-        <a href="/" className="group">
+        <Link href="/" className="group">
           <Image
             src="/fr_horizontal_black.png"
             alt="Flying Rat Studio"
@@ -93,7 +94,7 @@ export function Header() {
             className="logo-light h-8 md:h-10 w-auto"
             priority
           />
-        </a>
+        </Link>
 
         <nav className="hidden md:flex items-center gap-8">
           {navSections.map((item) => {
@@ -133,15 +134,17 @@ export function Header() {
             </div>
             <button
               type="button"
-              onClick={toggleTheme}
+              onClick={cycleTheme}
               className="p-1.5 rounded-lg hover:text-[var(--color-text)] hover:bg-[var(--color-surface-light)] transition-all hover:scale-110 active:scale-90 cursor-pointer"
-              aria-label="Toggle theme"
+              aria-label="Switch theme"
             >
               {themeMounted &&
-                (resolvedTheme === "dark" ? (
-                  <SunIcon className="w-4 h-4" />
-                ) : (
+                (theme === "dark" ? (
                   <MoonIcon className="w-4 h-4" />
+                ) : theme === "system" ? (
+                  <MonitorIcon className="w-4 h-4" />
+                ) : (
+                  <SunIcon className="w-4 h-4" />
                 ))}
             </button>
           </div>
@@ -214,15 +217,17 @@ export function Header() {
             </div>
             <button
               type="button"
-              onClick={toggleTheme}
+              onClick={cycleTheme}
               className="p-1.5 rounded-lg hover:text-[var(--color-text)] hover:bg-[var(--color-surface-light)] transition-colors cursor-pointer"
-              aria-label="Toggle theme"
+              aria-label="Switch theme"
             >
               {themeMounted &&
-                (resolvedTheme === "dark" ? (
-                  <SunIcon className="w-4 h-4" />
-                ) : (
+                (theme === "dark" ? (
                   <MoonIcon className="w-4 h-4" />
+                ) : theme === "system" ? (
+                  <MonitorIcon className="w-4 h-4" />
+                ) : (
+                  <SunIcon className="w-4 h-4" />
                 ))}
             </button>
           </div>

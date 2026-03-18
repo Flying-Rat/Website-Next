@@ -1,7 +1,7 @@
 "use client";
 
 import type { CSSProperties, ReactNode } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useReducer, useRef } from "react";
 
 import { useAnimationsEnabled } from "../hooks/useAnimationsEnabled";
 
@@ -34,18 +34,14 @@ export function FadeInView({
 }: FadeInViewProps) {
   const ref = useRef<HTMLDivElement | null>(null);
   const shouldAnimate = useAnimationsEnabled();
-  const [isVisible, setIsVisible] = useState(!shouldAnimate);
+  const [isVisible, show] = useReducer(() => true, !shouldAnimate);
   const hasAnimated = useRef(false);
 
   useEffect(() => {
-    if (!shouldAnimate || hasAnimated.current) {
-      setIsVisible(true);
-      return;
-    }
-
     const element = ref.current;
-    if (!element) {
-      setIsVisible(true);
+
+    if (!shouldAnimate || hasAnimated.current || !element) {
+      queueMicrotask(show);
       return;
     }
 
@@ -53,11 +49,7 @@ export function FadeInView({
       (entries) => {
         if (entries[0]?.isIntersecting && !hasAnimated.current) {
           hasAnimated.current = true;
-          if (delay > 0) {
-            setTimeout(() => setIsVisible(true), delay * 1000);
-          } else {
-            setIsVisible(true);
-          }
+          setTimeout(show, delay * 1000);
           observer.disconnect();
         }
       },

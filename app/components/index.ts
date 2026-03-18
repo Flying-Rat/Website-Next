@@ -1,13 +1,9 @@
 export { About } from "./About";
 export { Contact } from "./Contact";
-export { ContactSection } from "./ContactSection";
 export { Footer } from "./Footer";
 export { Header } from "./Header";
 export { Hero } from "./Hero";
-export { PageHeader } from "./PageHeader";
 export { Projects } from "./Projects";
-export { ShapeScene } from "./ShapeScene";
 export { ScrollProgress } from "./ScrollProgress";
-export { SecondaryPageShell } from "./SecondaryPageShell";
 export { TechStack } from "./TechStack";
 export { WhatWeDo } from "./WhatWeDo";

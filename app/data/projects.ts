@@ -1,11 +1,11 @@
 import projectsData from "./projects.json";
 
-export interface PlatformLink {
+interface PlatformLink {
   name: string;
   url: string;
 }
 
-export interface Project {
+interface Project {
   id: string;
   title: string;
   studio: string;
