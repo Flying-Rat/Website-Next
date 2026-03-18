@@ -83,7 +83,8 @@ export function Header() {
             alt="Flying Rat Studio"
             width={160}
             height={40}
-            className="logo-dark h-8 md:h-10 w-auto"
+            className="logo-dark h-8 md:h-10"
+            style={{ width: "auto" }}
             priority
           />
           <Image
@@ -91,7 +92,8 @@ export function Header() {
             alt="Flying Rat Studio"
             width={160}
             height={40}
-            className="logo-light h-8 md:h-10 w-auto"
+            className="logo-light h-8 md:h-10"
+            style={{ width: "auto" }}
             priority
           />
         </Link>

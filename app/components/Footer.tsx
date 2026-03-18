@@ -28,14 +28,16 @@ export function Footer() {
               alt="Flying Rat Studio"
               width={120}
               height={30}
-              className="logo-dark h-6 w-auto opacity-70"
+              className="logo-dark h-6 opacity-70"
+              style={{ width: "auto" }}
             />
             <Image
               src="/fr_horizontal_white.png"
               alt="Flying Rat Studio"
               width={120}
               height={30}
-              className="logo-light h-6 w-auto opacity-70"
+              className="logo-light h-6 opacity-70"
+              style={{ width: "auto" }}
             />
             <span suppressHydrationWarning className="text-[var(--color-text-muted)] text-sm">
               © {isClient ? new Date().getFullYear() : 2026} {t("footer.rights")}
