@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { memo, useCallback, useState } from "react";
 
 import { projects } from "../data/projects";
@@ -8,10 +9,26 @@ import { useTranslation } from "../i18n";
 import { FadeInView } from "./FadeInView";
 import { PlatformIcon } from "./icons";
 
+const PRIVACY_POLICY_HREF = "/games/privacy-policy";
+
+const privacyCalloutCopy = {
+  en: {
+    label: "Policy & Data",
+    title: "Telemetry, analytics, and player data practices for our games.",
+    cta: "Privacy Policy",
+  },
+  cs: {
+    label: "Zasady a data",
+    title: "Jak v nasich hrach pracujeme s telemetrii, analytikou a daty hracu.",
+    cta: "Zasady ochrany soukromi",
+  },
+} as const;
+
 export const Projects = () => {
   const { t, i18n } = useTranslation();
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const currentLang = (i18n.language === "cs" ? "cs" : "en") as "en" | "cs";
+  const privacyCopy = privacyCalloutCopy[currentLang];
 
   const toggleExpand = useCallback((id: string) => {
     setExpandedId((prev) => (prev === id ? null : id));
@@ -43,6 +60,42 @@ export const Projects = () => {
               />
             ))}
           </div>
+
+          <FadeInView animation="scale" delay={0.2} margin="-30px" className="mt-5 md:mt-6">
+            <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)]/55 backdrop-blur-sm">
+              <div className="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5 sm:py-4">
+                <div className="min-w-0 sm:pr-4">
+                  <div className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.16em] text-[var(--color-text-subtle)]">
+                    <span className="h-px w-4 bg-accent/60" />
+                    <span>{privacyCopy.label}</span>
+                  </div>
+                  <p className="mt-1.5 max-w-2xl text-sm text-[var(--color-text-secondary)] md:text-[15px]">
+                    {privacyCopy.title}
+                  </p>
+                </div>
+                <Link
+                  href={PRIVACY_POLICY_HREF}
+                  className="inline-flex w-full shrink-0 items-center justify-center gap-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)]/50 px-3 py-2 text-sm font-medium text-[var(--color-text-secondary)] transition-colors hover:border-[var(--color-border-hover)] hover:text-[var(--color-text)] sm:w-auto"
+                >
+                  {privacyCopy.cta}
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 16 16"
+                    className="h-3.5 w-3.5 text-accent"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.75"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M3.5 8h9m0 0-3-3m3 3-3 3"
+                    />
+                  </svg>
+                </Link>
+              </div>
+            </div>
+          </FadeInView>
         </div>
       </div>
     </section>
