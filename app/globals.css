@@ -483,6 +483,78 @@ html.light .timeline-scanline {
     0 0 32px color-mix(in srgb, var(--color-accent) 18%, transparent);
 }
 
+.project-detail-overlay {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-surface) 86%, transparent),
+      color-mix(in srgb, var(--color-surface) 94%, transparent)
+    ),
+    radial-gradient(
+      circle at top right,
+      color-mix(in srgb, var(--color-accent) 12%, transparent),
+      transparent 45%
+    );
+  backdrop-filter: blur(14px) saturate(125%);
+  -webkit-backdrop-filter: blur(14px) saturate(125%);
+  animation: project-detail-in 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-origin: 50% 48%;
+  will-change: opacity, transform;
+}
+
+.project-detail-copy {
+  max-height: 100%;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--color-accent) 45%, transparent) transparent;
+}
+
+.project-detail-close {
+  display: inline-flex;
+  width: 1.75rem;
+  height: 1.75rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border);
+  border-radius: 9999px;
+  color: var(--color-text-secondary);
+  background: color-mix(in srgb, var(--color-bg) 38%, transparent);
+  transition:
+    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.project-detail-close:hover {
+  transform: scale(1.06);
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: white;
+}
+
+@media (max-width: 639px) {
+  .project-detail-close {
+    width: 2.25rem;
+    height: 2.25rem;
+    background: color-mix(in srgb, var(--color-bg) 58%, transparent);
+  }
+}
+
+@keyframes project-detail-in {
+  from {
+    opacity: 0;
+    transform: translateY(7px) scale(0.975);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 .card-hover {
   transition:
     transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),

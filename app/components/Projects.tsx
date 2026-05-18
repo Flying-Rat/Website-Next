@@ -48,7 +48,7 @@ export const Projects = () => {
             <p className="section-subtitle max-w-2xl mx-auto">{translate('projects.subtitle')}</p>
           </FadeInView>
 
-          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+          <div className="grid grid-cols-1 min-[420px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
             {projects.map((project, index) => (
               <ProjectCard
                 key={project.id}
@@ -120,14 +120,17 @@ const ProjectCard = memo(function ProjectCard({
   t,
   currentLang,
 }: ProjectCardProps) {
+  const descriptionId = `${project.id}-description`;
+
   return (
     <FadeInView animation="scale" delay={index * 0.06} margin="-30px">
-      <article className="project-card bg-[var(--color-surface)] rounded-xl sm:rounded-2xl overflow-hidden group border border-[var(--color-border)] h-full">
+      <article className="project-card relative bg-[var(--color-surface)] rounded-xl sm:rounded-2xl overflow-hidden group border border-[var(--color-border)] h-full">
         <button
           type="button"
           className="block w-full text-left cursor-pointer"
           onClick={() => onToggle(project.id)}
           aria-expanded={isExpanded}
+          aria-controls={project.description ? descriptionId : undefined}
         >
           <div className="aspect-video bg-[var(--color-surface-light)] relative overflow-hidden">
             <div className="absolute inset-0 transition-transform duration-[400ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105 will-change-transform">
@@ -208,19 +211,50 @@ const ProjectCard = memo(function ProjectCard({
               <span className="platform-badge">🔜 {t('projects.tba')}</span>
             )}
           </fieldset>
-
-          {project.description && (
-            <div
-              className={`grid transition-all duration-300 ease-out ${isExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}
-            >
-              <div className="overflow-hidden">
-                <p className="text-sm text-[var(--color-text-muted)] mt-4 pt-4 border-t border-[var(--color-border)]">
-                  {project.description[currentLang]}
-                </p>
-              </div>
-            </div>
-          )}
         </div>
+
+        {project.description && isExpanded && (
+          <div
+            id={descriptionId}
+            className="project-detail-overlay absolute inset-0 z-20 overflow-hidden p-3 sm:p-4"
+            role="region"
+            aria-label={`${project.title} details`}
+          >
+            <button
+              type="button"
+              className="project-detail-close absolute right-3 top-3 sm:right-4 sm:top-4"
+              onClick={() => onToggle(project.id)}
+              aria-label={`Close ${project.title} details`}
+            >
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 20 20"
+                className="size-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              >
+                <path d="M5 5l10 10M15 5 5 15" />
+              </svg>
+            </button>
+
+            <div className="project-detail-copy">
+              <div className="max-w-[calc(100%-2.75rem)] sm:max-w-[calc(100%-2.5rem)]">
+                <p className="text-[9px] sm:text-[10px] font-medium uppercase tracking-[0.18em] text-accent">
+                  {project.studio}
+                </p>
+                <h3 className="mt-1 text-sm font-semibold leading-tight text-[var(--color-text)] sm:text-base">
+                  {project.title}
+                </h3>
+              </div>
+
+              <p className="mt-3 text-xs leading-relaxed text-[var(--color-text-secondary)] sm:mt-4 sm:text-sm">
+                {project.description[currentLang]}
+              </p>
+            </div>
+          </div>
+        )}
       </article>
     </FadeInView>
   );
