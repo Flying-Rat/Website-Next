@@ -132,8 +132,8 @@ const ProjectCard = memo(function ProjectCard({
           aria-expanded={isExpanded}
           aria-controls={project.description ? descriptionId : undefined}
         >
-          <div className="aspect-video bg-[var(--color-surface-light)] relative overflow-hidden">
-            <div className="absolute inset-0 transition-transform duration-[400ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105 will-change-transform">
+          <div className="project-image-frame aspect-video bg-[var(--color-surface-light)] relative overflow-hidden">
+            <div className="project-image-layer absolute -inset-1 transition-transform duration-[500ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.025] will-change-transform">
               {project.image ? (
                 <Image
                   src={project.image}
@@ -152,40 +152,39 @@ const ProjectCard = memo(function ProjectCard({
                   </div>
                 </div>
               )}
+              <div className="project-image-wash pointer-events-none absolute" />
             </div>
-            <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-surface-light)]/80 to-transparent pointer-events-none" />
 
             {project.isInternal && (
-              <div className="absolute top-2 right-2 sm:top-3 sm:right-3 px-1.5 py-0.5 sm:px-2 sm:py-1 bg-accent text-[10px] sm:text-xs font-semibold rounded">
+              <div className="project-internal-badge absolute top-2 right-2 z-10 sm:top-3 sm:right-3 px-1.5 py-0.5 sm:px-2 sm:py-1 bg-accent text-[10px] sm:text-xs font-semibold rounded">
                 {t('projects.internal')}
               </div>
             )}
           </div>
 
-          <div className="p-3 sm:p-5 pb-2 sm:pb-3">
-            <div className="flex items-start justify-between gap-1 sm:gap-2">
+          <div className="project-card-body p-3 pt-4 pb-3 sm:p-4 sm:pt-5">
+            <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <h3 className="text-sm sm:text-lg font-semibold mb-0.5 sm:mb-1 group-hover:text-accent transition-colors truncate">
+                <h3 className="text-sm sm:text-base font-semibold leading-tight mb-1 group-hover:text-accent transition-colors truncate">
                   {project.title}
                 </h3>
-                <p className="text-xs sm:text-sm text-[var(--color-text-subtle)] truncate">
+                <p className="text-[11px] sm:text-xs text-[var(--color-text-subtle)] truncate">
                   {project.studio}
                 </p>
               </div>
               <div
-                className={`mt-0.5 sm:mt-1 text-[var(--color-text-muted)] shrink-0 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+                className={`mt-0.5 shrink-0 text-[var(--color-text-subtle)] transition-transform duration-200 ${isExpanded ? 'rotate-180 text-accent' : ''}`}
               >
                 <svg
-                  width="16"
-                  height="16"
+                  aria-hidden="true"
                   viewBox="0 0 24 24"
+                  className="size-4"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
-                  <title>Expand</title>
                   <polyline points="6 9 12 15 18 9" />
                 </svg>
               </div>
@@ -193,7 +192,7 @@ const ProjectCard = memo(function ProjectCard({
           </div>
         </button>
 
-        <div className="px-3 pb-3 sm:px-5 sm:pb-5">
+        <div className="project-platform-footer px-3 pt-2.5 pb-3 sm:px-4 sm:pt-3 sm:pb-4">
           <fieldset className="flex flex-wrap gap-1.5" aria-label="Platforms">
             {project.platforms.map((platform) => (
               <a
@@ -201,14 +200,15 @@ const ProjectCard = memo(function ProjectCard({
                 href={platform.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="platform-badge"
+                className="platform-badge project-platform-badge"
                 title={`${project.title} on ${platform.name}`}
               >
-                <PlatformIcon name={platform.name} /> {platform.name}
+                <PlatformIcon name={platform.name} />
+                <span className="hidden sm:inline">{platform.name}</span>
               </a>
             ))}
             {project.isInternal && project.platforms.length === 0 && (
-              <span className="platform-badge">🔜 {t('projects.tba')}</span>
+              <span className="platform-badge project-platform-badge">🔜 {t('projects.tba')}</span>
             )}
           </fieldset>
         </div>

@@ -477,10 +477,92 @@ html.light .timeline-scanline {
 }
 
 .project-card:hover {
-  transform: translateY(-6px);
+  transform: translateY(-2px);
   box-shadow:
-    0 22px 40px -18px rgba(0, 0, 0, 0.45),
-    0 0 32px color-mix(in srgb, var(--color-accent) 18%, transparent);
+    0 14px 28px -22px rgba(0, 0, 0, 0.5),
+    0 0 0 1px color-mix(in srgb, var(--color-accent) 14%, transparent);
+}
+
+.project-internal-badge {
+  border: 1px solid color-mix(in srgb, var(--color-accent) 72%, white 28%);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--color-accent) 36%, transparent),
+    0 0 12px color-mix(in srgb, var(--color-accent) 52%, transparent),
+    0 0 26px color-mix(in srgb, var(--color-accent) 24%, transparent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .project-internal-badge {
+    animation: project-internal-pulse 2.8s ease-in-out infinite;
+  }
+}
+
+@keyframes project-internal-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--color-accent) 34%, transparent),
+      0 0 10px color-mix(in srgb, var(--color-accent) 42%, transparent),
+      0 0 22px color-mix(in srgb, var(--color-accent) 18%, transparent);
+  }
+
+  50% {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--color-accent) 52%, transparent),
+      0 0 16px color-mix(in srgb, var(--color-accent) 68%, transparent),
+      0 0 34px color-mix(in srgb, var(--color-accent) 34%, transparent);
+  }
+}
+
+.project-image-layer {
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.project-image-frame {
+  isolation: isolate;
+  transform: translateZ(0);
+}
+
+.project-image-wash {
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    to top,
+    var(--color-surface) 0%,
+    color-mix(in srgb, var(--color-surface-light) 82%, transparent) 22%,
+    transparent 76%
+  );
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.project-card-body {
+  position: relative;
+  z-index: 2;
+  margin-top: -0.5rem;
+  background: var(--color-surface);
+}
+
+.project-platform-footer {
+  border-top: 1px solid var(--color-border);
+}
+
+.project-platform-badge {
+  border-color: transparent;
+  border-radius: 0.375rem;
+  background: transparent;
+  padding: 0.2rem 0.35rem;
+  font-size: 0.6875rem;
+  color: var(--color-text-subtle);
+}
+
+.project-platform-badge:hover {
+  transform: translateY(-1px);
+  background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  color: var(--color-accent);
+  border-color: color-mix(in srgb, var(--color-accent) 30%, transparent);
+  box-shadow: none;
 }
 
 .project-detail-overlay {
