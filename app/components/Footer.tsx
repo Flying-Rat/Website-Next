@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useSyncExternalStore } from 'react';
 
+import { useTheme } from '../hooks/useTheme';
 import { useTranslation } from '../i18n';
 
 function emptySubscribe() {
@@ -12,11 +13,17 @@ function emptySubscribe() {
 
 export function Footer() {
   const { t } = useTranslation();
+  const { mounted: themeMounted, resolvedTheme } = useTheme();
   const isClient = useSyncExternalStore(
     emptySubscribe,
     () => true,
     () => false,
   );
+
+  const logoSrc =
+    themeMounted && resolvedTheme === 'dark'
+      ? '/fr_horizontal_white.png'
+      : '/fr_horizontal_black.png';
 
   return (
     <footer className="py-8 border-t border-[var(--color-border)]">
@@ -24,20 +31,12 @@ export function Footer() {
         <div className="flex flex-col items-center gap-6 md:flex-row md:justify-between md:gap-4">
           <div className="flex flex-col items-center gap-3 md:flex-row md:gap-4">
             <Image
-              src="/fr_horizontal_black.png"
+              src={logoSrc}
               alt="Flying Rat Studio"
               width={120}
               height={30}
-              className="logo-dark h-6 opacity-70"
-              style={{ width: 'auto' }}
-            />
-            <Image
-              src="/fr_horizontal_white.png"
-              alt="Flying Rat Studio"
-              width={120}
-              height={30}
-              className="logo-light h-6 opacity-70"
-              style={{ width: 'auto' }}
+              className="max-h-6 opacity-70"
+              style={{ width: 'auto', height: 'auto', aspectRatio: '120 / 30' }}
             />
             <span suppressHydrationWarning className="text-[var(--color-text-muted)] text-sm">
               © {isClient ? new Date().getFullYear() : 2026} {t('footer.rights')}

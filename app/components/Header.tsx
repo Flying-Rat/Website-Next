@@ -22,7 +22,7 @@ const navSections = [
 export function Header() {
   const [currentLang, setLanguage] = useLanguage();
   const { t } = useTranslation();
-  const { theme, cycleTheme, mounted: themeMounted } = useTheme();
+  const { theme, cycleTheme, mounted: themeMounted, resolvedTheme } = useTheme();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const shouldAnimate = useAnimationsEnabled();
@@ -71,6 +71,11 @@ export function Header() {
       }
     : {};
 
+  const logoSrc =
+    themeMounted && resolvedTheme === 'dark'
+      ? '/fr_horizontal_white.png'
+      : '/fr_horizontal_black.png';
+
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-[padding] duration-300 ${isScrolled ? 'glass py-3' : 'py-6'}`}
@@ -79,21 +84,12 @@ export function Header() {
       <div className="container mx-auto px-6 flex items-center justify-between">
         <Link href="/" className="group">
           <Image
-            src="/fr_horizontal_black.png"
+            src={logoSrc}
             alt="Flying Rat Studio"
             width={160}
             height={40}
-            className="logo-dark h-8 md:h-10"
-            style={{ width: 'auto' }}
-            priority
-          />
-          <Image
-            src="/fr_horizontal_white.png"
-            alt="Flying Rat Studio"
-            width={160}
-            height={40}
-            className="logo-light h-8 md:h-10"
-            style={{ width: 'auto' }}
+            className="max-h-8 md:max-h-10"
+            style={{ width: 'auto', height: 'auto', aspectRatio: '160 / 40' }}
             priority
           />
         </Link>

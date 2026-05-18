@@ -67,16 +67,6 @@ html.light {
   --color-border-hover: rgba(0, 0, 0, 0.26);
 }
 
-html.dark .logo-dark,
-html.light .logo-light {
-  display: none;
-}
-
-html.dark .logo-light,
-html.light .logo-dark {
-  display: block;
-}
-
 html.light .glass {
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(20px) saturate(180%);
