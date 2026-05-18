@@ -1,29 +1,29 @@
-import type { ReactNode } from "react";
+import type { ReactNode } from 'react';
 import {
   createContext,
   createElement,
-  useContext,
+  use,
   useLayoutEffect,
   useMemo,
   useSyncExternalStore,
-} from "react";
+} from 'react';
 
-import { isPrivacyBrowser } from "../lib/motionDetect";
+import { isPrivacyBrowser } from '../lib/motionDetect';
 
 function getShouldAnimate() {
-  if (typeof window === "undefined") {
+  if (typeof window === 'undefined') {
     return true;
   }
 
-  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const ua = navigator.userAgent;
   return !(prefersReducedMotion || isPrivacyBrowser(ua));
 }
 
 function subscribeToReducedMotion(callback: () => void) {
-  const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-  mq.addEventListener("change", callback);
-  return () => mq.removeEventListener("change", callback);
+  const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+  mq.addEventListener('change', callback);
+  return () => mq.removeEventListener('change', callback);
 }
 
 const AnimationGateContext = createContext<{ initialShouldAnimate: boolean } | null>(null);
@@ -40,7 +40,7 @@ export function AnimationGateProvider({
 }
 
 export function useAnimationsEnabled() {
-  const context = useContext(AnimationGateContext);
+  const context = use(AnimationGateContext);
   const initialShouldAnimate = context?.initialShouldAnimate ?? true;
 
   const shouldAnimate = useSyncExternalStore(
@@ -52,9 +52,9 @@ export function useAnimationsEnabled() {
   useLayoutEffect(() => {
     const root = document.documentElement;
     if (shouldAnimate) {
-      root.classList.remove("no-motion");
+      root.classList.remove('no-motion');
     } else {
-      root.classList.add("no-motion");
+      root.classList.add('no-motion');
     }
   }, [shouldAnimate]);
 

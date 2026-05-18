@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import Link from 'next/link';
+import { useEffect, useRef, useState } from 'react';
 
-import { useAnimationsEnabled } from "../hooks/useAnimationsEnabled";
-import { useTheme } from "../hooks/useTheme";
-import { useLanguage, useTranslation } from "../i18n";
-import { MonitorIcon, MoonIcon, SunIcon } from "./icons";
+import { useAnimationsEnabled } from '../hooks/useAnimationsEnabled';
+import { useTheme } from '../hooks/useTheme';
+import { useLanguage, useTranslation } from '../i18n';
+import { MonitorIcon, MoonIcon, SunIcon } from './icons';
 
 type PageNavItem = {
   id: string;
@@ -66,27 +66,27 @@ export function PageHeader({ navItems }: PageHeaderProps) {
     };
 
     onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener('scroll', onScroll, { passive: true });
     return () => {
       if (frameRef.current !== 0) {
         window.cancelAnimationFrame(frameRef.current);
       }
-      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener('scroll', onScroll);
     };
   }, []);
 
   const headerStyle = shouldAnimate
     ? {
         opacity: headerMounted ? 1 : 0,
-        transform: headerMounted ? "none" : "translateY(-100%)",
+        transform: headerMounted ? 'none' : 'translateY(-100%)',
         transition:
-          "opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
+          'opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
       }
     : undefined;
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-[padding] duration-300 ${isScrolled ? "glass py-3" : "py-6"}`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-[padding] duration-300 ${isScrolled ? 'glass py-3' : 'py-6'}`}
       style={headerStyle}
     >
       <div className="container mx-auto px-6 flex items-center justify-between">
@@ -94,8 +94,8 @@ export function PageHeader({ navItems }: PageHeaderProps) {
           href="/"
           className="flex items-center gap-2 text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-colors"
         >
-          <ArrowLeftIcon className="w-4 h-4" />
-          <span>{t("pressKit.backHome")}</span>
+          <ArrowLeftIcon className="size-4" />
+          <span>{t('pressKit.backHome')}</span>
         </Link>
 
         <div className="hidden md:flex items-center gap-8">
@@ -119,16 +119,16 @@ export function PageHeader({ navItems }: PageHeaderProps) {
             <div className="flex items-center">
               <button
                 type="button"
-                onClick={() => setLanguage("en")}
-                className={`px-1.5 py-1 rounded transition-all active:scale-95 cursor-pointer ${currentLang === "en" ? "text-[var(--color-text)]" : "hover:text-[var(--color-text)]"}`}
+                onClick={() => setLanguage('en')}
+                className={`px-1.5 py-1 rounded transition-all active:scale-95 cursor-pointer ${currentLang === 'en' ? 'text-[var(--color-text)]' : 'hover:text-[var(--color-text)]'}`}
               >
                 EN
               </button>
               <span className="opacity-30">|</span>
               <button
                 type="button"
-                onClick={() => setLanguage("cs")}
-                className={`px-1.5 py-1 rounded transition-all active:scale-95 cursor-pointer ${currentLang === "cs" ? "text-[var(--color-text)]" : "hover:text-[var(--color-text)]"}`}
+                onClick={() => setLanguage('cs')}
+                className={`px-1.5 py-1 rounded transition-all active:scale-95 cursor-pointer ${currentLang === 'cs' ? 'text-[var(--color-text)]' : 'hover:text-[var(--color-text)]'}`}
               >
                 CS
               </button>
@@ -137,15 +137,15 @@ export function PageHeader({ navItems }: PageHeaderProps) {
               type="button"
               onClick={cycleTheme}
               className="p-1.5 rounded-lg hover:text-[var(--color-text)] hover:bg-[var(--color-surface-light)] transition-all hover:scale-110 active:scale-90 cursor-pointer"
-              aria-label={t("pressKit.toggleTheme")}
+              aria-label={t('pressKit.toggleTheme')}
             >
               {themeMounted &&
-                (theme === "dark" ? (
-                  <MoonIcon className="w-4 h-4" />
-                ) : theme === "system" ? (
-                  <MonitorIcon className="w-4 h-4" />
+                (theme === 'dark' ? (
+                  <MoonIcon className="size-4" />
+                ) : theme === 'system' ? (
+                  <MonitorIcon className="size-4" />
                 ) : (
-                  <SunIcon className="w-4 h-4" />
+                  <SunIcon className="size-4" />
                 ))}
             </button>
           </div>
@@ -155,25 +155,25 @@ export function PageHeader({ navItems }: PageHeaderProps) {
           type="button"
           className="md:hidden p-2"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          aria-label={t("nav.toggleMenu")}
+          aria-label={t('nav.toggleMenu')}
           aria-expanded={isMobileMenuOpen}
         >
           <div className="w-6 h-5 relative flex flex-col justify-between">
             <span
-              className={`w-full h-0.5 bg-[var(--color-text)] transition-all duration-200 origin-center ${isMobileMenuOpen ? "rotate-45 translate-y-[9px]" : ""}`}
+              className={`w-full h-0.5 bg-[var(--color-text)] transition-all duration-200 origin-center ${isMobileMenuOpen ? 'rotate-45 translate-y-[9px]' : ''}`}
             />
             <span
-              className={`w-full h-0.5 bg-[var(--color-text)] transition-all duration-200 ${isMobileMenuOpen ? "opacity-0" : ""}`}
+              className={`w-full h-0.5 bg-[var(--color-text)] transition-all duration-200 ${isMobileMenuOpen ? 'opacity-0' : ''}`}
             />
             <span
-              className={`w-full h-0.5 bg-[var(--color-text)] transition-all duration-200 origin-center ${isMobileMenuOpen ? "-rotate-45 -translate-y-[9px]" : ""}`}
+              className={`w-full h-0.5 bg-[var(--color-text)] transition-all duration-200 origin-center ${isMobileMenuOpen ? '-rotate-45 -translate-y-[9px]' : ''}`}
             />
           </div>
         </button>
       </div>
 
       <div
-        className={`md:hidden glass mt-2 mx-4 rounded-lg overflow-hidden transition-all duration-300 ${isMobileMenuOpen ? "max-h-[70vh] opacity-100 p-4" : "max-h-0 opacity-0 p-0"}`}
+        className={`md:hidden glass mt-2 mx-4 rounded-lg overflow-hidden transition-all duration-300 ${isMobileMenuOpen ? 'max-h-[70vh] opacity-100 p-4' : 'max-h-0 opacity-0 p-0'}`}
       >
         <nav className="flex flex-col gap-4">
           {navItems.map((item) => (
@@ -191,10 +191,10 @@ export function PageHeader({ navItems }: PageHeaderProps) {
               <button
                 type="button"
                 onClick={() => {
-                  setLanguage("en");
+                  setLanguage('en');
                   setIsMobileMenuOpen(false);
                 }}
-                className={`px-1.5 py-1 rounded transition-colors cursor-pointer ${currentLang === "en" ? "text-[var(--color-text)]" : "hover:text-[var(--color-text)]"}`}
+                className={`px-1.5 py-1 rounded transition-colors cursor-pointer ${currentLang === 'en' ? 'text-[var(--color-text)]' : 'hover:text-[var(--color-text)]'}`}
               >
                 EN
               </button>
@@ -202,10 +202,10 @@ export function PageHeader({ navItems }: PageHeaderProps) {
               <button
                 type="button"
                 onClick={() => {
-                  setLanguage("cs");
+                  setLanguage('cs');
                   setIsMobileMenuOpen(false);
                 }}
-                className={`px-1.5 py-1 rounded transition-colors cursor-pointer ${currentLang === "cs" ? "text-[var(--color-text)]" : "hover:text-[var(--color-text)]"}`}
+                className={`px-1.5 py-1 rounded transition-colors cursor-pointer ${currentLang === 'cs' ? 'text-[var(--color-text)]' : 'hover:text-[var(--color-text)]'}`}
               >
                 CS
               </button>
@@ -214,15 +214,15 @@ export function PageHeader({ navItems }: PageHeaderProps) {
               type="button"
               onClick={cycleTheme}
               className="p-1.5 rounded-lg hover:text-[var(--color-text)] hover:bg-[var(--color-surface-light)] transition-colors cursor-pointer"
-              aria-label={t("pressKit.toggleTheme")}
+              aria-label={t('pressKit.toggleTheme')}
             >
               {themeMounted &&
-                (theme === "dark" ? (
-                  <MoonIcon className="w-4 h-4" />
-                ) : theme === "system" ? (
-                  <MonitorIcon className="w-4 h-4" />
+                (theme === 'dark' ? (
+                  <MoonIcon className="size-4" />
+                ) : theme === 'system' ? (
+                  <MonitorIcon className="size-4" />
                 ) : (
-                  <SunIcon className="w-4 h-4" />
+                  <SunIcon className="size-4" />
                 ))}
             </button>
           </div>

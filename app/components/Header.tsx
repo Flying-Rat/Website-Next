@@ -1,22 +1,22 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import Link from "next/link";
-import type { CSSProperties } from "react";
-import { useEffect, useRef, useState } from "react";
+import Image from 'next/image';
+import Link from 'next/link';
+import type { CSSProperties } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-import { useAnimationsEnabled } from "../hooks/useAnimationsEnabled";
-import { useTheme } from "../hooks/useTheme";
-import { useLanguage, useTranslation } from "../i18n";
-import { ExternalLinkIcon, MonitorIcon, MoonIcon, SunIcon } from "./icons";
+import { useAnimationsEnabled } from '../hooks/useAnimationsEnabled';
+import { useTheme } from '../hooks/useTheme';
+import { useLanguage, useTranslation } from '../i18n';
+import { ExternalLinkIcon, MonitorIcon, MoonIcon, SunIcon } from './icons';
 
 const navSections = [
-  { href: "#about", key: "nav.about" },
-  { href: "#what-we-do", key: "nav.whatWeDo" },
-  { href: "#projects", key: "nav.projects" },
-  { href: "/jobs", key: "nav.jobs" },
-  { href: "#contact", key: "nav.contact" },
-  { href: "https://tech.flying-rat.studio/", key: "nav.blog" },
+  { href: '#about', key: 'nav.about' },
+  { href: '#what-we-do', key: 'nav.whatWeDo' },
+  { href: '#projects', key: 'nav.projects' },
+  { href: '/jobs', key: 'nav.jobs' },
+  { href: '#contact', key: 'nav.contact' },
+  { href: 'https://tech.flying-rat.studio/', key: 'nav.blog' },
 ];
 
 export function Header() {
@@ -53,27 +53,27 @@ export function Header() {
     };
 
     onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener('scroll', onScroll, { passive: true });
     return () => {
       if (frameRef.current !== 0) {
         window.cancelAnimationFrame(frameRef.current);
       }
-      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener('scroll', onScroll);
     };
   }, []);
 
   const headerStyle: CSSProperties = shouldAnimate
     ? {
         opacity: mounted ? 1 : 0,
-        transform: mounted ? "none" : "translateY(-100%)",
+        transform: mounted ? 'none' : 'translateY(-100%)',
         transition:
-          "opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
+          'opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
       }
     : {};
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-[padding] duration-300 ${isScrolled ? "glass py-3" : "py-6"}`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-[padding] duration-300 ${isScrolled ? 'glass py-3' : 'py-6'}`}
       style={headerStyle}
     >
       <div className="container mx-auto px-6 flex items-center justify-between">
@@ -84,7 +84,7 @@ export function Header() {
             width={160}
             height={40}
             className="logo-dark h-8 md:h-10"
-            style={{ width: "auto" }}
+            style={{ width: 'auto' }}
             priority
           />
           <Image
@@ -93,24 +93,24 @@ export function Header() {
             width={160}
             height={40}
             className="logo-light h-8 md:h-10"
-            style={{ width: "auto" }}
+            style={{ width: 'auto' }}
             priority
           />
         </Link>
 
         <nav className="hidden md:flex items-center gap-8">
           {navSections.map((item) => {
-            const isExternal = item.href.startsWith("http");
+            const isExternal = item.href.startsWith('http');
             return (
               <a
                 key={item.href}
                 href={item.href}
-                target={isExternal ? "_blank" : undefined}
-                rel={isExternal ? "noopener noreferrer" : undefined}
+                target={isExternal ? '_blank' : undefined}
+                rel={isExternal ? 'noopener noreferrer' : undefined}
                 className="text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-all relative group flex items-center gap-1 hover:-translate-y-0.5"
               >
                 {t(item.key)}
-                {isExternal && <ExternalLinkIcon className="w-2.5 h-2.5 opacity-50" />}
+                {isExternal && <ExternalLinkIcon className="size-2.5 opacity-50" />}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all group-hover:w-full" />
               </a>
             );
@@ -120,16 +120,16 @@ export function Header() {
             <div className="flex items-center">
               <button
                 type="button"
-                onClick={() => setLanguage("en")}
-                className={`px-1.5 py-1 rounded transition-all active:scale-95 cursor-pointer ${currentLang === "en" ? "text-[var(--color-text)]" : "hover:text-[var(--color-text)]"}`}
+                onClick={() => setLanguage('en')}
+                className={`px-1.5 py-1 rounded transition-all active:scale-95 cursor-pointer ${currentLang === 'en' ? 'text-[var(--color-text)]' : 'hover:text-[var(--color-text)]'}`}
               >
                 EN
               </button>
               <span className="opacity-30">|</span>
               <button
                 type="button"
-                onClick={() => setLanguage("cs")}
-                className={`px-1.5 py-1 rounded transition-all active:scale-95 cursor-pointer ${currentLang === "cs" ? "text-[var(--color-text)]" : "hover:text-[var(--color-text)]"}`}
+                onClick={() => setLanguage('cs')}
+                className={`px-1.5 py-1 rounded transition-all active:scale-95 cursor-pointer ${currentLang === 'cs' ? 'text-[var(--color-text)]' : 'hover:text-[var(--color-text)]'}`}
               >
                 CS
               </button>
@@ -141,12 +141,12 @@ export function Header() {
               aria-label="Switch theme"
             >
               {themeMounted &&
-                (theme === "dark" ? (
-                  <MoonIcon className="w-4 h-4" />
-                ) : theme === "system" ? (
-                  <MonitorIcon className="w-4 h-4" />
+                (theme === 'dark' ? (
+                  <MoonIcon className="size-4" />
+                ) : theme === 'system' ? (
+                  <MonitorIcon className="size-4" />
                 ) : (
-                  <SunIcon className="w-4 h-4" />
+                  <SunIcon className="size-4" />
                 ))}
             </button>
           </div>
@@ -156,40 +156,40 @@ export function Header() {
           type="button"
           className="md:hidden p-2 shrink-0"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          aria-label={t("nav.toggleMenu")}
+          aria-label={t('nav.toggleMenu')}
           aria-expanded={isMobileMenuOpen}
         >
           <div className="w-6 h-5 relative flex flex-col justify-between">
             <span
-              className={`w-full h-0.5 bg-[var(--color-text)] transition-all duration-200 origin-center ${isMobileMenuOpen ? "rotate-45 translate-y-[9px]" : ""}`}
+              className={`w-full h-0.5 bg-[var(--color-text)] transition-all duration-200 origin-center ${isMobileMenuOpen ? 'rotate-45 translate-y-[9px]' : ''}`}
             />
             <span
-              className={`w-full h-0.5 bg-[var(--color-text)] transition-all duration-200 ${isMobileMenuOpen ? "opacity-0" : ""}`}
+              className={`w-full h-0.5 bg-[var(--color-text)] transition-all duration-200 ${isMobileMenuOpen ? 'opacity-0' : ''}`}
             />
             <span
-              className={`w-full h-0.5 bg-[var(--color-text)] transition-all duration-200 origin-center ${isMobileMenuOpen ? "-rotate-45 -translate-y-[9px]" : ""}`}
+              className={`w-full h-0.5 bg-[var(--color-text)] transition-all duration-200 origin-center ${isMobileMenuOpen ? '-rotate-45 -translate-y-[9px]' : ''}`}
             />
           </div>
         </button>
       </div>
 
       <div
-        className={`md:hidden glass mt-2 mx-4 rounded-lg overflow-hidden transition-all duration-300 ${isMobileMenuOpen ? "max-h-[70vh] opacity-100 p-4" : "max-h-0 opacity-0 p-0"}`}
+        className={`md:hidden glass mt-2 mx-4 rounded-lg overflow-hidden transition-all duration-300 ${isMobileMenuOpen ? 'max-h-[70vh] opacity-100 p-4' : 'max-h-0 opacity-0 p-0'}`}
       >
         <nav className="flex flex-col gap-4">
           {navSections.map((item) => {
-            const isExternal = item.href.startsWith("http");
+            const isExternal = item.href.startsWith('http');
             return (
               <a
                 key={item.href}
                 href={item.href}
-                target={isExternal ? "_blank" : undefined}
-                rel={isExternal ? "noopener noreferrer" : undefined}
+                target={isExternal ? '_blank' : undefined}
+                rel={isExternal ? 'noopener noreferrer' : undefined}
                 className="text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-colors py-2 flex items-center gap-2"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 {t(item.key)}
-                {isExternal && <ExternalLinkIcon className="w-2.5 h-2.5 opacity-50" />}
+                {isExternal && <ExternalLinkIcon className="size-2.5 opacity-50" />}
               </a>
             );
           })}
@@ -198,10 +198,10 @@ export function Header() {
               <button
                 type="button"
                 onClick={() => {
-                  setLanguage("en");
+                  setLanguage('en');
                   setIsMobileMenuOpen(false);
                 }}
-                className={`px-1.5 py-1 rounded transition-colors cursor-pointer ${currentLang === "en" ? "text-[var(--color-text)]" : "hover:text-[var(--color-text)]"}`}
+                className={`px-1.5 py-1 rounded transition-colors cursor-pointer ${currentLang === 'en' ? 'text-[var(--color-text)]' : 'hover:text-[var(--color-text)]'}`}
               >
                 EN
               </button>
@@ -209,10 +209,10 @@ export function Header() {
               <button
                 type="button"
                 onClick={() => {
-                  setLanguage("cs");
+                  setLanguage('cs');
                   setIsMobileMenuOpen(false);
                 }}
-                className={`px-1.5 py-1 rounded transition-colors cursor-pointer ${currentLang === "cs" ? "text-[var(--color-text)]" : "hover:text-[var(--color-text)]"}`}
+                className={`px-1.5 py-1 rounded transition-colors cursor-pointer ${currentLang === 'cs' ? 'text-[var(--color-text)]' : 'hover:text-[var(--color-text)]'}`}
               >
                 CS
               </button>
@@ -224,12 +224,12 @@ export function Header() {
               aria-label="Switch theme"
             >
               {themeMounted &&
-                (theme === "dark" ? (
-                  <MoonIcon className="w-4 h-4" />
-                ) : theme === "system" ? (
-                  <MonitorIcon className="w-4 h-4" />
+                (theme === 'dark' ? (
+                  <MoonIcon className="size-4" />
+                ) : theme === 'system' ? (
+                  <MonitorIcon className="size-4" />
                 ) : (
-                  <SunIcon className="w-4 h-4" />
+                  <SunIcon className="size-4" />
                 ))}
             </button>
           </div>

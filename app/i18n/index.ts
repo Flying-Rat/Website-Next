@@ -1,1 +1,1 @@
-export { useLanguage, useTranslation } from "./client";
+export { useLanguage, useTranslation } from './client';

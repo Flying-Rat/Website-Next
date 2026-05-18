@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import type { ReactNode } from "react";
+import Image from 'next/image';
+import type { ReactNode } from 'react';
 
-import { useTranslation } from "../i18n";
-import { FadeInView } from "./FadeInView";
-import { MailIcon } from "./icons";
-import { SocialLinks } from "./SocialLinks";
+import { useTranslation } from '../i18n';
+import { FadeInView } from './FadeInView';
+import { MailIcon } from './icons';
+import { SocialLinks } from './SocialLinks';
 
 type ContactSectionProps = {
   id?: string;
@@ -27,9 +27,9 @@ export function ContactSection({
   descriptionKey,
   martyAltKey,
   email,
-  ctaKey = "contact.cta",
-  socialKey = "contact.social",
-  statusKey = "contact.statusAvailable",
+  ctaKey = 'contact.cta',
+  socialKey = 'contact.social',
+  statusKey = 'contact.statusAvailable',
   afterSocial,
   withFadeIn = false,
 }: ContactSectionProps) {
@@ -58,7 +58,7 @@ export function ContactSection({
         href={`mailto:${email}`}
         className="inline-flex items-center gap-3 px-8 py-4 bg-accent hover:bg-accent-dark text-white font-semibold rounded-xl transition-all hover:shadow-lg hover:shadow-accent/30 text-lg hover:scale-105 active:scale-98"
       >
-        <MailIcon className="w-6 h-6" />
+        <MailIcon className="size-6" />
         {t(ctaKey)}
       </a>
       <p className="text-[var(--color-text-subtle)] text-sm">{email}</p>

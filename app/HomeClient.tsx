@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   About,
@@ -10,9 +10,9 @@ import {
   ScrollProgress,
   TechStack,
   WhatWeDo,
-} from "./components";
-import { AnimationGateProvider } from "./hooks/useAnimationsEnabled";
-import { useSectionObserver } from "./hooks/useSectionObserver";
+} from './components';
+import { AnimationGateProvider } from './hooks/useAnimationsEnabled';
+import { useSectionObserver } from './hooks/useSectionObserver';
 
 export function HomeClient({ initialShouldAnimate }: { initialShouldAnimate: boolean }) {
   useSectionObserver();

@@ -1,4 +1,4 @@
-import projectsData from "./projects.json";
+import projectsData from './projects.json';
 
 interface PlatformLink {
   name: string;

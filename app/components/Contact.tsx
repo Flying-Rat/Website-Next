@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { ContactSection } from "./ContactSection";
+import { ContactSection } from './ContactSection';
 
 export function Contact() {
-  const email = "marty@flying-rat.studio";
+  const email = 'marty@flying-rat.studio';
 
   return (
     <ContactSection

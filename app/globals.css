@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
   --color-accent: #fa5565;
@@ -461,7 +461,7 @@ html.light .timeline-scanline {
     -webkit-backdrop-filter: none;
   }
 
-  [class*="backdrop-blur"] {
+  [class*='backdrop-blur'] {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }

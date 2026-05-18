@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import Link from "next/link";
-import { useSyncExternalStore } from "react";
+import Image from 'next/image';
+import Link from 'next/link';
+import { useSyncExternalStore } from 'react';
 
-import { useTranslation } from "../i18n";
+import { useTranslation } from '../i18n';
 
 function emptySubscribe() {
   return () => {};
@@ -29,7 +29,7 @@ export function Footer() {
               width={120}
               height={30}
               className="logo-dark h-6 opacity-70"
-              style={{ width: "auto" }}
+              style={{ width: 'auto' }}
             />
             <Image
               src="/fr_horizontal_white.png"
@@ -37,28 +37,28 @@ export function Footer() {
               width={120}
               height={30}
               className="logo-light h-6 opacity-70"
-              style={{ width: "auto" }}
+              style={{ width: 'auto' }}
             />
             <span suppressHydrationWarning className="text-[var(--color-text-muted)] text-sm">
-              © {isClient ? new Date().getFullYear() : 2026} {t("footer.rights")}
+              © {isClient ? new Date().getFullYear() : 2026} {t('footer.rights')}
             </span>
           </div>
           <div className="flex flex-col items-center gap-3 md:items-end md:gap-1">
             <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[var(--color-text-subtle)] text-sm">
-              <p className="hidden sm:block">{t("footer.cookies")}</p>
+              <p className="hidden sm:block">{t('footer.cookies')}</p>
               <span className="hidden sm:block opacity-30">|</span>
               <Link
                 href="/jobs"
                 className="hover:text-[var(--color-text-muted)] transition-colors inline-flex items-center gap-1"
               >
-                {t("footer.jobs")} 💼
+                {t('footer.jobs')} 💼
               </Link>
               <span className="opacity-30">|</span>
               <Link
                 href="/press"
                 className="hover:text-[var(--color-text-muted)] transition-colors inline-flex items-center gap-1"
               >
-                {t("footer.press")} 📰
+                {t('footer.press')} 📰
               </Link>
             </div>
             <p
@@ -67,7 +67,7 @@ export function Footer() {
             >
               GADEN ALPHA s.r.o. | IČO: 09949194 | DIČ: CZ09949194
               <span className="hidden md:inline">
-                {" "}
+                {' '}
                 | Polní 21, 252 64 Velké Přílepy | Zapsáno u MS v Praze, C 345227
               </span>
             </p>

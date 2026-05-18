@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef } from 'react';
 
-import { useAnimationsEnabled } from "../hooks/useAnimationsEnabled";
+import { useAnimationsEnabled } from '../hooks/useAnimationsEnabled';
 
 export function ScrollProgress() {
   const barRef = useRef<HTMLDivElement | null>(null);
@@ -34,23 +34,23 @@ export function ScrollProgress() {
 
     if (shouldAnimate) {
       requestUpdate();
-      window.addEventListener("scroll", requestUpdate, { passive: true });
-      window.addEventListener("resize", requestUpdate);
+      window.addEventListener('scroll', requestUpdate, { passive: true });
+      window.addEventListener('resize', requestUpdate);
     } else {
       updateProgress();
-      window.addEventListener("scroll", updateProgress, { passive: true });
-      window.addEventListener("resize", updateProgress);
+      window.addEventListener('scroll', updateProgress, { passive: true });
+      window.addEventListener('resize', updateProgress);
     }
     return () => {
       if (frameRef.current !== 0) {
         window.cancelAnimationFrame(frameRef.current);
       }
       if (shouldAnimate) {
-        window.removeEventListener("scroll", requestUpdate);
-        window.removeEventListener("resize", requestUpdate);
+        window.removeEventListener('scroll', requestUpdate);
+        window.removeEventListener('resize', requestUpdate);
       } else {
-        window.removeEventListener("scroll", updateProgress);
-        window.removeEventListener("resize", updateProgress);
+        window.removeEventListener('scroll', updateProgress);
+        window.removeEventListener('resize', updateProgress);
       }
     };
   }, [shouldAnimate]);
@@ -60,7 +60,7 @@ export function ScrollProgress() {
       <div
         ref={barRef}
         className="scroll-progress-bar h-full transition-transform duration-150 ease-out bg-gradient-to-r from-accent via-accent to-accent/50"
-        style={{ transform: "scaleX(0)" }}
+        style={{ transform: 'scaleX(0)' }}
       />
     </div>
   );

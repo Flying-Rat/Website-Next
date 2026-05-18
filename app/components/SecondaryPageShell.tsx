@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import type { ReactNode } from "react";
+import type { ReactNode } from 'react';
 
-import { Footer } from "./Footer";
-import { PageHeader } from "./PageHeader";
-import { ScrollProgress } from "./ScrollProgress";
+import { Footer } from './Footer';
+import { PageHeader } from './PageHeader';
+import { ScrollProgress } from './ScrollProgress';
 
 type SecondaryPageShellProps = {
   navItems: { id: string; label: string }[];

@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import type { CSSProperties, ReactNode } from "react";
-import { useEffect, useReducer, useRef } from "react";
+import type { CSSProperties, ReactNode } from 'react';
+import { useEffect, useReducer, useRef } from 'react';
 
-import { useAnimationsEnabled } from "../hooks/useAnimationsEnabled";
+import { useAnimationsEnabled } from '../hooks/useAnimationsEnabled';
 
-type Animation = "up" | "left" | "right" | "scale";
+type Animation = 'up' | 'left' | 'right' | 'scale';
 
 interface FadeInViewProps {
   children: ReactNode;
@@ -18,18 +18,18 @@ interface FadeInViewProps {
 }
 
 const transforms: Record<Animation, string> = {
-  up: "translateY(30px)",
-  left: "translateX(-40px)",
-  right: "translateX(40px)",
-  scale: "translateY(40px) scale(0.98)",
+  up: 'translateY(30px)',
+  left: 'translateX(-40px)',
+  right: 'translateX(40px)',
+  scale: 'translateY(40px) scale(0.98)',
 };
 
 export function FadeInView({
   children,
-  animation = "up",
+  animation = 'up',
   delay = 0,
-  margin = "-100px",
-  className = "",
+  margin = '-100px',
+  className = '',
   slideOnly = false,
 }: FadeInViewProps) {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -39,6 +39,7 @@ export function FadeInView({
 
   useEffect(() => {
     const element = ref.current;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
     if (!shouldAnimate || hasAnimated.current || !element) {
       queueMicrotask(show);
@@ -49,7 +50,7 @@ export function FadeInView({
       (entries) => {
         if (entries[0]?.isIntersecting && !hasAnimated.current) {
           hasAnimated.current = true;
-          setTimeout(show, delay * 1000);
+          timeoutId = setTimeout(show, delay * 1000);
           observer.disconnect();
         }
       },
@@ -57,16 +58,21 @@ export function FadeInView({
     );
 
     observer.observe(element);
-    return () => observer.disconnect();
+    return () => {
+      if (timeoutId !== undefined) {
+        clearTimeout(timeoutId);
+      }
+      observer.disconnect();
+    };
   }, [shouldAnimate, margin, delay]);
 
   const style: CSSProperties = shouldAnimate
     ? {
         opacity: slideOnly ? 1 : isVisible ? 1 : 0,
-        transform: isVisible ? "none" : transforms[animation],
+        transform: isVisible ? 'none' : transforms[animation],
         transition: slideOnly
-          ? "transform 0.7s cubic-bezier(0.16, 1, 0.3, 1)"
-          : "opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1)",
+          ? 'transform 0.7s cubic-bezier(0.16, 1, 0.3, 1)'
+          : 'opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1)',
       }
     : {};
 

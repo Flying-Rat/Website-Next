@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import i18next from "i18next";
-import { useSyncExternalStore } from "react";
-import { initReactI18next, useTranslation as useTranslationOrg } from "react-i18next";
+import i18next from 'i18next';
+import { useSyncExternalStore } from 'react';
+import { initReactI18next, useTranslation as useTranslationOrg } from 'react-i18next';
 
-import csCommon from "../locales/cs.json";
-import enCommon from "../locales/en.json";
-import { fallbackLng, getOptions, type Language } from "./settings";
+import csCommon from '../locales/cs.json';
+import enCommon from '../locales/en.json';
+import { fallbackLng, getOptions, type Language } from './settings';
 
 const resources = {
   en: { common: enCommon },
@@ -24,9 +24,9 @@ if (!i18nInstance.isInitialized) {
 }
 
 function subscribeToLanguage(callback: () => void) {
-  i18next.on("languageChanged", callback);
+  i18next.on('languageChanged', callback);
   return () => {
-    i18next.off("languageChanged", callback);
+    i18next.off('languageChanged', callback);
   };
 }
 
@@ -47,8 +47,8 @@ export function useLanguage(): [Language, (lng: Language) => void] {
 
   const changeLanguage = (lng: Language) => {
     i18next.changeLanguage(lng);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("i18nextLng", lng);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('i18nextLng', lng);
     }
   };
 

@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { useTranslation } from "../i18n";
-import { FadeInView } from "./FadeInView";
-import { AiIcon, BackendIcon, EngineeringIcon, PortingIcon, QaIcon, ReleaseIcon } from "./icons";
+import { useTranslation } from '../i18n';
+import { FadeInView } from './FadeInView';
+import { AiIcon, BackendIcon, EngineeringIcon, PortingIcon, QaIcon, ReleaseIcon } from './icons';
 
 const whatWeDoItems = [
-  { key: "engineering", Icon: EngineeringIcon },
-  { key: "porting", Icon: PortingIcon },
-  { key: "qa", Icon: QaIcon },
-  { key: "release", Icon: ReleaseIcon },
-  { key: "backend", Icon: BackendIcon },
-  { key: "ai", Icon: AiIcon },
+  { key: 'engineering', Icon: EngineeringIcon },
+  { key: 'porting', Icon: PortingIcon },
+  { key: 'qa', Icon: QaIcon },
+  { key: 'release', Icon: ReleaseIcon },
+  { key: 'backend', Icon: BackendIcon },
+  { key: 'ai', Icon: AiIcon },
 ];
 
 function WhatWeDoCard({
@@ -35,12 +35,12 @@ function WhatWeDoCard({
         <div className="relative z-10">
           <div className="flex items-center gap-3 sm:gap-4 mb-3">
             <div className="relative shrink-0">
-              <div className="h-10 w-10 sm:h-14 sm:w-14 rounded-xl sm:rounded-2xl bg-[var(--color-surface)]/80 border border-[var(--color-border)] flex items-center justify-center text-accent shadow-sm backdrop-blur-md">
-                <Icon className="h-5 w-5 sm:h-7 sm:w-7" />
+              <div className="size-10 sm:size-14 rounded-xl sm:rounded-2xl bg-[var(--color-surface)]/80 border border-[var(--color-border)] flex items-center justify-center text-accent shadow-sm backdrop-blur-md">
+                <Icon className="size-5 sm:size-7" />
               </div>
               <div className="absolute inset-0 bg-accent/20 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </div>
-            <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-[var(--color-text)]">
+            <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-[var(--color-text)]">
               {title}
             </h3>
           </div>
@@ -49,7 +49,7 @@ function WhatWeDoCard({
           </p>
         </div>
 
-        <div className="absolute -top-[100%] -left-[100%] w-[300%] h-[300%] bg-gradient-to-br from-[var(--color-text)]/5 to-transparent rotate-45 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+        <div className="absolute -top-[100%] -left-[100%] size-[300%] bg-gradient-to-br from-[var(--color-text)]/5 to-transparent rotate-45 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
       </div>
     </FadeInView>
   );
@@ -67,8 +67,8 @@ export function WhatWeDo() {
 
       <div className="container mx-auto px-6 relative z-10">
         <FadeInView animation="up" className="max-w-3xl mx-auto text-center mb-10 md:mb-16">
-          <h2 className="section-title mb-3 md:mb-4">{t("whatWeDo.title")}</h2>
-          <p className="section-subtitle max-w-2xl mx-auto">{t("whatWeDo.subtitle")}</p>
+          <h2 className="section-title mb-3 md:mb-4">{t('whatWeDo.title')}</h2>
+          <p className="section-subtitle max-w-2xl mx-auto">{t('whatWeDo.subtitle')}</p>
         </FadeInView>
 
         <div className="grid md:grid-cols-2 gap-4 md:gap-6 lg:gap-8">

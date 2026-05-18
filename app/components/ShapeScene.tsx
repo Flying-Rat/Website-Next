@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { memo, useEffect, useReducer, useRef, useState } from "react";
-import { createPortal } from "react-dom";
-import * as THREE from "three";
+import { memo, useEffect, useReducer, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import * as THREE from 'three';
 
-import { useTheme } from "../hooks/useTheme";
+import { useTheme } from '../hooks/useTheme';
 import {
   EASTER_SEQUENCE,
   EASTER_SET,
@@ -13,25 +13,25 @@ import {
   type ShapeType,
   createShapeGeometry,
   edgeCreaseAngle,
-} from "./ShapeScene/shapeSceneGeometry";
-import { vertexShader, fragmentShader } from "./ShapeScene/shapeSceneShaders";
+} from './ShapeScene/shapeSceneGeometry';
+import { vertexShader, fragmentShader } from './ShapeScene/shapeSceneShaders';
 
 type EasterState = {
   active: boolean;
   inputKeys: Array<{ id: string; key: string }>;
 };
 type EasterAction =
-  | { type: "activate" }
-  | { type: "deactivate" }
-  | { type: "keys"; keys: Array<{ id: string; key: string }> };
+  | { type: 'activate' }
+  | { type: 'deactivate' }
+  | { type: 'keys'; keys: Array<{ id: string; key: string }> };
 
 function easterReducer(_state: EasterState, action: EasterAction): EasterState {
   switch (action.type) {
-    case "activate":
+    case 'activate':
       return { active: true, inputKeys: [] };
-    case "deactivate":
+    case 'deactivate':
       return { active: false, inputKeys: [] };
-    case "keys":
+    case 'keys':
       return { active: _state.active, inputKeys: action.keys };
   }
 }
@@ -57,7 +57,7 @@ export const ShapeScene = memo(function ShapeScene({
   const keyEntriesRef = useRef<Array<{ id: string; key: string }>>([]);
   const keyIdRef = useRef(0);
   const timerRef = useRef<number | null>(null);
-  const easterEmail = "marty+levelup@flying-rat.studio";
+  const easterEmail = 'marty+levelup@flying-rat.studio';
 
   useEffect(() => {
     queueMicrotask(() => setPortalTarget(document.body));
@@ -69,10 +69,10 @@ export const ShapeScene = memo(function ShapeScene({
       return;
     }
 
-    const isLight = resolvedTheme === "light";
+    const isLight = resolvedTheme === 'light';
     const accent = new THREE.Color(isLight ? 0xe84054 : 0xfa5565);
     const steel = new THREE.Color(isLight ? 0x3a3a3a : 0xd8d8d8);
-    const isMobile = window.innerWidth < 768 || "ontouchstart" in window;
+    const isMobile = window.innerWidth < 768 || 'ontouchstart' in window;
     const subdivisions = isMobile ? 6 : 10;
     const cameraParallax = isMobile ? 0.95 : 1.6;
     const fogColor = new THREE.Color(isLight ? 0xf5f5f5 : 0x0a0a0a);
@@ -86,11 +86,11 @@ export const ShapeScene = memo(function ShapeScene({
     const renderer = new THREE.WebGLRenderer({
       antialias: !isMobile,
       alpha: true,
-      powerPreference: "low-power",
+      powerPreference: 'low-power',
     });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x000000, 0);
-    renderer.domElement.style.display = "block";
+    renderer.domElement.style.display = 'block';
     container.appendChild(renderer.domElement);
 
     const getViewSizeAtZ = (worldZ = 0) => {
@@ -133,14 +133,14 @@ export const ShapeScene = memo(function ShapeScene({
 
     const shapes: ShapeData[] = [];
 
-    const auraCanvas = document.createElement("canvas");
+    const auraCanvas = document.createElement('canvas');
     auraCanvas.width = 128;
     auraCanvas.height = 128;
-    const auraCtx = auraCanvas.getContext("2d")!;
+    const auraCtx = auraCanvas.getContext('2d')!;
     const auraGradient = auraCtx.createRadialGradient(64, 64, 0, 64, 64, 64);
-    auraGradient.addColorStop(0, "rgba(255,255,255,1)");
-    auraGradient.addColorStop(0.3, "rgba(255,255,255,0.3)");
-    auraGradient.addColorStop(1, "rgba(255,255,255,0)");
+    auraGradient.addColorStop(0, 'rgba(255,255,255,1)');
+    auraGradient.addColorStop(0.3, 'rgba(255,255,255,0.3)');
+    auraGradient.addColorStop(1, 'rgba(255,255,255,0)');
     auraCtx.fillStyle = auraGradient;
     auraCtx.fillRect(0, 0, 128, 128);
     const auraTexture = new THREE.CanvasTexture(auraCanvas);
@@ -173,14 +173,14 @@ export const ShapeScene = memo(function ShapeScene({
       const shapeRoll = Math.random();
       const shapeType: ShapeType =
         i === 0
-          ? "box"
+          ? 'box'
           : shapeRoll < 0.4
-            ? "box"
+            ? 'box'
             : shapeRoll < 0.62
-              ? "octahedron"
+              ? 'octahedron'
               : shapeRoll < 0.82
-                ? "tetrahedron"
-                : "torus";
+                ? 'tetrahedron'
+                : 'torus';
 
       let position = new THREE.Vector3();
       if (isMobile) {
@@ -243,7 +243,7 @@ export const ShapeScene = memo(function ShapeScene({
         edges.position.copy(position);
       } else {
         const explosionScale =
-          shapeType === "torus" ? 0.08 + Math.random() * 0.06 : 0.28 + Math.random() * 0.18;
+          shapeType === 'torus' ? 0.08 + Math.random() * 0.06 : 0.28 + Math.random() * 0.18;
         material = new THREE.ShaderMaterial({
           vertexShader,
           fragmentShader,
@@ -256,7 +256,7 @@ export const ShapeScene = memo(function ShapeScene({
             uExplosion: { value: size * explosionScale },
             uProximity: { value: 0 },
             uBoost: { value: 0 },
-            uEdgeGlow: { value: shapeType === "box" ? 1.0 : 0.0 },
+            uEdgeGlow: { value: shapeType === 'box' ? 1.0 : 0.0 },
             uFogColor: { value: fogColor.clone() },
             uFogDensity: { value: fogDensity },
           },
@@ -312,7 +312,7 @@ export const ShapeScene = memo(function ShapeScene({
 
     const particlePositions = new Float32Array(particleCount * 3);
     const particleGeometry = new THREE.BufferGeometry();
-    particleGeometry.setAttribute("position", new THREE.BufferAttribute(particlePositions, 3));
+    particleGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
     const particleMaterial = new THREE.PointsMaterial({
       color: accent,
       size: 0.06,
@@ -343,10 +343,10 @@ export const ShapeScene = memo(function ShapeScene({
     const constellationPairShapes = new Int32Array(maxPairs * 2);
     const constellationGeometry = new THREE.BufferGeometry();
     constellationGeometry.setAttribute(
-      "position",
+      'position',
       new THREE.BufferAttribute(constellationPositions, 3),
     );
-    constellationGeometry.setAttribute("color", new THREE.BufferAttribute(constellationColors, 3));
+    constellationGeometry.setAttribute('color', new THREE.BufferAttribute(constellationColors, 3));
     const constellationMaterial = new THREE.LineDashedMaterial({
       vertexColors: true,
       transparent: true,
@@ -361,16 +361,16 @@ export const ShapeScene = memo(function ShapeScene({
     const dotCount = isMobile ? 2 : 6;
     const dotPositions = new Float32Array(dotCount * 3);
     const dotGeometry = new THREE.BufferGeometry();
-    dotGeometry.setAttribute("position", new THREE.BufferAttribute(dotPositions, 3));
+    dotGeometry.setAttribute('position', new THREE.BufferAttribute(dotPositions, 3));
     const dotColor = accent.clone().lerp(new THREE.Color(0xffffff), 0.2);
-    const dotCanvas = document.createElement("canvas");
+    const dotCanvas = document.createElement('canvas');
     dotCanvas.width = 32;
     dotCanvas.height = 32;
-    const dotCtx = dotCanvas.getContext("2d")!;
+    const dotCtx = dotCanvas.getContext('2d')!;
     const dotGradient = dotCtx.createRadialGradient(16, 16, 0, 16, 16, 16);
-    dotGradient.addColorStop(0, "rgba(255,255,255,1)");
-    dotGradient.addColorStop(0.45, "rgba(255,255,255,0.6)");
-    dotGradient.addColorStop(1, "rgba(255,255,255,0)");
+    dotGradient.addColorStop(0, 'rgba(255,255,255,1)');
+    dotGradient.addColorStop(0.45, 'rgba(255,255,255,0.6)');
+    dotGradient.addColorStop(1, 'rgba(255,255,255,0)');
     dotCtx.fillStyle = dotGradient;
     dotCtx.fillRect(0, 0, 32, 32);
     const dotTexture = new THREE.CanvasTexture(dotCanvas);
@@ -402,32 +402,26 @@ export const ShapeScene = memo(function ShapeScene({
       spawnBounds = getSpawnBounds();
 
       for (const shape of shapes) {
+        const base = shape.basePosition;
         const limitX = Math.max(0.8, spawnBounds.shapeX - shape.scale * 0.5);
         const limitY = Math.max(0.7, spawnBounds.shapeY - shape.scale * 0.5);
-        shape.basePosition.x = THREE.MathUtils.clamp(shape.basePosition.x, -limitX, limitX);
-        shape.basePosition.y = THREE.MathUtils.clamp(shape.basePosition.y, -limitY, limitY);
-        shape.mesh.position.x = shape.basePosition.x;
-        shape.mesh.position.y = shape.basePosition.y;
+        base.x = THREE.MathUtils.clamp(base.x, -limitX, limitX);
+        base.y = THREE.MathUtils.clamp(base.y, -limitY, limitY);
+        shape.mesh.position.x = base.x;
+        shape.mesh.position.y = base.y;
         if (shape.edges) {
-          shape.edges.position.x = shape.basePosition.x;
-          shape.edges.position.y = shape.basePosition.y;
+          shape.edges.position.x = base.x;
+          shape.edges.position.y = base.y;
         }
       }
 
       for (let pi = 0; pi < particles.length; pi++) {
         const particle = particles[pi];
-        particle.basePosition.x = THREE.MathUtils.clamp(
-          particle.basePosition.x,
-          -spawnBounds.particleX,
-          spawnBounds.particleX,
-        );
-        particle.basePosition.y = THREE.MathUtils.clamp(
-          particle.basePosition.y,
-          -spawnBounds.particleY,
-          spawnBounds.particleY,
-        );
-        particlePositions[pi * 3] = particle.basePosition.x;
-        particlePositions[pi * 3 + 1] = particle.basePosition.y;
+        const base = particle.basePosition;
+        base.x = THREE.MathUtils.clamp(base.x, -spawnBounds.particleX, spawnBounds.particleX);
+        base.y = THREE.MathUtils.clamp(base.y, -spawnBounds.particleY, spawnBounds.particleY);
+        particlePositions[pi * 3] = base.x;
+        particlePositions[pi * 3 + 1] = base.y;
       }
       particleGeometry.attributes.position.needsUpdate = true;
     };
@@ -442,7 +436,7 @@ export const ShapeScene = memo(function ShapeScene({
     });
     resizeObserver.observe(container);
 
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const allowMotion = shouldAnimate && !prefersReducedMotion;
 
     let animationFrame = 0;
@@ -744,13 +738,13 @@ export const ShapeScene = memo(function ShapeScene({
     };
 
     const handleVisibility = () => {
-      visible = document.visibilityState === "visible";
+      visible = document.visibilityState === 'visible';
       updateRunning();
     };
-    document.addEventListener("visibilitychange", handleVisibility);
+    document.addEventListener('visibilitychange', handleVisibility);
 
     let observer: IntersectionObserver | null = null;
-    if ("IntersectionObserver" in window) {
+    if ('IntersectionObserver' in window) {
       observer = new IntersectionObserver(
         (entries) => {
           inView = entries.some((entry) => entry.isIntersecting);
@@ -780,14 +774,14 @@ export const ShapeScene = memo(function ShapeScene({
     };
 
     if (allowMotion) {
-      window.addEventListener("pointermove", handlePointerMove);
-      window.addEventListener("pointerleave", handlePointerLeave);
+      window.addEventListener('pointermove', handlePointerMove);
+      window.addEventListener('pointerleave', handlePointerLeave);
     }
 
     return () => {
-      document.removeEventListener("visibilitychange", handleVisibility);
-      window.removeEventListener("pointermove", handlePointerMove);
-      window.removeEventListener("pointerleave", handlePointerLeave);
+      document.removeEventListener('visibilitychange', handleVisibility);
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerleave', handlePointerLeave);
       resizeObserver.disconnect();
       if (resizeTimer) {
         clearTimeout(resizeTimer);
@@ -829,23 +823,23 @@ export const ShapeScene = memo(function ShapeScene({
 
   useEffect(() => {
     if (!shouldAnimate) {
-      dispatchEaster({ type: "deactivate" });
-      document.documentElement.classList.remove("crt-mode");
+      dispatchEaster({ type: 'deactivate' });
+      document.documentElement.classList.remove('crt-mode');
       boostRef.current = false;
       return;
     }
 
     const triggerEaster = () => {
       boostRef.current = true;
-      dispatchEaster({ type: "activate" });
-      document.documentElement.classList.add("crt-mode");
+      dispatchEaster({ type: 'activate' });
+      document.documentElement.classList.add('crt-mode');
       if (timerRef.current) {
         window.clearTimeout(timerRef.current);
       }
       timerRef.current = window.setTimeout(() => {
         boostRef.current = false;
-        dispatchEaster({ type: "deactivate" });
-        document.documentElement.classList.remove("crt-mode");
+        dispatchEaster({ type: 'deactivate' });
+        document.documentElement.classList.remove('crt-mode');
       }, 5000);
     };
 
@@ -868,7 +862,7 @@ export const ShapeScene = memo(function ShapeScene({
       } else {
         keysRef.current = next;
         keyEntriesRef.current = nextEntries;
-        dispatchEaster({ type: "keys", keys: nextEntries });
+        dispatchEaster({ type: 'keys', keys: nextEntries });
       }
       if (matches) {
         keysRef.current = [];
@@ -876,14 +870,14 @@ export const ShapeScene = memo(function ShapeScene({
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener('keydown', handleKeyDown);
       if (timerRef.current) {
         window.clearTimeout(timerRef.current);
       }
-      dispatchEaster({ type: "deactivate" });
-      document.documentElement.classList.remove("crt-mode");
+      dispatchEaster({ type: 'deactivate' });
+      document.documentElement.classList.remove('crt-mode');
       boostRef.current = false;
     };
   }, [shouldAnimate]);
@@ -891,7 +885,7 @@ export const ShapeScene = memo(function ShapeScene({
   return (
     <div
       ref={containerRef}
-      className={className ?? "relative h-full w-full overflow-hidden"}
+      className={className ?? 'relative h-full w-full overflow-hidden'}
       aria-label={label}
       role="img"
     >
@@ -899,10 +893,10 @@ export const ShapeScene = memo(function ShapeScene({
         ? createPortal(<div className="crt-overlay" aria-hidden="true" />, portalTarget)
         : null}
       {easterActive && (
-        <div className="absolute bottom-4 left-4 z-10 max-w-[280px] rounded-2xl border border-white/10 bg-black/70 px-4 py-3 text-[12px] leading-relaxed text-gray-200 shadow-[0_0_18px_rgba(250,85,101,0.35)] backdrop-blur">
+        <div className="absolute bottom-4 left-4 z-10 max-w-[280px] rounded-2xl border border-white/10 bg-black/70 px-4 py-3 text-[12px] leading-relaxed text-zinc-200 shadow-[0_0_18px_rgba(250,85,101,0.35)] backdrop-blur">
           <p className="font-semibold uppercase tracking-[0.2em] text-white/80">Hey gamer</p>
-          <p className="mt-1 text-gray-300/90">
-            Sounds like you know your way around. Say hi at{" "}
+          <p className="mt-1 text-zinc-300/90">
+            Sounds like you know your way around. Say hi at{' '}
             <a className="text-white hover:text-white/90" href={`mailto:${easterEmail}`}>
               {easterEmail}
             </a>
@@ -912,9 +906,9 @@ export const ShapeScene = memo(function ShapeScene({
       )}
       {inputKeys.length > 0 && (
         <div className="absolute top-3 right-3 z-10">
-          <div className="flex items-center gap-1 rounded-full border border-white/10 bg-black/60 px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-gray-300 backdrop-blur">
+          <div className="flex items-center gap-1 rounded-full border border-white/10 bg-black/60 px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-zinc-300 backdrop-blur">
             {inputKeys.map((entry) => (
-              <span key={entry.id}>{entry.key.replace("arrow", "")}</span>
+              <span key={entry.id}>{entry.key.replace('arrow', '')}</span>
             ))}
           </div>
         </div>

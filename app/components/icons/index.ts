@@ -1,2 +1,2 @@
-export { PlatformIcon } from "./PlatformIcon";
-export * from "./SocialIcons";
+export { PlatformIcon } from './PlatformIcon';
+export * from './SocialIcons';

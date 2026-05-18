@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import type { CSSProperties } from "react";
-import { useEffect, useState } from "react";
+import Image from 'next/image';
+import type { CSSProperties } from 'react';
+import { useEffect, useState } from 'react';
 
-import { useAnimationsEnabled } from "../hooks/useAnimationsEnabled";
-import { useTranslation } from "../i18n";
+import { useAnimationsEnabled } from '../hooks/useAnimationsEnabled';
+import { useTranslation } from '../i18n';
 
-const trustedStudios = ["Meta", "Red Hook Studios", "3D Realms", "Bohemia Incubator"];
+const trustedStudios = ['Meta', 'Red Hook Studios', '3D Realms', 'Bohemia Incubator'];
 
 export function Hero() {
   const { t } = useTranslation();
@@ -26,7 +26,7 @@ export function Hero() {
     const isVisible = mounted;
     return {
       opacity: isVisible ? 1 : 0,
-      transform: isVisible ? "none" : "translateY(30px)",
+      transform: isVisible ? 'none' : 'translateY(30px)',
       transition: `opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${delayMs}ms, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${delayMs}ms`,
     };
   };
@@ -50,24 +50,24 @@ export function Hero() {
       </div>
 
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-accent/5 rounded-full blur-3xl" />
+        <div className="absolute top-1/4 left-1/4 size-96 bg-accent/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/4 size-80 bg-accent/5 rounded-full blur-3xl" />
       </div>
 
       <div className="container mx-auto px-6 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
           <h1
-            className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-4 md:mb-6"
+            className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-semibold mb-4 md:mb-6"
             style={getStyle(0)}
           >
-            <span className="gradient-text">{t("hero.tagline")}</span>
+            <span className="gradient-text">{t('hero.tagline')}</span>
           </h1>
 
           <p
             className="text-lg sm:text-xl md:text-2xl text-[var(--color-text-secondary)] mb-8 md:mb-12 max-w-2xl mx-auto"
             style={getStyle(100)}
           >
-            {t("hero.subtitle")}
+            {t('hero.subtitle')}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center" style={getStyle(200)}>
@@ -75,13 +75,13 @@ export function Hero() {
               href="#projects"
               className="px-6 py-3 sm:px-8 sm:py-4 bg-accent hover:bg-accent-dark text-white font-semibold rounded-xl transition-all hover:shadow-lg hover:shadow-accent/30 hover:scale-105 active:scale-95"
             >
-              {t("hero.cta.projects")}
+              {t('hero.cta.projects')}
             </a>
             <a
               href="#contact"
               className="px-6 py-3 sm:px-8 sm:py-4 border border-[var(--color-text-muted)] hover:border-accent text-[var(--color-text)] font-semibold rounded-xl transition-all backdrop-blur-sm hover:scale-105 active:scale-95"
             >
-              {t("hero.cta.contact")}
+              {t('hero.cta.contact')}
             </a>
           </div>
         </div>
@@ -93,7 +93,7 @@ export function Hero() {
       >
         <div className="flex items-center justify-center gap-4 text-[11px] uppercase tracking-[0.35em] text-[var(--color-text-subtle)]">
           <span className="h-px w-10 bg-gradient-to-r from-transparent via-[var(--color-text)]/20 to-transparent" />
-          <span>{t("hero.trustedBy")}</span>
+          <span>{t('hero.trustedBy')}</span>
           <span className="h-px w-10 bg-gradient-to-r from-transparent via-[var(--color-text)]/20 to-transparent" />
         </div>
         <div className="mt-4 flex flex-wrap items-center justify-center gap-x-0 gap-y-2 text-xs md:text-sm text-[var(--color-text-secondary)]">
@@ -111,7 +111,7 @@ export function Hero() {
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
         <div className="hidden md:flex w-6 h-10 border-2 border-[var(--color-text-muted)] rounded-full justify-center pt-2">
           <div
-            className={`w-1 h-2 bg-accent rounded-full ${shouldAnimate ? "animate-scroll-wheel" : ""}`}
+            className={`w-1 h-2 bg-accent rounded-full ${shouldAnimate ? 'animate-scroll-wheel' : ''}`}
           />
         </div>
         <div className="md:hidden text-[var(--color-text-muted)]">

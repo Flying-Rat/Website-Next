@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useTheme as useNextTheme } from "next-themes";
-import { useCallback, useSyncExternalStore } from "react";
+import { useTheme as useNextTheme } from 'next-themes';
+import { useCallback, useSyncExternalStore } from 'react';
 
-type Theme = "light" | "dark" | "system";
+type Theme = 'light' | 'dark' | 'system';
 
 function emptySubscribe() {
   return () => {};
@@ -18,8 +18,8 @@ export function useTheme() {
   );
 
   const cycleTheme = useCallback(() => {
-    const current = theme ?? "system";
-    const order: Theme[] = ["light", "dark", "system"];
+    const current = theme ?? 'system';
+    const order: Theme[] = ['light', 'dark', 'system'];
     const idx = order.indexOf(current as Theme);
     const next = order[(idx + 1) % order.length];
     setTheme(next);
@@ -28,7 +28,7 @@ export function useTheme() {
   return {
     theme: theme as Theme | undefined,
     setTheme,
-    resolvedTheme: resolvedTheme as "light" | "dark" | undefined,
+    resolvedTheme: resolvedTheme as 'light' | 'dark' | undefined,
     cycleTheme,
     mounted,
   };

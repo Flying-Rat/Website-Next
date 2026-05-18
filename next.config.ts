@@ -1,11 +1,11 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig = {
   reactStrictMode: true,
-  output: "standalone",
+  output: 'standalone',
   reactCompiler: true,
   poweredByHeader: false,
-  allowedDevOrigins: ["localhost"],
+  allowedDevOrigins: ['localhost'],
   experimental: {
     turbopackFileSystemCacheForDev: true,
   },

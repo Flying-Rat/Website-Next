@@ -1,37 +1,37 @@
-import { Analytics } from "@vercel/analytics/next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
-import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
+import type { Metadata, Viewport } from 'next';
+import { Inter } from 'next/font/google';
 
-import { ThemeProvider } from "./components/ThemeProvider";
+import { ThemeProvider } from './components/ThemeProvider';
 
-import "./globals.css";
+import './globals.css';
 
 const inter = Inter({
-  subsets: ["latin", "latin-ext"],
-  display: "swap",
-  variable: "--font-inter",
+  subsets: ['latin', 'latin-ext'],
+  display: 'swap',
+  variable: '--font-inter',
 });
 
 export const viewport: Viewport = {
-  width: "device-width",
+  width: 'device-width',
   initialScale: 1,
-  viewportFit: "cover",
+  viewportFit: 'cover',
 };
 
 export const metadata: Metadata = {
-  title: "Flying Rat Studio | Game Development Studio",
+  title: 'Flying Rat Studio | Game Development Studio',
   description:
-    "Prague-based game development studio crafting gameplay that feels amazing. We collaborate with top studios on titles like Beat Saber, Darkest Dungeon 2, and more.",
+    'Prague-based game development studio crafting gameplay that feels amazing. We collaborate with top studios on titles like Beat Saber, Darkest Dungeon 2, and more.',
   keywords: [
-    "game development",
-    "indie games",
-    "Prague",
-    "Beat Saber",
-    "game studio",
-    "Flying Rat",
+    'game development',
+    'indie games',
+    'Prague',
+    'Beat Saber',
+    'game studio',
+    'Flying Rat',
   ],
-  authors: [{ name: "Flying Rat Studio" }],
+  authors: [{ name: 'Flying Rat Studio' }],
   formatDetection: {
     telephone: false,
     date: false,
@@ -39,21 +39,21 @@ export const metadata: Metadata = {
     address: false,
   },
   openGraph: {
-    title: "Flying Rat Studio | Game Development Studio",
-    description: "Prague-based game development studio crafting gameplay that feels amazing.",
-    url: "https://flying-rat.studio",
-    siteName: "Flying Rat Studio",
-    locale: "en_US",
-    type: "website",
+    title: 'Flying Rat Studio | Game Development Studio',
+    description: 'Prague-based game development studio crafting gameplay that feels amazing.',
+    url: 'https://flying-rat.studio',
+    siteName: 'Flying Rat Studio',
+    locale: 'en_US',
+    type: 'website',
   },
   twitter: {
-    card: "summary_large_image",
-    title: "Flying Rat Studio | Game Development Studio",
-    description: "Prague-based game development studio crafting gameplay that feels amazing.",
+    card: 'summary_large_image',
+    title: 'Flying Rat Studio | Game Development Studio',
+    description: 'Prague-based game development studio crafting gameplay that feels amazing.',
   },
   icons: {
-    icon: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
+    icon: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
   },
 };
 

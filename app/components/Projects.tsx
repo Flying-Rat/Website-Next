@@ -1,34 +1,35 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import Link from "next/link";
-import { memo, useCallback, useState } from "react";
+import Image from 'next/image';
+import Link from 'next/link';
+import { memo, useCallback, useState } from 'react';
 
-import { projects } from "../data/projects";
-import { useTranslation } from "../i18n";
-import { FadeInView } from "./FadeInView";
-import { PlatformIcon } from "./icons";
+import { projects } from '../data/projects';
+import { useLanguage, useTranslation } from '../i18n';
+import { FadeInView } from './FadeInView';
+import { PlatformIcon } from './icons';
 
-const PRIVACY_POLICY_HREF = "/games/privacy-policy";
+const PRIVACY_POLICY_HREF = '/games/privacy-policy';
 
 const privacyCalloutCopy = {
   en: {
-    label: "Policy & Data",
-    title: "Telemetry, analytics, and player data practices for our games.",
-    cta: "Privacy Policy",
+    label: 'Policy & Data',
+    title: 'Telemetry, analytics, and player data practices for our games.',
+    cta: 'Privacy Policy',
   },
   cs: {
-    label: "Zasady a data",
-    title: "Jak v nasich hrach pracujeme s telemetrii, analytikou a daty hracu.",
-    cta: "Zasady ochrany soukromi",
+    label: 'Zasady a data',
+    title: 'Jak v nasich hrach pracujeme s telemetrii, analytikou a daty hracu.',
+    cta: 'Zasady ochrany soukromi',
   },
 } as const;
 
 export const Projects = () => {
-  const { t, i18n } = useTranslation();
+  const [currentLang] = useLanguage();
+  const { t } = useTranslation();
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const currentLang = (i18n.language === "cs" ? "cs" : "en") as "en" | "cs";
   const privacyCopy = privacyCalloutCopy[currentLang];
+  const translate = useCallback((key: string) => t(key, { lng: currentLang }), [t, currentLang]);
 
   const toggleExpand = useCallback((id: string) => {
     setExpandedId((prev) => (prev === id ? null : id));
@@ -43,8 +44,8 @@ export const Projects = () => {
       <div className="container mx-auto px-6 relative z-10">
         <div className="max-w-6xl mx-auto">
           <FadeInView animation="up" className="text-center mb-10 md:mb-16">
-            <h2 className="section-title mb-3 md:mb-4">{t("projects.title")}</h2>
-            <p className="section-subtitle max-w-2xl mx-auto">{t("projects.subtitle")}</p>
+            <h2 className="section-title mb-3 md:mb-4">{translate('projects.title')}</h2>
+            <p className="section-subtitle max-w-2xl mx-auto">{translate('projects.subtitle')}</p>
           </FadeInView>
 
           <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
@@ -55,7 +56,7 @@ export const Projects = () => {
                 index={index}
                 isExpanded={expandedId === project.id}
                 onToggle={toggleExpand}
-                t={t}
+                t={translate}
                 currentLang={currentLang}
               />
             ))}
@@ -81,7 +82,7 @@ export const Projects = () => {
                   <svg
                     aria-hidden="true"
                     viewBox="0 0 16 16"
-                    className="h-3.5 w-3.5 text-accent"
+                    className="size-3.5 text-accent"
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="1.75"
@@ -108,7 +109,7 @@ interface ProjectCardProps {
   isExpanded: boolean;
   onToggle: (id: string) => void;
   t: (key: string) => string;
-  currentLang: "en" | "cs";
+  currentLang: 'en' | 'cs';
 }
 
 const ProjectCard = memo(function ProjectCard({
@@ -143,7 +144,7 @@ const ProjectCard = memo(function ProjectCard({
                   <div className="text-center">
                     <span className="text-4xl">🧀</span>
                     <p className="text-xs text-[var(--color-text-subtle)] mt-2">
-                      {t("projects.comingSoon")}
+                      {t('projects.comingSoon')}
                     </p>
                   </div>
                 </div>
@@ -153,7 +154,7 @@ const ProjectCard = memo(function ProjectCard({
 
             {project.isInternal && (
               <div className="absolute top-2 right-2 sm:top-3 sm:right-3 px-1.5 py-0.5 sm:px-2 sm:py-1 bg-accent text-[10px] sm:text-xs font-semibold rounded">
-                {t("projects.internal")}
+                {t('projects.internal')}
               </div>
             )}
           </div>
@@ -161,7 +162,7 @@ const ProjectCard = memo(function ProjectCard({
           <div className="p-3 sm:p-5 pb-2 sm:pb-3">
             <div className="flex items-start justify-between gap-1 sm:gap-2">
               <div className="min-w-0">
-                <h3 className="text-sm sm:text-lg font-bold mb-0.5 sm:mb-1 group-hover:text-accent transition-colors truncate">
+                <h3 className="text-sm sm:text-lg font-semibold mb-0.5 sm:mb-1 group-hover:text-accent transition-colors truncate">
                   {project.title}
                 </h3>
                 <p className="text-xs sm:text-sm text-[var(--color-text-subtle)] truncate">
@@ -169,7 +170,7 @@ const ProjectCard = memo(function ProjectCard({
                 </p>
               </div>
               <div
-                className={`mt-0.5 sm:mt-1 text-[var(--color-text-muted)] shrink-0 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
+                className={`mt-0.5 sm:mt-1 text-[var(--color-text-muted)] shrink-0 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
               >
                 <svg
                   width="16"
@@ -204,13 +205,13 @@ const ProjectCard = memo(function ProjectCard({
               </a>
             ))}
             {project.isInternal && project.platforms.length === 0 && (
-              <span className="platform-badge">🔜 {t("projects.tba")}</span>
+              <span className="platform-badge">🔜 {t('projects.tba')}</span>
             )}
           </fieldset>
 
           {project.description && (
             <div
-              className={`grid transition-all duration-300 ease-out ${isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}
+              className={`grid transition-all duration-300 ease-out ${isExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}
             >
               <div className="overflow-hidden">
                 <p className="text-sm text-[var(--color-text-muted)] mt-4 pt-4 border-t border-[var(--color-border)]">

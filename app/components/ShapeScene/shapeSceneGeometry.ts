@@ -1,16 +1,16 @@
-import * as THREE from "three";
+import * as THREE from 'three';
 
 export const EASTER_SEQUENCE = [
-  "arrowup",
-  "arrowup",
-  "arrowdown",
-  "arrowdown",
-  "arrowleft",
-  "arrowright",
-  "arrowleft",
-  "arrowright",
-  "b",
-  "a",
+  'arrowup',
+  'arrowup',
+  'arrowdown',
+  'arrowdown',
+  'arrowleft',
+  'arrowright',
+  'arrowleft',
+  'arrowright',
+  'b',
+  'a',
 ];
 export const EASTER_SET = new Set(EASTER_SEQUENCE);
 
@@ -34,7 +34,7 @@ export interface ParticleData {
   phase: number;
 }
 
-export type ShapeType = "box" | "octahedron" | "tetrahedron" | "torus";
+export type ShapeType = 'box' | 'octahedron' | 'tetrahedron' | 'torus';
 
 function toFlatNormals(geo: THREE.BufferGeometry): THREE.BufferGeometry {
   const flat = geo.getIndex() ? geo.toNonIndexed() : geo.clone();
@@ -81,15 +81,15 @@ export function createShapeGeometry(
 ): THREE.BufferGeometry {
   const isMobileSub = subdivisions <= 6;
   switch (type) {
-    case "octahedron": {
+    case 'octahedron': {
       const geo = new THREE.OctahedronGeometry(size * 0.62, wireframe ? 0 : isMobileSub ? 1 : 2);
       return wireframe ? geo : toFlatNormals(geo);
     }
-    case "tetrahedron": {
+    case 'tetrahedron': {
       const geo = new THREE.TetrahedronGeometry(size * 0.72, wireframe ? 0 : isMobileSub ? 1 : 2);
       return wireframe ? geo : toFlatNormals(geo);
     }
-    case "torus":
+    case 'torus':
       return new THREE.TorusGeometry(
         size * 0.38,
         size * 0.13,
@@ -104,13 +104,13 @@ export function createShapeGeometry(
 }
 
 export function edgeCreaseAngle(type: ShapeType): number {
-  if (type === "tetrahedron") {
+  if (type === 'tetrahedron') {
     return 20;
   }
-  if (type === "octahedron") {
+  if (type === 'octahedron') {
     return 30;
   }
-  if (type === "torus") {
+  if (type === 'torus') {
     return 15;
   }
   return 40;
