@@ -19,6 +19,15 @@ const ICON_PATHS: Record<string, string> = {
 const DEFAULT_PATH = 'M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z';
 
 export function PlatformIcon({ name }: { name: string }) {
+  if (name === 'Demo') {
+    return (
+      <svg className="size-3 shrink-0 fill-current" viewBox="0 0 24 24" aria-hidden>
+        <circle cx="12" cy="12" r="9" opacity={0.22} />
+        <path d="M10 8.35v7.3l6.1-3.65L10 8.35z" />
+      </svg>
+    );
+  }
+
   return (
     <svg className="size-3 fill-current shrink-0" viewBox="0 0 24 24">
       <title>{name}</title>

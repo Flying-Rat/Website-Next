@@ -237,6 +237,10 @@
     "studio": "Flying Rat Studio",
     "platforms": [
       {
+        "name": "Demo",
+        "url": "https://pitpanic.game/l/demo"
+      },
+      {
         "name": "Steam",
         "url": "https://store.steampowered.com/app/2491490/Pit_Panic/"
       },
@@ -248,8 +252,8 @@
     "image": "/images/projects/pit-panic.jpg",
     "isInternal": true,
     "description": {
-      "en": "Our in-house roguelike platformer: race out of a sinking Aztec temple with physics-driven digging, a versatile hook, handcrafted levels, and daily leaderboards. Steam demo on 26 May 2026; launches July 2026.",
-      "cs": "Naše interní roguelike platformerka: utíkejte z potápějícího se aztéckého chrámu s fyzikálním kopáním, univerzálním háčkem, ručně tvořenými levely a denními žebříčky. Steam demo 26. května 2026; vydání v červenci 2026."
+      "en": "Roguelike platformer: escape a sinking Aztec temple—digging, hook, handcrafted levels, daily boards. [Play the demo](https://pitpanic.game/l/demo). Wishlist on Steam; ships July 2026.",
+      "cs": "Roguelike platformerka: útěk z potápějícího se chrámu—kopání, háček, levely, denní žebříčky. [Hrát demo](https://pitpanic.game/l/demo). Wishlist na Steamu; plná hra v červenci 2026."
     }
   }
 ]

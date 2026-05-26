@@ -6,6 +6,7 @@ import { memo, useCallback, useState } from 'react';
 
 import { projects } from '../data/projects';
 import { useLanguage, useTranslation } from '../i18n';
+import { renderSimpleMarkdown } from '../utils/renderSimpleMarkdown';
 import { FadeInView } from './FadeInView';
 import { PlatformIcon } from './icons';
 
@@ -216,7 +217,7 @@ const ProjectCard = memo(function ProjectCard({
         {project.description && isExpanded && (
           <div
             id={descriptionId}
-            className="project-detail-overlay absolute inset-0 z-20 overflow-hidden p-3 sm:p-4"
+            className="project-detail-overlay flex min-h-0 flex-col absolute inset-0 z-20 overflow-hidden p-3 sm:p-4"
             role="region"
             aria-label={`${project.title} details`}
           >
@@ -239,7 +240,7 @@ const ProjectCard = memo(function ProjectCard({
               </svg>
             </button>
 
-            <div className="project-detail-copy">
+            <div className="project-detail-copy min-h-0 flex-1">
               <div className="max-w-[calc(100%-2.75rem)] sm:max-w-[calc(100%-2.5rem)]">
                 <p className="text-[9px] sm:text-[10px] font-medium uppercase tracking-[0.18em] text-accent">
                   {project.studio}
@@ -249,8 +250,8 @@ const ProjectCard = memo(function ProjectCard({
                 </h3>
               </div>
 
-              <p className="mt-3 text-xs leading-relaxed text-[var(--color-text-secondary)] sm:mt-4 sm:text-sm">
-                {project.description[currentLang]}
+              <p className="mt-3 text-xs leading-snug text-pretty text-[var(--color-text-secondary)] sm:mt-4 sm:text-sm sm:leading-relaxed">
+                {renderSimpleMarkdown(project.description[currentLang])}
               </p>
             </div>
           </div>
