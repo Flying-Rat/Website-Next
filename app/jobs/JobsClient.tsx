@@ -20,7 +20,6 @@ const sections = [
       { key: 'cppMediorEngineer', level: 'medior' },
       { key: 'cppRustEngineer', level: 'senior' },
       { key: 'backendEngineer', level: 'medior' },
-      { key: 'pythonProgrammer', level: 'medior' },
     ],
   },
   {
@@ -29,14 +28,17 @@ const sections = [
     positions: [{ key: 'qaEngineer', level: 'medior' }],
   },
   {
-    id: 'marketing',
-    key: 'marketing',
-    positions: [{ key: 'marketingManager', level: 'medior' }],
-  },
-  {
     id: 'it',
     key: 'it',
     positions: [{ key: 'juniorIt', level: 'junior' }],
+  },
+  {
+    id: 'previously',
+    key: 'previously',
+    positions: [
+      { key: 'pythonProgrammer', level: 'medior' },
+      { key: 'marketingManager', level: 'medior' },
+    ],
   },
 ];
 
@@ -55,10 +57,12 @@ export function JobsClient() {
   const email = 'marty+jobs@flying-rat.studio';
   const { copied: copiedId, copy: copyLink } = useClipboard<string>();
 
-  const jobsNavItems = sections.map((section) => ({
-    id: section.id,
-    label: t(`jobs.sections.${section.key}`),
-  }));
+  const jobsNavItems = sections
+    .filter((section) => section.id !== 'previously')
+    .map((section) => ({
+      id: section.id,
+      label: t(`jobs.sections.${section.key}`),
+    }));
   const hiringSteps = t('jobs.hiringProcess.steps', {
     returnObjects: true,
   }) as { title: string; description: string }[];
@@ -217,8 +221,8 @@ export function JobsClient() {
       <div className="container mx-auto px-6">
         <div className="max-w-4xl mx-auto">
           {sections.map((section) => (
-            <section key={section.id} id={section.id} className="mb-16 scroll-mt-28">
-              <h2 className="text-2xl font-semibold mb-6">{t(`jobs.sections.${section.key}`)}</h2>
+            <section key={section.id} id={section.id} className={`mb-16 scroll-mt-28 ${section.id === 'previously' ? 'opacity-50' : ''}`}>
+              <h2 className={`text-2xl font-semibold mb-6 ${section.id === 'previously' ? 'text-[var(--color-text-muted)]' : ''}`}>{t(`jobs.sections.${section.key}`)}</h2>
               <div className="space-y-4">
                 {section.positions.map((position, index) => {
                   const title = t(`jobs.positions.${position.key}.title`);
