@@ -146,6 +146,7 @@
       "qa": "QA",
       "marketing": "Marketing",
       "it": "IT",
+      "operations": "Provoz",
       "previously": "Dřívější pozice"
     },
     "contact": {
@@ -244,6 +245,17 @@
           "VMware/Synology zkušenosti výhodou",
           "Řešení HW a SW problémů",
           "Chuť se učit a růst"
+        ]
+      },
+      "officeCultureManager": {
+        "title": "Office & Culture Manager",
+        "description": "Udržuj naše pražské HQ v chodu a dělej z něj skvělé místo k práci. Postaráš se o každodenní kancelářskou agendu, rozpočty a dodavatele, zorganizuješ firemní akce a interní aktivity a podpoříš HR při onboardingu, náboru a komunikaci s kandidáty. Role pro někoho, kdo miluje pořádek a spokojený tým.",
+        "points": [
+          "Kancelářská agenda a rozpočty",
+          "Akce, teambuilding a kultura",
+          "Podpora HR (onboarding, nábor)",
+          "Dodavatelé, zásoby a provoz kanceláře",
+          "Kalendáře, schůzky a návštěvy"
         ]
       }
     }

@@ -146,6 +146,7 @@
       "qa": "QA",
       "marketing": "Marketing",
       "it": "IT",
+      "operations": "Operations",
       "previously": "Past Positions"
     },
     "contact": {
@@ -244,6 +245,17 @@
           "VMware/Synology experience a plus",
           "HW & SW troubleshooting",
           "Eager to learn & grow"
+        ]
+      },
+      "officeCultureManager": {
+        "title": "Office & Culture Manager",
+        "description": "Keep our Prague HQ running smoothly and make it a great place to work. You'll handle day-to-day office admin, budgets, and vendor coordination, organize team events and internal activities, and support HR with onboarding, recruitment, and candidate communication. A role for someone who thrives on keeping things organized and people happy.",
+        "points": [
+          "Office admin & budget management",
+          "Events, teambuilding & culture",
+          "HR support (onboarding, hiring)",
+          "Vendors, supplies & office ops",
+          "Calendars, meetings & visitors"
         ]
       }
     }
