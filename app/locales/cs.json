@@ -128,8 +128,12 @@
           "description": "Projdeme, co od tebe máme, a probereme to."
         },
         {
-          "title": "Setkání v HQ",
-          "description": "Když to bude dávat smysl, potkáme se u nás v Praze."
+          "title": "První pohovor",
+          "description": "Potkáš se s team leadery a HR v našem HQ v Praze. Probereme zkušenosti, způsob práce a jak role vypadá v praxi."
+        },
+        {
+          "title": "Druhé kolo",
+          "description": "Kratší setkání s founderem - spíš o tom, jestli si sedíme po lidské stránce, co tě baví a jestli jsme na stejné vlně."
         },
         {
           "title": "Když to klapne",

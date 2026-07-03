@@ -128,8 +128,12 @@
           "description": "We review what you sent and talk it through."
         },
         {
-          "title": "Meet at HQ",
-          "description": "If it makes sense, we'll meet at HQ in Prague."
+          "title": "First interview",
+          "description": "You'll meet team leaders and HR at our HQ in Prague. We talk about your experience, how you work, and what the role looks like day to day."
+        },
+        {
+          "title": "Second round",
+          "description": "A shorter conversation with our founder - usually more about culture fit, motivation, and whether we're aligned on both sides."
         },
         {
           "title": "If it clicks",
