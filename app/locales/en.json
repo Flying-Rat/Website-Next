@@ -148,6 +148,7 @@
     "sections": {
       "engineering": "Engineering",
       "qa": "QA",
+      "production": "Production",
       "marketing": "Marketing",
       "it": "IT",
       "operations": "Operations",
@@ -228,6 +229,17 @@
           "Console certification experience",
           "Bug tracking & test case management",
           "Scripting or automation a plus"
+        ]
+      },
+      "mediorProducer": {
+        "title": "Producer",
+        "description": "Run production on co-dev, porting, and internal work - often several streams at once. You'll keep plans honest, partners informed, and engineering and QA unblocked, including cert, storefront submissions, and the update after ship. Close enough to the tech to talk builds and constraints with engineers; clear enough to cut scope when the date is real. Mid-level: you've shipped, you don't hide behind process, and the schedule you keep is one people trust.",
+        "points": [
+          "3+ yrs game production",
+          "Shipped at least one title or major milestone",
+          "Co-dev / multi-project delivery",
+          "Platform cert & storefronts a plus",
+          "Jira / YouTrack (or similar)"
         ]
       },
       "marketingManager": {

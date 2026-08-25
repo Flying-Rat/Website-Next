@@ -28,6 +28,16 @@ const sections = [
     positions: [{ key: 'qaEngineer', level: 'medior' }],
   },
   {
+    id: 'production',
+    key: 'production',
+    positions: [{ key: 'mediorProducer', level: 'medior' }],
+  },
+  {
+    id: 'marketing',
+    key: 'marketing',
+    positions: [{ key: 'marketingManager', level: 'medior' }],
+  },
+  {
     id: 'it',
     key: 'it',
     positions: [{ key: 'juniorIt', level: 'junior' }],
@@ -40,10 +50,7 @@ const sections = [
   {
     id: 'previously',
     key: 'previously',
-    positions: [
-      { key: 'pythonProgrammer', level: 'medior' },
-      { key: 'marketingManager', level: 'medior' },
-    ],
+    positions: [{ key: 'pythonProgrammer', level: 'medior' }],
   },
 ];
 

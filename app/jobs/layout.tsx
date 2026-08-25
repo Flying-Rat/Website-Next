@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Jobs | Flying Rat Studio',
   description:
-    "Join Flying Rat Studio in Prague. We're hiring engineers, marketers, and IT specialists to help ship great games.",
+    "Join Flying Rat Studio in Prague. We're hiring engineers, producers, marketers, and IT specialists to help ship great games.",
   keywords: [
     'Flying Rat Studio',
     'jobs',
@@ -12,11 +12,13 @@ export const metadata: Metadata = {
     'Prague jobs',
     'Unreal Engineer',
     'Unity Engineer',
+    'Producer',
+    'Marketing Manager',
   ],
   openGraph: {
     title: 'Jobs | Flying Rat Studio',
     description:
-      "Join Flying Rat Studio in Prague. We're hiring engineers, marketers, and IT specialists.",
+      "Join Flying Rat Studio in Prague. We're hiring engineers, producers, marketers, and IT specialists.",
     url: 'https://flying-rat.studio/jobs',
     siteName: 'Flying Rat Studio',
     locale: 'en_US',
@@ -26,7 +28,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Jobs | Flying Rat Studio',
     description:
-      "Join Flying Rat Studio in Prague. We're hiring engineers, marketers, and IT specialists.",
+      "Join Flying Rat Studio in Prague. We're hiring engineers, producers, marketers, and IT specialists.",
   },
   alternates: {
     canonical: 'https://flying-rat.studio/jobs',

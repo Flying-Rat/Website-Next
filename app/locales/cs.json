@@ -148,6 +148,7 @@
     "sections": {
       "engineering": "Engineering",
       "qa": "QA",
+      "production": "Produkce",
       "marketing": "Marketing",
       "it": "IT",
       "operations": "Provoz",
@@ -228,6 +229,17 @@
           "Zkušenosti s certifikací konzolí",
           "Bug tracking a správa test cases",
           "Skriptování nebo automatizace výhodou"
+        ]
+      },
+      "mediorProducer": {
+        "title": "Producer",
+        "description": "Měj na starosti produkci co-dev, portovacích i interních projektů, často několika najednou. Budeš držet plány reálné, partnery v obraze a engineering s QA bez zbytečných blokací, včetně certifikace, odevzdek na platformy a updatů po releasu. Dost blízko technice, abys s inženýry mluvil o buildech a omezeních, a dost rozhodný na to, ořezat scope, když termín platí. Mediorská role: už jsi shipnul, neschováváš se za proces a tvoje plány jsou takové, kterým tým věří.",
+        "points": [
+          "3+ roky v herní produkci",
+          "Alespoň jeden vydaný titul nebo velký milník",
+          "Co-dev / víc projektů najednou",
+          "Certifikace a storefronty výhodou",
+          "Jira / YouTrack (nebo podobné)"
         ]
       },
       "marketingManager": {
