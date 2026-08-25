@@ -43,14 +43,12 @@ const sections = [
     positions: [{ key: 'juniorIt', level: 'junior' }],
   },
   {
-    id: 'operations',
-    key: 'operations',
-    positions: [{ key: 'officeCultureManager', level: 'medior' }],
-  },
-  {
     id: 'previously',
     key: 'previously',
-    positions: [{ key: 'pythonProgrammer', level: 'medior' }],
+    positions: [
+      { key: 'pythonProgrammer', level: 'medior' },
+      { key: 'officeCultureManager', level: 'medior' },
+    ],
   },
 ];
 
