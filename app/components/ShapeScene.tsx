@@ -1,41 +1,21 @@
 'use client';
 
-import { memo, useEffect, useReducer, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import * as THREE from 'three';
 
 import { useTheme } from '../hooks/useTheme';
-import {
-  EASTER_SEQUENCE,
-  EASTER_SET,
-  type ShapeData,
-  type ParticleData,
-  type ShapeType,
-  createShapeGeometry,
-  edgeCreaseAngle,
-} from './ShapeScene/shapeSceneGeometry';
-import { vertexShader, fragmentShader } from './ShapeScene/shapeSceneShaders';
+import { ShapeSceneRuntime } from './ShapeScene/ShapeSceneRuntime';
+import { readSceneTheme } from './ShapeScene/shapeSceneTheme';
+import { useEasterEgg } from './ShapeScene/useEasterEgg';
 
-type EasterState = {
-  active: boolean;
-  inputKeys: Array<{ id: string; key: string }>;
-};
-type EasterAction =
-  | { type: 'activate' }
-  | { type: 'deactivate' }
-  | { type: 'keys'; keys: Array<{ id: string; key: string }> };
+const EASTER_EMAIL = 'marty+levelup@flying-rat.studio';
+const RESIZE_DEBOUNCE_MS = 100;
 
-function easterReducer(_state: EasterState, action: EasterAction): EasterState {
-  switch (action.type) {
-    case 'activate':
-      return { active: true, inputKeys: [] };
-    case 'deactivate':
-      return { active: false, inputKeys: [] };
-    case 'keys':
-      return { active: _state.active, inputKeys: action.keys };
-  }
-}
-
+/**
+ * Decorative Three.js background for the About section. The scene itself lives in
+ * `ShapeSceneRuntime`; this component only handles lifecycle, input, and visibility.
+ * Load it lazily (see `About`): it pulls in three.js.
+ */
 export const ShapeScene = memo(function ShapeScene({
   label,
   shouldAnimate,
@@ -46,693 +26,105 @@ export const ShapeScene = memo(function ShapeScene({
   className?: string;
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const runtimeRef = useRef<ShapeSceneRuntime | null>(null);
   const { resolvedTheme } = useTheme();
-  const [{ active: easterActive, inputKeys }, dispatchEaster] = useReducer(easterReducer, {
-    active: false,
-    inputKeys: [],
-  });
+  const { active: easterActive, inputKeys, boostRef } = useEasterEgg(shouldAnimate);
   const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
-  const boostRef = useRef(false);
-  const keysRef = useRef<string[]>([]);
-  const keyEntriesRef = useRef<Array<{ id: string; key: string }>>([]);
-  const keyIdRef = useRef(0);
-  const timerRef = useRef<number | null>(null);
-  const easterEmail = 'marty+levelup@flying-rat.studio';
 
   useEffect(() => {
     queueMicrotask(() => setPortalTarget(document.body));
   }, []);
 
+  // Build the scene once; it survives theme and motion-preference changes.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) {
       return;
     }
 
-    const isLight = resolvedTheme === 'light';
-    const accent = new THREE.Color(isLight ? 0xe84054 : 0xfa5565);
-    const steel = new THREE.Color(isLight ? 0x3a3a3a : 0xd8d8d8);
-    const isMobile = window.innerWidth < 768 || 'ontouchstart' in window;
-    const subdivisions = isMobile ? 6 : 10;
-    const cameraParallax = isMobile ? 0.95 : 1.6;
-    const fogColor = new THREE.Color(isLight ? 0xf5f5f5 : 0x0a0a0a);
-    const fogDensity = 0.06;
-
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-    // Zoom out slightly on mobile to give more breathing room and reduce crowding
-    camera.position.set(0, 0, isMobile ? 14 : 10);
-
-    const renderer = new THREE.WebGLRenderer({
-      antialias: !isMobile,
-      alpha: true,
-      powerPreference: 'low-power',
+    const runtime = new ShapeSceneRuntime(container, {
+      isMobile: window.innerWidth < 768 || 'ontouchstart' in window,
+      hoverEnabled: window.matchMedia('(hover: hover)').matches,
+      theme: readSceneTheme(),
     });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setClearColor(0x000000, 0);
-    renderer.domElement.style.display = 'block';
-    container.appendChild(renderer.domElement);
+    runtimeRef.current = runtime;
 
-    const getViewSizeAtZ = (worldZ = 0) => {
-      const distance = Math.abs(camera.position.z - worldZ);
-      const verticalFov = THREE.MathUtils.degToRad(camera.fov);
-      const height = 2 * Math.tan(verticalFov / 2) * distance;
-      return { width: height * camera.aspect, height };
-    };
-    const getSpawnBounds = () => {
-      const view = getViewSizeAtZ(0);
-      const halfWidth = view.width * 0.5;
-      const halfHeight = view.height * 0.5;
-      const shapeX = Math.max(1.2, halfWidth - (isMobile ? 1.0 : 1.6) - cameraParallax);
-      const shapeY = Math.max(1.0, halfHeight - (isMobile ? 1.2 : 1.5));
-      const particleX = Math.max(1.6, halfWidth - (isMobile ? 0.35 : 0.8));
-      const particleY = Math.max(1.3, halfHeight - (isMobile ? 0.5 : 0.9));
-
-      return { shapeX, shapeY, particleX, particleY };
-    };
-    const syncViewport = () => {
-      const rect = container.getBoundingClientRect();
-      const width = Math.max(1, rect.width);
-      const height = Math.max(1, rect.height);
-      renderer.setSize(width, height);
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-    };
-    syncViewport();
-    let spawnBounds = getSpawnBounds();
-
-    const gridColor = new THREE.Color(isLight ? 0x000000 : 0xffffff);
-    const grid = new THREE.GridHelper(28, 28, gridColor, gridColor);
-    const gridMat = grid.material as THREE.LineBasicMaterial;
-    gridMat.transparent = true;
-    const gridBaseOpacity = isLight ? 0.15 : 0.12;
-    gridMat.opacity = gridBaseOpacity;
-    grid.position.set(0, -4, -2);
-    grid.rotation.x = Math.PI * 0.08;
-    scene.add(grid);
-
-    const shapes: ShapeData[] = [];
-
-    const auraCanvas = document.createElement('canvas');
-    auraCanvas.width = 128;
-    auraCanvas.height = 128;
-    const auraCtx = auraCanvas.getContext('2d')!;
-    const auraGradient = auraCtx.createRadialGradient(64, 64, 0, 64, 64, 64);
-    auraGradient.addColorStop(0, 'rgba(255,255,255,1)');
-    auraGradient.addColorStop(0.3, 'rgba(255,255,255,0.3)');
-    auraGradient.addColorStop(1, 'rgba(255,255,255,0)');
-    auraCtx.fillStyle = auraGradient;
-    auraCtx.fillRect(0, 0, 128, 128);
-    const auraTexture = new THREE.CanvasTexture(auraCanvas);
-    const auraMaterialBase = new THREE.SpriteMaterial({
-      map: auraTexture,
-      transparent: true,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false,
-    });
-
-    const placedShapes: { pos: THREE.Vector3; size: number }[] = [];
-    const shapeCount = isMobile
-      ? 2 + Math.floor(Math.random() * 2)
-      : 9 + Math.floor(Math.random() * 3);
-
-    const checkOverlap = (pos: THREE.Vector3, size: number): boolean => {
-      for (const placed of placedShapes) {
-        if (pos.distanceTo(placed.pos) < (size + placed.size) * 0.85) {
-          return true;
-        }
-      }
-      return false;
-    };
-
-    for (let i = 0; i < shapeCount; i++) {
-      const size = i === 0 ? 1.2 + Math.random() * 0.2 : 0.5 + Math.random() * 0.4;
-      const isWireframe = i > 1 && Math.random() < 0.4;
-      const isAccent = i === 0 || Math.random() < 0.5;
-
-      const shapeRoll = Math.random();
-      const shapeType: ShapeType =
-        i === 0
-          ? 'box'
-          : shapeRoll < 0.4
-            ? 'box'
-            : shapeRoll < 0.62
-              ? 'octahedron'
-              : shapeRoll < 0.82
-                ? 'tetrahedron'
-                : 'torus';
-
-      let position = new THREE.Vector3();
-      if (isMobile) {
-        let attempts = 0;
-        do {
-          position.set(
-            (Math.random() * 2 - 1) * spawnBounds.shapeX,
-            (Math.random() * 1.2 - 0.2) * spawnBounds.shapeY,
-            (Math.random() - 0.5) * 2,
-          );
-          attempts++;
-        } while (checkOverlap(position, size) && attempts < 50);
-      } else {
-        const regionScale = i === 0 ? 0.55 : 1.0;
-        let bestScore = -Infinity;
-        for (let c = 0; c < 30; c++) {
-          const candidate = new THREE.Vector3(
-            ((Math.random() * 2 - 1) * regionScale + 0.1) * spawnBounds.shapeX,
-            (Math.random() * 2 - 1) * spawnBounds.shapeY * regionScale,
-            (Math.random() - 0.5) * 2,
-          );
-          let minClearance = Infinity;
-          for (const placed of placedShapes) {
-            minClearance = Math.min(
-              minClearance,
-              candidate.distanceTo(placed.pos) - placed.size - size,
-            );
-          }
-          if (minClearance > bestScore) {
-            bestScore = minClearance;
-            position.copy(candidate);
-          }
-        }
-      }
-
-      placedShapes.push({ pos: position.clone(), size });
-
-      const shapeColor = isAccent ? accent : steel;
-      const hoverColor = new THREE.Color(
-        Math.min(1, shapeColor.r * 1.5 + 0.35),
-        Math.min(1, shapeColor.g * 1.3 + 0.22),
-        Math.min(1, shapeColor.b * 1.0 + 0.1),
-      );
-
-      let material: THREE.Material;
-      let edges: THREE.LineSegments | null = null;
-
-      const geometry = createShapeGeometry(shapeType, size, isWireframe, subdivisions);
-
-      if (isWireframe) {
-        material = new THREE.MeshBasicMaterial({ visible: false });
-        edges = new THREE.LineSegments(
-          new THREE.EdgesGeometry(geometry, edgeCreaseAngle(shapeType)),
-          new THREE.LineBasicMaterial({
-            color: shapeColor,
-            transparent: true,
-            opacity: isAccent ? 0.85 : 0.7,
-          }),
-        );
-        edges.position.copy(position);
-      } else {
-        const explosionScale =
-          shapeType === 'torus' ? 0.08 + Math.random() * 0.06 : 0.28 + Math.random() * 0.18;
-        material = new THREE.ShaderMaterial({
-          vertexShader,
-          fragmentShader,
-          uniforms: {
-            uTime: { value: 0 },
-            uColor: { value: shapeColor.clone() },
-            uHoverColor: { value: hoverColor },
-            uOpacity: { value: isAccent ? 0.95 : 0.85 },
-            uAmplitude: { value: 0.035 + Math.random() * 0.035 },
-            uExplosion: { value: size * explosionScale },
-            uProximity: { value: 0 },
-            uBoost: { value: 0 },
-            uEdgeGlow: { value: shapeType === 'box' ? 1.0 : 0.0 },
-            uFogColor: { value: fogColor.clone() },
-            uFogDensity: { value: fogDensity },
-          },
-          transparent: true,
-          depthWrite: false,
-          side: THREE.DoubleSide,
-        });
-      }
-
-      const mesh = new THREE.Mesh(geometry, material);
-      mesh.position.copy(position);
-      mesh.rotation.set(
-        Math.random() * Math.PI,
-        Math.random() * Math.PI,
-        Math.random() * Math.PI * 0.3,
-      );
-      scene.add(mesh);
-
-      if (edges) {
-        edges.rotation.copy(mesh.rotation);
-        scene.add(edges);
-      }
-
-      const auraMat = auraMaterialBase.clone();
-      auraMat.color.copy(shapeColor);
-      const aura = new THREE.Sprite(auraMat);
-      aura.position.copy(position);
-      scene.add(aura);
-
-      shapes.push({
-        mesh,
-        edges,
-        rotationSpeed: new THREE.Vector3(
-          (Math.random() - 0.5) * 0.004,
-          (Math.random() - 0.5) * 0.006,
-          (Math.random() - 0.5) * 0.003,
-        ),
-        floatOffset: Math.random() * Math.PI * 2,
-        floatSpeed: 0.12 + Math.random() * 0.15,
-        basePosition: position.clone(),
-        scale: size,
-        hoverStrength: 0,
-        color: shapeColor.clone(),
-        aura,
-        ...(edges && { baseColor: shapeColor.clone(), hoverColor }),
-      });
-    }
-
-    const particles: ParticleData[] = [];
-    const particleCount = isMobile
-      ? 2 + Math.floor(Math.random() * 2)
-      : 12 + Math.floor(Math.random() * 6);
-
-    const particlePositions = new Float32Array(particleCount * 3);
-    const particleGeometry = new THREE.BufferGeometry();
-    particleGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
-    const particleMaterial = new THREE.PointsMaterial({
-      color: accent,
-      size: 0.06,
-      transparent: true,
-      opacity: 0.65,
-      depthWrite: false,
-      sizeAttenuation: true,
-    });
-    const particlePoints = new THREE.Points(particleGeometry, particleMaterial);
-    scene.add(particlePoints);
-
-    for (let i = 0; i < particleCount; i++) {
-      const basePos = new THREE.Vector3(
-        (Math.random() * 2 - 1) * spawnBounds.particleX,
-        (isMobile ? Math.random() * 1.2 - 0.2 : Math.random() * 2 - 1) * spawnBounds.particleY,
-        (Math.random() - 0.5) * 3 - 2,
-      );
-      particlePositions[i * 3] = basePos.x;
-      particlePositions[i * 3 + 1] = basePos.y;
-      particlePositions[i * 3 + 2] = basePos.z;
-      particles.push({ basePosition: basePos, phase: Math.random() * Math.PI * 2 });
-    }
-    const shapeMeshes = shapes.map((shape) => shape.mesh);
-
-    const maxPairs = (shapeCount * (shapeCount - 1)) / 2;
-    const constellationPositions = new Float32Array(maxPairs * 2 * 3);
-    const constellationColors = new Float32Array(maxPairs * 2 * 3);
-    const constellationPairShapes = new Int32Array(maxPairs * 2);
-    const constellationGeometry = new THREE.BufferGeometry();
-    constellationGeometry.setAttribute(
-      'position',
-      new THREE.BufferAttribute(constellationPositions, 3),
-    );
-    constellationGeometry.setAttribute('color', new THREE.BufferAttribute(constellationColors, 3));
-    const constellationMaterial = new THREE.LineDashedMaterial({
-      vertexColors: true,
-      transparent: true,
-      opacity: 0.65,
-      depthWrite: false,
-      dashSize: 0.35,
-      gapSize: 0.25,
-    });
-    const constellationMesh = new THREE.LineSegments(constellationGeometry, constellationMaterial);
-    scene.add(constellationMesh);
-
-    const dotCount = isMobile ? 2 : 6;
-    const dotPositions = new Float32Array(dotCount * 3);
-    const dotGeometry = new THREE.BufferGeometry();
-    dotGeometry.setAttribute('position', new THREE.BufferAttribute(dotPositions, 3));
-    const dotColor = accent.clone().lerp(new THREE.Color(0xffffff), 0.2);
-    const dotCanvas = document.createElement('canvas');
-    dotCanvas.width = 32;
-    dotCanvas.height = 32;
-    const dotCtx = dotCanvas.getContext('2d')!;
-    const dotGradient = dotCtx.createRadialGradient(16, 16, 0, 16, 16, 16);
-    dotGradient.addColorStop(0, 'rgba(255,255,255,1)');
-    dotGradient.addColorStop(0.45, 'rgba(255,255,255,0.6)');
-    dotGradient.addColorStop(1, 'rgba(255,255,255,0)');
-    dotCtx.fillStyle = dotGradient;
-    dotCtx.fillRect(0, 0, 32, 32);
-    const dotTexture = new THREE.CanvasTexture(dotCanvas);
-    const dotMaterial = new THREE.PointsMaterial({
-      color: dotColor,
-      size: 0.28,
-      map: dotTexture,
-      transparent: true,
-      opacity: 0.9,
-      depthWrite: false,
-      sizeAttenuation: true,
-      alphaTest: 0.01,
-    });
-    const dotPoints = new THREE.Points(dotGeometry, dotMaterial);
-    scene.add(dotPoints);
-
-    const dotTraversers = Array.from({ length: dotCount }, () => ({
-      shapeA: -1,
-      shapeB: -1,
-      t: Math.random(),
-      initialized: false,
-    }));
-    const dotSpeed = 0.18;
-    const _dotCandidatePairA = new Int32Array(maxPairs);
-    const _dotCandidatePairB = new Int32Array(maxPairs);
-
-    const handleResize = () => {
-      syncViewport();
-      spawnBounds = getSpawnBounds();
-
-      for (const shape of shapes) {
-        const base = shape.basePosition;
-        const limitX = Math.max(0.8, spawnBounds.shapeX - shape.scale * 0.5);
-        const limitY = Math.max(0.7, spawnBounds.shapeY - shape.scale * 0.5);
-        base.x = THREE.MathUtils.clamp(base.x, -limitX, limitX);
-        base.y = THREE.MathUtils.clamp(base.y, -limitY, limitY);
-        shape.mesh.position.x = base.x;
-        shape.mesh.position.y = base.y;
-        if (shape.edges) {
-          shape.edges.position.x = base.x;
-          shape.edges.position.y = base.y;
-        }
-      }
-
-      for (let pi = 0; pi < particles.length; pi++) {
-        const particle = particles[pi];
-        const base = particle.basePosition;
-        base.x = THREE.MathUtils.clamp(base.x, -spawnBounds.particleX, spawnBounds.particleX);
-        base.y = THREE.MathUtils.clamp(base.y, -spawnBounds.particleY, spawnBounds.particleY);
-        particlePositions[pi * 3] = base.x;
-        particlePositions[pi * 3 + 1] = base.y;
-      }
-      particleGeometry.attributes.position.needsUpdate = true;
-    };
-
-    handleResize();
     let resizeTimer: ReturnType<typeof setTimeout> | null = null;
     const resizeObserver = new ResizeObserver(() => {
       if (resizeTimer) {
         clearTimeout(resizeTimer);
       }
-      resizeTimer = setTimeout(handleResize, 100);
+      resizeTimer = setTimeout(() => {
+        runtime.resize();
+        runtime.render();
+      }, RESIZE_DEBOUNCE_MS);
     });
     resizeObserver.observe(container);
 
+    return () => {
+      resizeObserver.disconnect();
+      if (resizeTimer) {
+        clearTimeout(resizeTimer);
+      }
+      runtime.dispose();
+      runtimeRef.current = null;
+    };
+  }, []);
+
+  // Theme changes swap colors in place instead of rebuilding the WebGL context.
+  useEffect(() => {
+    const runtime = runtimeRef.current;
+    if (!runtime) {
+      return;
+    }
+    runtime.setTheme(readSceneTheme());
+    runtime.render();
+  }, [resolvedTheme]);
+
+  // Render loop, paused when hidden or scrolled out of view.
+  useEffect(() => {
+    const container = containerRef.current;
+    const runtime = runtimeRef.current;
+    if (!container || !runtime) {
+      return;
+    }
+
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const allowMotion = shouldAnimate && !prefersReducedMotion;
+    if (!shouldAnimate || prefersReducedMotion) {
+      runtime.render();
+      return;
+    }
 
-    let animationFrame = 0;
-    let running = allowMotion;
-    let visible = true;
+    const frameInterval = runtime.isMobile ? 1000 / 30 : 1000 / 60;
+    let running = false;
+    let visible = document.visibilityState === 'visible';
     let inView = true;
-    let pointerX = 0;
-    let pointerY = 0;
-    let targetPointerX = 0;
-    let targetPointerY = 0;
+    let animationFrame = 0;
     let lastFrameTime = 0;
-    const frameInterval = isMobile ? 1000 / 30 : 1000 / 60;
-
-    const _raycaster = new THREE.Raycaster();
-    const _pointerNDC = new THREE.Vector2();
 
     const animate = (time: number) => {
       if (!running) {
         return;
       }
-
       const elapsed = time - lastFrameTime;
-      if (elapsed < frameInterval) {
-        animationFrame = requestAnimationFrame(animate);
-        return;
+      if (elapsed >= frameInterval) {
+        lastFrameTime = time;
+        runtime.boost = boostRef.current;
+        runtime.update(time, elapsed);
       }
-      const dtNorm = Math.min(elapsed / 16.667, 3);
-      lastFrameTime = time;
-
-      const t = time * 0.001;
-      const speedMultiplier = boostRef.current ? 2.5 : 1;
-
-      pointerX += (targetPointerX - pointerX) * (1 - Math.exp(-0.10536 * dtNorm));
-      pointerY += (targetPointerY - pointerY) * (1 - Math.exp(-0.10536 * dtNorm));
-
-      camera.position.x +=
-        (pointerX * cameraParallax - camera.position.x) * (1 - Math.exp(-0.04082 * dtNorm));
-      camera.position.y +=
-        (-pointerY * cameraParallax - camera.position.y) * (1 - Math.exp(-0.04082 * dtNorm));
-      if (boostRef.current) {
-        const shake = 0.18 * dtNorm;
-        camera.position.x +=
-          (Math.sin(t * 47) * 0.5 + Math.sin(t * 31) * 0.35 + Math.sin(t * 19) * 0.2) * shake;
-        camera.position.y +=
-          (Math.cos(t * 53) * 0.45 + Math.cos(t * 37) * 0.3 + Math.cos(t * 23) * 0.15) * shake;
-        camera.position.z += (Math.sin(t * 41) * 0.15 + Math.cos(t * 29) * 0.1) * shake;
-      }
-      camera.lookAt(0, 0, 0);
-
-      _pointerNDC.set(targetPointerX, -targetPointerY);
-      _raycaster.setFromCamera(_pointerNDC, camera);
-
-      for (const shape of shapes) {
-        shape.mesh.rotation.x += shape.rotationSpeed.x * speedMultiplier * dtNorm;
-        shape.mesh.rotation.y += shape.rotationSpeed.y * speedMultiplier * dtNorm;
-        shape.mesh.rotation.z += shape.rotationSpeed.z * speedMultiplier * dtNorm;
-
-        const floatX = Math.sin(t * shape.floatSpeed + shape.floatOffset) * 0.1;
-        const floatY = Math.sin(t * shape.floatSpeed * 1.3 + shape.floatOffset) * 0.15;
-        const floatZ = Math.cos(t * shape.floatSpeed * 0.7 + shape.floatOffset) * 0.08;
-        const boost = boostRef.current ? 1 : 0;
-        const chaosX = boost * (Math.sin(t * 8) * 0.15 + Math.cos(t * 11) * 0.1);
-        const chaosY = boost * (Math.cos(t * 9) * 0.12 + Math.sin(t * 13) * 0.08);
-        const chaosZ = boost * (Math.sin(t * 7) * 0.08);
-        shape.mesh.position.x = shape.basePosition.x + floatX + chaosX;
-        shape.mesh.position.y = shape.basePosition.y + floatY + chaosY;
-        shape.mesh.position.z = shape.basePosition.z + floatZ + chaosZ;
-        if (shape.edges) {
-          shape.edges.position.copy(shape.mesh.position);
-          shape.edges.rotation.copy(shape.mesh.rotation);
-        }
-        if (shape.aura) {
-          shape.aura.position.copy(shape.mesh.position);
-        }
-      }
-      scene.updateMatrixWorld();
-
-      const hit = _raycaster.intersectObjects(shapeMeshes, false)[0];
-      const hoveredMesh = hit?.object ?? null;
-
-      for (const shape of shapes) {
-        const hoverTarget = hoveredMesh === shape.mesh ? 1 : 0;
-        const lerpRate =
-          1 - Math.exp((hoverTarget > shape.hoverStrength ? -0.05657 : -0.03562) * dtNorm);
-        shape.hoverStrength += (hoverTarget - shape.hoverStrength) * lerpRate;
-        const proximity = shape.hoverStrength;
-
-        if (shape.mesh.material instanceof THREE.ShaderMaterial) {
-          const u = shape.mesh.material.uniforms;
-          u.uTime.value = t * speedMultiplier;
-          u.uProximity.value = proximity;
-          u.uBoost.value +=
-            ((boostRef.current ? 1 : 0) - u.uBoost.value) *
-            (boostRef.current ? 0.12 : 0.06) *
-            dtNorm;
-        }
-
-        if (shape.edges && shape.baseColor && shape.hoverColor) {
-          (shape.edges.material as THREE.LineBasicMaterial).color.lerpColors(
-            shape.baseColor,
-            shape.hoverColor,
-            proximity,
-          );
-        }
-
-        const scale = 1 + Math.sin(t * 2 + shape.floatOffset) * 0.02 + proximity * 0.18;
-        shape.mesh.scale.setScalar(scale);
-        shape.edges?.scale.setScalar(scale);
-        if (shape.aura) {
-          shape.aura.scale.setScalar(shape.scale * 4.5 * scale);
-          shape.aura.material.opacity = (isLight ? 0.35 : 0.6) + proximity * 0.4;
-        }
-      }
-
-      const maxConstellationDist = 5.5;
-      const maxConstellationDistSq = maxConstellationDist * maxConstellationDist;
-      let pairIdx = 0;
-      for (let a = 0; a < shapes.length; a++) {
-        for (let b = a + 1; b < shapes.length; b++) {
-          const pa = shapes[a].mesh.position;
-          const pb = shapes[b].mesh.position;
-          const dx = pa.x - pb.x;
-          const dy = pa.y - pb.y;
-          const dz = pa.z - pb.z;
-          const distSq = dx * dx + dy * dy + dz * dz;
-          if (distSq < maxConstellationDistSq) {
-            const dist = Math.sqrt(distSq);
-            const linearStrength = 1.0 - dist / maxConstellationDist;
-            const strength = linearStrength * linearStrength;
-            const base = pairIdx * 6;
-            constellationPositions[base] = pa.x;
-            constellationPositions[base + 1] = pa.y;
-            constellationPositions[base + 2] = pa.z;
-            constellationPositions[base + 3] = pb.x;
-            constellationPositions[base + 4] = pb.y;
-            constellationPositions[base + 5] = pb.z;
-            const ca = shapes[a].color,
-              cb = shapes[b].color;
-            constellationColors[base] = ca.r * strength;
-            constellationColors[base + 1] = ca.g * strength;
-            constellationColors[base + 2] = ca.b * strength;
-            constellationColors[base + 3] = cb.r * strength;
-            constellationColors[base + 4] = cb.g * strength;
-            constellationColors[base + 5] = cb.b * strength;
-            constellationPairShapes[pairIdx * 2] = a;
-            constellationPairShapes[pairIdx * 2 + 1] = b;
-            pairIdx += 1;
-          }
-        }
-      }
-      constellationGeometry.setDrawRange(0, pairIdx * 2);
-      constellationGeometry.attributes.position.needsUpdate = true;
-      constellationGeometry.attributes.color.needsUpdate = true;
-      constellationMesh.computeLineDistances();
-      (constellationMaterial as THREE.LineDashedMaterial & { dashOffset: number }).dashOffset =
-        -t * 0.7;
-
-      if (pairIdx > 0) {
-        const dtSec = elapsed * 0.001;
-        const advance = dotSpeed * dtSec * speedMultiplier;
-
-        const pickRandomSegment = (dot: (typeof dotTraversers)[0]) => {
-          const seg = Math.floor(Math.random() * pairIdx);
-          dot.shapeA = constellationPairShapes[seg * 2];
-          dot.shapeB = constellationPairShapes[seg * 2 + 1];
-          if (Math.random() < 0.5) {
-            const tmp = dot.shapeA;
-            dot.shapeA = dot.shapeB;
-            dot.shapeB = tmp;
-          }
-        };
-
-        for (let d = 0; d < dotCount; d++) {
-          const dot = dotTraversers[d];
-
-          if (!dot.initialized) {
-            pickRandomSegment(dot);
-            dot.t = Math.random();
-            dot.initialized = true;
-          }
-
-          const posA = shapes[dot.shapeA].mesh.position;
-          const posB = shapes[dot.shapeB].mesh.position;
-          const ldx = posA.x - posB.x;
-          const ldy = posA.y - posB.y;
-          const ldz = posA.z - posB.z;
-          if (ldx * ldx + ldy * ldy + ldz * ldz >= maxConstellationDistSq) {
-            pickRandomSegment(dot);
-            dot.t = 0;
-          }
-
-          dot.t += advance;
-
-          if (dot.t >= 1) {
-            const arrivalNode = dot.shapeB;
-            let nCand = 0;
-            let nFiltered = 0;
-            for (let p = 0; p < pairIdx; p++) {
-              const sa = constellationPairShapes[p * 2];
-              const sb = constellationPairShapes[p * 2 + 1];
-              if (sa === arrivalNode || sb === arrivalNode) {
-                const fromNode = sa === arrivalNode ? sb : sa;
-                const isSamePair =
-                  (fromNode === dot.shapeA && arrivalNode === dot.shapeB) ||
-                  (fromNode === dot.shapeB && arrivalNode === dot.shapeA);
-                _dotCandidatePairA[nCand] = arrivalNode;
-                _dotCandidatePairB[nCand] = fromNode;
-                nCand++;
-                if (!isSamePair) {
-                  nFiltered++;
-                }
-              }
-            }
-            if (nCand > 0) {
-              let pick: number;
-              if (nFiltered > 0) {
-                let r = Math.floor(Math.random() * nFiltered);
-                pick = 0;
-                for (let ci = 0; ci < nCand; ci++) {
-                  const fromNode = _dotCandidatePairB[ci];
-                  const isSame =
-                    (fromNode === dot.shapeA && arrivalNode === dot.shapeB) ||
-                    (fromNode === dot.shapeB && arrivalNode === dot.shapeA);
-                  if (!isSame) {
-                    if (r === 0) {
-                      pick = ci;
-                      break;
-                    }
-                    r--;
-                  }
-                }
-              } else {
-                pick = Math.floor(Math.random() * nCand);
-              }
-              dot.shapeA = _dotCandidatePairA[pick];
-              dot.shapeB = _dotCandidatePairB[pick];
-            } else {
-              pickRandomSegment(dot);
-            }
-            dot.t = 0;
-          }
-
-          const pA = shapes[dot.shapeA].mesh.position;
-          const pB = shapes[dot.shapeB].mesh.position;
-          const s = dot.t;
-          dotPositions[d * 3] = pA.x + (pB.x - pA.x) * s;
-          dotPositions[d * 3 + 1] = pA.y + (pB.y - pA.y) * s;
-          dotPositions[d * 3 + 2] = pA.z + (pB.z - pA.z) * s;
-        }
-        dotGeometry.attributes.position.needsUpdate = true;
-      }
-      const dotPulseFreq = boostRef.current ? 4.2 : 2.8;
-      dotMaterial.opacity = 0.82 + 0.12 * Math.sin(t * dotPulseFreq);
-      dotMaterial.size = 0.28 + 0.05 * Math.sin(t * dotPulseFreq);
-
-      gridMat.opacity = gridBaseOpacity * (0.85 + 0.15 * Math.sin(t * 0.35));
-
-      const particleBoost = boostRef.current ? 2.5 : 1;
-      const posAttr = particleGeometry.attributes.position as THREE.BufferAttribute;
-      for (let pi = 0; pi < particles.length; pi++) {
-        const particle = particles[pi];
-        const px = Math.sin(t * 0.5 + particle.phase) * 0.5;
-        const py = Math.cos(t * 0.4 + particle.phase) * 0.5;
-        const pz = Math.sin(t * 0.3 + particle.phase) * 0.3;
-        const chaos = boostRef.current
-          ? Math.sin(t * 6 + particle.phase) * 0.8 + Math.cos(t * 4 + particle.phase * 2) * 0.5
-          : 0;
-        posAttr.setXYZ(
-          pi,
-          particle.basePosition.x + px * particleBoost + chaos * 0.3,
-          particle.basePosition.y + py * particleBoost + chaos * 0.25,
-          particle.basePosition.z + pz * particleBoost + chaos * 0.2,
-        );
-      }
-      posAttr.needsUpdate = true;
-      particleMaterial.opacity = boostRef.current ? 0.65 : 0.4;
-
-      renderer.render(scene, camera);
       animationFrame = requestAnimationFrame(animate);
     };
 
-    if (allowMotion) {
-      animationFrame = requestAnimationFrame(animate);
-    } else {
-      renderer.render(scene, camera);
-    }
-
     const updateRunning = () => {
-      const shouldRun = allowMotion && visible && inView;
+      const shouldRun = visible && inView;
       if (shouldRun === running) {
         return;
       }
       running = shouldRun;
       if (running) {
+        lastFrameTime = performance.now();
         animationFrame = requestAnimationFrame(animate);
-      } else if (animationFrame) {
+      } else {
         cancelAnimationFrame(animationFrame);
       }
     };
@@ -743,144 +135,51 @@ export const ShapeScene = memo(function ShapeScene({
     };
     document.addEventListener('visibilitychange', handleVisibility);
 
-    let observer: IntersectionObserver | null = null;
-    if ('IntersectionObserver' in window) {
-      observer = new IntersectionObserver(
-        (entries) => {
-          inView = entries.some((entry) => entry.isIntersecting);
-          updateRunning();
-        },
-        { threshold: 0.1 },
-      );
-      observer.observe(container);
-    }
+    const intersection = new IntersectionObserver(
+      (entries) => {
+        inView = entries.some((entry) => entry.isIntersecting);
+        updateRunning();
+      },
+      { threshold: 0.1 },
+    );
+    intersection.observe(container);
 
+    // The container rect is cached and only re-read after scroll or resize,
+    // so pointer events don't force layout.
+    let rect: DOMRect | null = null;
+    const invalidateRect = () => {
+      rect = null;
+    };
     const handlePointerMove = (event: PointerEvent) => {
-      const rect = container.getBoundingClientRect();
+      rect ??= container.getBoundingClientRect();
       const x = (event.clientX - rect.left) / rect.width;
       const y = (event.clientY - rect.top) / rect.height;
       if (x >= 0 && x <= 1 && y >= 0 && y <= 1) {
-        targetPointerX = (x - 0.5) * 2;
-        targetPointerY = (y - 0.5) * 2;
+        runtime.setPointer((x - 0.5) * 2, (y - 0.5) * 2);
       } else {
-        targetPointerX = 0;
-        targetPointerY = 0;
+        runtime.clearPointer();
       }
     };
+    const handlePointerLeave = () => runtime.clearPointer();
 
-    const handlePointerLeave = () => {
-      targetPointerX = 0;
-      targetPointerY = 0;
-    };
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerleave', handlePointerLeave);
+    window.addEventListener('scroll', invalidateRect, { passive: true });
+    window.addEventListener('resize', invalidateRect, { passive: true });
 
-    if (allowMotion) {
-      window.addEventListener('pointermove', handlePointerMove);
-      window.addEventListener('pointerleave', handlePointerLeave);
-    }
+    updateRunning();
 
     return () => {
+      running = false;
+      cancelAnimationFrame(animationFrame);
       document.removeEventListener('visibilitychange', handleVisibility);
+      intersection.disconnect();
       window.removeEventListener('pointermove', handlePointerMove);
       window.removeEventListener('pointerleave', handlePointerLeave);
-      resizeObserver.disconnect();
-      if (resizeTimer) {
-        clearTimeout(resizeTimer);
-      }
-      observer?.disconnect();
-      if (animationFrame) {
-        cancelAnimationFrame(animationFrame);
-      }
-
-      grid.geometry.dispose();
-      (grid.material as THREE.Material).dispose();
-      constellationGeometry.dispose();
-      (constellationMesh.material as THREE.Material).dispose();
-      dotGeometry.dispose();
-      dotTexture.dispose();
-      dotMaterial.dispose();
-
-      for (const shape of shapes) {
-        shape.mesh.geometry.dispose();
-        (shape.mesh.material as THREE.Material).dispose();
-        if (shape.edges) {
-          shape.edges.geometry.dispose();
-          (shape.edges.material as THREE.Material).dispose();
-        }
-        if (shape.aura) {
-          shape.aura.material.dispose();
-        }
-      }
-      auraTexture.dispose();
-      auraMaterialBase.dispose();
-      particleGeometry.dispose();
-      particleMaterial.dispose();
-      renderer.dispose();
-      if (container.contains(renderer.domElement)) {
-        container.removeChild(renderer.domElement);
-      }
+      window.removeEventListener('scroll', invalidateRect);
+      window.removeEventListener('resize', invalidateRect);
     };
-  }, [resolvedTheme, shouldAnimate]);
-
-  useEffect(() => {
-    if (!shouldAnimate) {
-      dispatchEaster({ type: 'deactivate' });
-      document.documentElement.classList.remove('crt-mode');
-      boostRef.current = false;
-      return;
-    }
-
-    const triggerEaster = () => {
-      boostRef.current = true;
-      dispatchEaster({ type: 'activate' });
-      document.documentElement.classList.add('crt-mode');
-      if (timerRef.current) {
-        window.clearTimeout(timerRef.current);
-      }
-      timerRef.current = window.setTimeout(() => {
-        boostRef.current = false;
-        dispatchEaster({ type: 'deactivate' });
-        document.documentElement.classList.remove('crt-mode');
-      }, 5000);
-    };
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      const key = event.key.toLowerCase();
-      if (!EASTER_SET.has(key)) {
-        return;
-      }
-
-      const next = [...keysRef.current, key].slice(-EASTER_SEQUENCE.length);
-      keyIdRef.current += 1;
-      const nextEntries = [...keyEntriesRef.current, { id: `key-${keyIdRef.current}`, key }].slice(
-        -EASTER_SEQUENCE.length,
-      );
-      const matches =
-        next.length === EASTER_SEQUENCE.length &&
-        next.every((value, idx) => value === EASTER_SEQUENCE[idx]);
-      if (matches) {
-        triggerEaster();
-      } else {
-        keysRef.current = next;
-        keyEntriesRef.current = nextEntries;
-        dispatchEaster({ type: 'keys', keys: nextEntries });
-      }
-      if (matches) {
-        keysRef.current = [];
-        keyEntriesRef.current = [];
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      if (timerRef.current) {
-        window.clearTimeout(timerRef.current);
-      }
-      dispatchEaster({ type: 'deactivate' });
-      document.documentElement.classList.remove('crt-mode');
-      boostRef.current = false;
-    };
-  }, [shouldAnimate]);
+  }, [shouldAnimate, boostRef]);
 
   return (
     <div
@@ -897,8 +196,8 @@ export const ShapeScene = memo(function ShapeScene({
           <p className="font-semibold uppercase tracking-[0.2em] text-white/80">Hey gamer</p>
           <p className="mt-1 text-zinc-300/90">
             Sounds like you know your way around. Say hi at{' '}
-            <a className="text-white hover:text-white/90" href={`mailto:${easterEmail}`}>
-              {easterEmail}
+            <a className="text-white hover:text-white/90" href={`mailto:${EASTER_EMAIL}`}>
+              {EASTER_EMAIL}
             </a>
             .
           </p>

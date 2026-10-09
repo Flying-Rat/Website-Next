@@ -1,9 +1,18 @@
 'use client';
 
+import dynamic from 'next/dynamic';
+import { useRef } from 'react';
+
 import { useAnimationsEnabled } from '../hooks/useAnimationsEnabled';
+import { useNearViewport } from '../hooks/useNearViewport';
 import { useTranslation } from '../i18n';
 import { FadeInView } from './FadeInView';
-import { ShapeScene } from './ShapeScene';
+
+// three.js is the largest chunk on the site; keep it off the critical path and
+// only fetch it once this section is close to the viewport.
+const ShapeScene = dynamic(() => import('./ShapeScene').then((m) => m.ShapeScene), {
+  ssr: false,
+});
 
 const aboutStats = [
   { value: '8+', key: 'about.stats.projects' },
@@ -14,15 +23,19 @@ const aboutStats = [
 export function About() {
   const { t } = useTranslation();
   const shouldAnimate = useAnimationsEnabled();
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const sceneNear = useNearViewport(sectionRef);
 
   return (
-    <section id="about" className="section-pad relative min-h-[560px]">
+    <section ref={sectionRef} id="about" className="section-pad relative min-h-[560px]">
       <div className="absolute inset-0" aria-hidden="true">
-        <ShapeScene
-          label={t('about.focus.title')}
-          shouldAnimate={shouldAnimate}
-          className="h-full w-full"
-        />
+        {sceneNear && (
+          <ShapeScene
+            label={t('about.focus.title')}
+            shouldAnimate={shouldAnimate}
+            className="h-full w-full"
+          />
+        )}
       </div>
 
       <div className="relative z-10 container mx-auto px-6">

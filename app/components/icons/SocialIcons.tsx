@@ -232,69 +232,96 @@ export function LinkIcon({ className }: IconProps) {
   );
 }
 
+function StrokeIcon({
+  className,
+  title,
+  children,
+}: IconProps & { title: string; children: React.ReactNode }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      role="img"
+    >
+      <title>{title}</title>
+      {children}
+    </svg>
+  );
+}
+
 export function EngineeringIcon({ className }: IconProps) {
   return (
-    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
-      <path
-        fill="currentColor"
-        d="M4 6a2 2 0 0 1 2-2h4a1 1 0 1 1 0 2H6v12h4a1 1 0 1 1 0 2H6a2 2 0 0 1-2-2V6Zm10-2a1 1 0 1 1 0 2h4v12h-4a1 1 0 1 1 0 2h4a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-4Zm-1.7 4.3a1 1 0 0 1 1.4 0l2.3 2.3a1 1 0 0 1 0 1.4l-2.3 2.3a1 1 0 1 1-1.4-1.4l.6-.6H11a1 1 0 1 1 0-2h1.9l-.6-.6a1 1 0 0 1 0-1.4Zm-4.6 0a1 1 0 0 1 0 1.4l-.6.6H9a1 1 0 1 1 0 2H7.1l.6.6a1 1 0 1 1-1.4 1.4L4 12a1 1 0 0 1 0-1.4l2.3-2.3a1 1 0 0 1 1.4 0Z"
-      />
-    </svg>
+    <StrokeIcon className={className} title="Engineering">
+      <path d="m18 16 4-4-4-4" />
+      <path d="m6 8-4 4 4 4" />
+      <path d="m14.5 4-5 16" />
+    </StrokeIcon>
   );
 }
 
 export function PortingIcon({ className }: IconProps) {
   return (
-    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
-      <path
-        fill="currentColor"
-        d="M6.5 4C5.1 4 4 5.1 4 6.5v11c0 1.4 1.1 2.5 2.5 2.5h1.6c.6 0 1-.4 1-1V5c0-.6-.4-1-1-1H6.5Zm8.2 0c-.6 0-1 .4-1 1v14c0 .6.4 1 1 1h2.6c1.5 0 2.7-1.2 2.7-2.7V6.7C20 5.2 18.8 4 17.3 4h-2.6Zm-2.8 2.4c-.5 0-.9.4-.9.9v9.4c0 .5.4.9.9.9s.9-.4.9-.9V7.3c0-.5-.4-.9-.9-.9Z"
-      />
-    </svg>
+    <StrokeIcon className={className} title="Porting">
+      <line x1="6" y1="11" x2="10" y2="11" />
+      <line x1="8" y1="9" x2="8" y2="13" />
+      <line x1="15" y1="12" x2="15.01" y2="12" />
+      <line x1="18" y1="10" x2="18.01" y2="10" />
+      <path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z" />
+    </StrokeIcon>
   );
 }
 
 export function QaIcon({ className }: IconProps) {
   return (
-    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
-      <path
-        fill="currentColor"
-        d="M10.5 4a6.5 6.5 0 1 0 3.9 11.7l3 3a1 1 0 0 0 1.4-1.4l-3-3A6.5 6.5 0 0 0 10.5 4Zm-4.5 6.5a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0Zm6.7-1.7a1 1 0 0 1 0 1.4l-2.6 2.6a1 1 0 0 1-1.4 0l-1.4-1.4a1 1 0 1 1 1.4-1.4l.7.7 1.9-1.9a1 1 0 0 1 1.4 0Z"
-      />
-    </svg>
+    <StrokeIcon className={className} title="In-House QA">
+      <path d="m8 2 1.88 1.88" />
+      <path d="M14.12 3.88 16 2" />
+      <path d="M9 7.13v-1a3.003 3.003 0 1 1 6 0v1" />
+      <path d="M12 20c-3.3 0-6-2.7-6-6v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3c0 3.3-2.7 6-6 6" />
+      <path d="M12 20v-9" />
+      <path d="M6.53 9C4.6 8.8 3 7.1 3 5" />
+      <path d="M6 13H2" />
+      <path d="M3 21c0-2.1 1.7-3.9 3.8-4" />
+      <path d="M20.97 5c0 2.1-1.6 3.8-3.5 4" />
+      <path d="M22 13h-4" />
+      <path d="M17.2 17c2.1.1 3.8 1.9 3.8 4" />
+    </StrokeIcon>
   );
 }
 
 export function ReleaseIcon({ className }: IconProps) {
   return (
-    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
-      <path
-        fill="currentColor"
-        d="M7 3a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h6.6a2 2 0 0 0 1.4-.6l3-3a2 2 0 0 0 .6-1.4V5a2 2 0 0 0-2-2H7Zm0 2h9v11h-2a2 2 0 0 0-2 2v2H7V5Zm6.5 11H16l-2.5 2.5V16Zm-5.8-6.2a1 1 0 1 1 1.4-1.4l1.1 1.1 2.2-2.2a1 1 0 1 1 1.4 1.4l-2.9 2.9a1 1 0 0 1-1.4 0l-1.8-1.8Z"
-      />
-    </svg>
+    <StrokeIcon className={className} title="Release Management">
+      <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" />
+      <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" />
+      <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" />
+      <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
+    </StrokeIcon>
   );
 }
 
 export function BackendIcon({ className }: IconProps) {
   return (
-    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
-      <path
-        fill="currentColor"
-        d="M7.5 18a4.5 4.5 0 0 1 0-9 5.5 5.5 0 0 1 10.6 1.6A3.5 3.5 0 0 1 17.5 18H7.5Zm0-2h10a1.5 1.5 0 0 0 .1-3 1 1 0 0 1-.9-1 3.5 3.5 0 0 0-6.8-1.1 1 1 0 0 1-1.2.7 2.5 2.5 0 0 0-.2 5.4Z"
-      />
-    </svg>
+    <StrokeIcon className={className} title="Backend and Cloud">
+      <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
+    </StrokeIcon>
   );
 }
 
 export function AiIcon({ className }: IconProps) {
   return (
-    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
-      <path
-        fill="currentColor"
-        d="M9 4a4 4 0 0 0-4 4v2a3 3 0 0 0 1.5 2.6V15a3 3 0 0 0 3 3h1v2a1 1 0 1 0 2 0v-2h1a3 3 0 0 0 3-3v-2.4A3 3 0 0 0 18 10V8a4 4 0 0 0-4-4H9Zm0 2h5a2 2 0 0 1 2 2v2a1 1 0 0 1-1 1h-1v4a1 1 0 0 1-1 1h-1v-4h-1v4h-1a1 1 0 0 1-1-1v-4H8a1 1 0 0 1-1-1V8a2 2 0 0 1 2-2Zm1 4a1 1 0 1 0 0 2h.5a1 1 0 1 0 0-2H10Zm3.5 0a1 1 0 1 0 0 2H14a1 1 0 1 0 0-2h-.5Z"
-      />
-    </svg>
+    <StrokeIcon className={className} title="AI">
+      <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" />
+      <path d="M20 3v4" />
+      <path d="M22 5h-4" />
+      <path d="M4 17v2" />
+      <path d="M5 18H3" />
+    </StrokeIcon>
   );
 }
 

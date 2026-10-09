@@ -17,16 +17,18 @@ export const EASTER_SET = new Set(EASTER_SEQUENCE);
 export interface ShapeData {
   mesh: THREE.Mesh;
   edges: THREE.LineSegments | null;
+  aura: THREE.Sprite;
+  isAccent: boolean;
   rotationSpeed: THREE.Vector3;
   floatOffset: number;
   floatSpeed: number;
   basePosition: THREE.Vector3;
   scale: number;
   hoverStrength: number;
+  /** Current base color; updated in place on theme change. */
   color: THREE.Color;
-  aura?: THREE.Sprite;
-  baseColor?: THREE.Color;
-  hoverColor?: THREE.Color;
+  /** Highlight color derived from `color`; updated in place on theme change. */
+  hoverColor: THREE.Color;
 }
 
 export interface ParticleData {
