@@ -10,7 +10,6 @@ export const metadata: Metadata = {
     'careers',
     'game development jobs',
     'Prague jobs',
-    'Unreal Engineer',
     'Producer',
     'Marketing Manager',
   ],

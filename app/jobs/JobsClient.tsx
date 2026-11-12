@@ -15,7 +15,6 @@ const sections = [
     id: 'engineering',
     key: 'engineering',
     positions: [
-      { key: 'unrealEngineer', level: 'medior' },
       { key: 'cppMediorEngineer', level: 'medior' },
       { key: 'cppRustEngineer', level: 'senior' },
       { key: 'backendEngineer', level: 'medior' },
@@ -45,6 +44,7 @@ const sections = [
     id: 'previously',
     key: 'previously',
     positions: [
+      { key: 'unrealEngineer', level: 'medior' },
       { key: 'unityEngineer', level: 'medior' },
       { key: 'pythonProgrammer', level: 'medior' },
       { key: 'officeCultureManager', level: 'medior' },
