@@ -2,7 +2,7 @@
 
 import { useEffect, useReducer, useRef } from 'react';
 
-import { EASTER_SEQUENCE, EASTER_SET } from './shapeSceneGeometry';
+import { EASTER_SEQUENCE, EASTER_SET } from './shapeSceneConstants';
 
 export type KeyEntry = { id: string; key: string };
 

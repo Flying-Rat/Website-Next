@@ -6,134 +6,281 @@
     "jobs": "Kariéra",
     "blog": "Tech Blog",
     "contact": "Kontakt",
-    "toggleMenu": "Přepnout menu"
+    "toggleMenu": "Přepnout menu",
+    "toggleTheme": "Přepnout motiv",
+    "language": "Jazyk",
+    "primary": "Hlavní",
+    "onThisPage": "Na této stránce",
+    "backHome": "Zpět na hlavní stránku",
+    "skipToContent": "Přeskočit na obsah"
   },
   "hero": {
+    "place": "Praha, CZ",
     "tagline": "Odemykáme nová dobrodružství",
     "subtitle": "Pražské studio, které pomáhá týmům vydávat skvělé hry – od gameplaye až po konzolové porty.",
-    "trustedBy": "Důvěřují nám týmy z",
+    "trustedBy": "Důvěřují nám",
+    "unlocked": "Achievement odemčen",
+    "photoAlt": "Tým Flying Rat Studio",
     "cta": {
       "projects": "Naše práce",
       "contact": "Ozvěte se"
     }
   },
   "about": {
-    "title": "Řešíme složité výzvy",
-    "description1": "Jsme pražský tým, který si poradí s tím nejtěžším: herní systémy, optimalizace výkonu, renderovací pipeline a portování na PlayStation, Xbox, Switch a handheldy.",
-    "description2": "Studia se na nás obracejí, když potřebují vyřešit náročné technické úkoly a stihnout termíny.",
+    "title": "Řešíme těžké problémy",
+    "description1": "Jsme pražský vývojářský tým, který si poradí s tím nejtěžším: herní systémy, optimalizace výkonu, renderovací pipeline a portování na PlayStation, Xbox, Switch a handheldy.",
+    "description2": "Studia se na nás obracejí, když potřebují vyřešit náročné technické problémy a vydat hru včas.",
     "stats": {
       "projects": "Projektů",
       "years": "Let zkušeností",
       "passion": "Vášeň"
     },
     "focus": {
-      "title": "Technická excelence",
-      "subtitle": "Jsme posedlí výkonem a dotažením detailů."
+      "title": "Technická excelence"
     }
   },
   "whatWeDo": {
     "title": "Co děláme",
-    "subtitle": "Specializovaný tým, který dokáže rychle dostat ambiciózní hry na více platforem.",
+    "subtitle": "Nejen programátoři. Engineering, art, QA i release pod jednou střechou, abychom ambiciózní hry dostali na všechny platformy.",
     "engineering": {
       "title": "Engineering",
-      "body": "Pracujeme přímo v enginech Unreal, Unity a Godot, ale dobře se orientujeme i v proprietárních technologiích na bázi C/C++ a Rustu. Stavíme stabilní systémy a výkon, který obstojí v produkci."
+      "body": "Pracujeme v enginech Unreal, Unity a Godot a stejně dobře se orientujeme v proprietárních enginech postavených na C/C++ a Rustu. Zaměřujeme se na čisté, stabilní systémy a výkon, který obstojí v produkci."
     },
     "porting": {
       "title": "Portování",
-      "body": "Vydáváme hry na Xbox One, Xbox Series, PlayStation 4, PlayStation 5, Nintendo Switch, Switch 2 a VR platformy jako Meta Quest. Platformní specifika řešíme pečlivě, aby hratelnost, výkon i certifikace proběhly hladce."
+      "body": "Vydáváme hry na Xbox One, Xbox Series X|S, PlayStation 4, PlayStation 5, Nintendo Switch, Nintendo Switch 2 a VR platformy jako Meta Quest. Specifika jednotlivých platforem řešíme pečlivě, aby hratelnost i výkon zůstaly na úrovni a certifikace proběhla hladce."
+    },
+    "art": {
+      "title": "Art",
+      "body": "Naši grafici pracují bok po boku s programátory: 3D, technický art a integrace přímo v enginu. Assety tak dobře vypadají a stejně dobře běží na každé platformě."
     },
     "qa": {
-      "title": "In-house QA",
-      "body": "Náš QA tým pracuje přímo s vývojáři, rychle ověřuje změny a zkracuje tím iterace. Zároveň provádí compliance kontroly pro každou platformu u každého buildu."
-    },
-    "release": {
-      "title": "Release management",
-      "body": "Nastavíme tituly, vyladíme profily a provedeme celý proces od buildu až po produkci. Postup je strukturovaný, opakovatelný a přehledný pro všechny strany."
+      "title": "QA a release",
+      "body": "Vlastní QA tým sedí přímo u programátorů, rychle testuje změny a u každého buildu kontroluje požadavky jednotlivých platforem. Postaráme se i o release: založíme tituly na platformách a provedeme buildy celým procesem až do produkce. Strukturovaně, opakovatelně, předvídatelně."
     },
     "backend": {
       "title": "Backend a cloud",
-      "body": "Stavíme API a backendové služby na AWS a Azure s využitím moderního stacku. Spolehlivost, observabilita a udržitelnost jsou pro nás klíčové."
+      "body": "Stavíme API a backendové služby na AWS, Azure a Vercelu, na moderním, produkčně ověřeném stacku. Spolehlivost, observabilita a udržovatelnost určují, jak služby dodáváme a provozujeme."
     },
     "ai": {
       "title": "AI",
-      "body": "Interně vyvíjíme a trénujeme modely, které pomáhají týmům v každém kroku vývoje – od prototypu po finální ladění. Cílem je reálné zrychlení práce, žádný hype."
+      "body": "Vyvíjíme a trénujeme vlastní modely, které pomáhají týmům v každé fázi vývoje, od prototypu po finální ladění. Cílem je skutečně zrychlit práci, ne honit hype."
     }
   },
   "projects": {
     "title": "Naše práce",
     "subtitle": "Jsme hrdí, že můžeme být součástí těchto skvělých projektů.",
     "internal": "Naše hra",
-    "comingSoon": "Již brzy",
-    "tba": "TBA"
+    "tba": "TBA",
+    "playDemo": "Zahrát si demo",
+    "platforms": "Platformy",
+    "privacy": {
+      "label": "Zásady a data",
+      "title": "Jak v našich hrách pracujeme s telemetrií, analytikou a daty hráčů.",
+      "cta": "Zásady ochrany soukromí"
+    }
+  },
+  "community": {
+    "title": "Vracíme komunitě",
+    "items": {
+      "gda": {
+        "tag": "Člen vedení",
+        "name": "GDACZ",
+        "body": "Asociace českých herních vývojářů."
+      },
+      "bnf": {
+        "tag": "Komunita",
+        "name": "Bonfire Events",
+        "body": "Meetupy herních vývojářů v Praze a ve Zlíně."
+      },
+      "dekoder": {
+        "tag": "Podcast",
+        "name": "Dekodér",
+        "body": "Herní design se potkává s technologiemi. S Janem Tomášikem a Martinem Pernicou."
+      },
+      "events": {
+        "tag": "Podpora",
+        "name": "Herní akce",
+        "body": "Jamy, meetupy, cokoli kolem her. Napište, co potřebujete."
+      }
+    }
   },
   "contact": {
-    "title": "Máte projekt v hlavě?",
+    "title": "Máte v hlavě projekt?",
     "subtitle": "Rádi si o něm popovídáme. Napište nám a uvidíme, co společně vymyslíme.",
     "cta": "Napište Martymu",
+    "person": {
+      "role": "Zakladatel",
+      "cta": "Napište Martinovi"
+    },
+    "other": "Akce, komunita nebo cokoli dalšího? Napište Martymu na",
     "social": "Nebo nás najdete na sítích.",
     "statusAvailable": "K dispozici",
     "martyAlt": "Marty z Flying Rat Studia"
   },
   "footer": {
     "rights": "Všechna práva vyhrazena.",
-    "cookies": "Žádné cookies tu nejsou, všechny jsme snědli. 🍪",
+    "cookies": "Cookies tu nenajdete. Všechny jsme snědli. 🍪",
     "jobs": "Kariéra",
-    "press": "Pro média"
+    "press": "Pro média",
+    "navLabel": "Patička"
   },
   "techStack": {
-    "title": "Náš stack"
+    "title": "Ovládáme"
+  },
+  "aiPolicy": {
+    "title": "AI tam, kde dává smysl. Kreativita především.",
+    "subtitle": "AI je tady a používáme ji každý den. Hry ale dělají lidé a tuhle část automatizovat nebudeme.",
+    "switch": {
+      "label": "AI na vašem projektu",
+      "on": "Zapnuto",
+      "off": "Vypnuto",
+      "onTitle": "Používáme ji tam, kde dává smysl.",
+      "onBody": "Produkce a procesy: plánování, pipeline, dokumentace, předávání práce. Informace díky tomu zůstávají aktuální, dohledatelné a uvnitř týmu.",
+      "offTitle": "Bez AI. Bez problému.",
+      "offBody": "Nehodí se k vaší hře? Vypneme ji a hru postavíme tak jako vždycky: ručně. Stejný tým, stejné standardy.",
+      "note": "Rozhodujete vy, u každého projektu zvlášť."
+    },
+    "ledger": {
+      "title": "Kde vede hranice",
+      "ai": {
+        "label": "AI zrychluje",
+        "items": [
+          "Plánování produkce",
+          "Pipeline a buildy",
+          "Dokumentaci a znalosti",
+          "Procesy a předávání práce",
+          "Rutinní práci"
+        ]
+      },
+      "people": {
+        "label": "Lidé tvoří",
+        "items": [
+          "Herní design",
+          "Art a art direction",
+          "Příběh a texty",
+          "Pocit ze hry a doladění",
+          "Každé finální rozhodnutí"
+        ]
+      }
+    },
+    "principles": {
+      "creative": {
+        "title": "Kreativita především. Vždy.",
+        "body": "Hry jsou tvůrčí práce. Design, art, příběh i pocit ze hry vznikají v hlavách lidí a žádný model je u nás nenahradí. Ani teď, ani později."
+      },
+      "care": {
+        "title": "Promyšleně, ne ze zvyku.",
+        "body": "Každé použití AI je rozhodnutí, ne zvyk. Pokud nezlepší výsledek nebo nezrychlí tým, nepoužijeme ji.",
+        "note": "Je to i šetrnější cesta: neplýtváme výpočetním výkonem ani energií tam, kde AI není potřeba."
+      },
+      "local": {
+        "title": "Naše modely. Náš hardware.",
+        "body": "Vyvíjíme vlastní modely a provozujeme je offline na vlastní inferenční infrastruktuře. Váš kód i assety zůstávají na našich vlastních strojích.",
+        "partner": {
+          "before": "Úzce spolupracujeme se",
+          "name": "Zet Labs",
+          "after": ", naší sesterskou společností."
+        }
+      }
+    }
+  },
+  "howWeWork": {
+    "title": "Jak pracujeme",
+    "subtitle": "Tři způsoby, jak nás zapojit. Jeden cíl: fungovat jako jeden tým.",
+    "legend": {
+      "you": "Váš tým",
+      "us": "Flying Rat Studio"
+    },
+    "models": {
+      "embedded": {
+        "label": "Součást týmu",
+        "title": "Řídíte vy.",
+        "body": "Naši programátoři se stanou součástí vašeho týmu: vaše stand-upy, váš backlog, váš směr. Vy ukazujete, my stavíme."
+      },
+      "scoped": {
+        "label": "Svěřená část",
+        "title": "Předejte to nám.",
+        "body": "Svěřte nám část projektu: port, systém, platformu. Naplánujeme ji, postavíme a vrátíme hotovou."
+      },
+      "mixed": {
+        "label": "Kombinace",
+        "title": "Obojí najednou.",
+        "body": "Programátoři zapojení do vašeho každodenního provozu a k tomu samostatná parta na část, kterou byste nejraději neřešili."
+      }
+    },
+    "team": {
+      "title": "Žádný odstup.",
+      "body": "Chceme, abyste nás brali jako svůj tým, ne jako dodavatele. Stejné kanály, stejná review, stejné standardy. Žádný mezičlánek."
+    },
+    "tools": {
+      "title": "Vaše nástroje. Naše zázemí.",
+      "body": "Pracujeme ve vašem stacku a ve vaší pipeline. Potřebujete víc výkonu? Připojte se k naší vlastní infrastruktuře, vyladěné na velkou zátěž a obrovské objemy dat.",
+      "specs": [
+        { "name": "Scribe", "label": "Hyper-scale správa verzí" },
+        { "name": "CI/CD", "label": "Vlastní, on-prem" },
+        { "name": "Zálohy", "label": "V základu" },
+        { "name": "Zabezpečení", "label": "Neveřejné, přístup jen pro zapojené" },
+        { "name": "Nástroje", "label": "Na míru projektu" }
+      ]
+    }
   },
   "jobs": {
     "title": "Přidej se k nám",
     "subtitle": {
-      "intro": "Děláme na hrách, které lidi fakt hrají - Beat Saber, Darkest Dungeon, tituly ze Steamu i konzolí. Náš 30+ členný tým v Praze řeší těžké technické problémy a dodává kvalitní práci pro studia po celém světě.",
-      "culture": "Žádný crunch, žádné nekonečné meetingy. Poctivý engineering, reálná zodpovědnost a projekty, o kterých stojí za to mluvit. Pokud ti to sedí, čti dál."
+      "intro": "Děláme na hrách, které už možná máš v knihovně: Beat Saber, Darkest Dungeon a další tituly na Steamu i konzolích. Je nás v Praze přes 30, řešíme těžké technické problémy a odvádíme kvalitní práci pro studia po celém světě.",
+      "culture": "Žádný crunch, žádné nekonečné meetingy. Poctivý engineering, skutečná zodpovědnost a projekty, o kterých stojí za to mluvit. Jestli ti to sedí, čti dál."
     },
+    "perksLabel": "Život ve studiu",
     "perks": [
       "Skvělá parta",
       "Deskovky",
       "Filmové večery",
       "Fotbálek",
       "Nejnovější technologie",
-      "Uč se od seniorů"
+      "Učení od seniorů"
     ],
-    "location": "Na místě, Praha",
-    "apply": "Přihlásit se",
+    "location": "Práce z kanceláře, Praha",
+    "apply": "Mám zájem o pozici",
     "copyLink": "Kopírovat odkaz",
+    "linkCopied": "Odkaz zkopírován",
     "levels": {
       "junior": "Junior",
       "medior": "Medior",
       "senior": "Senior"
     },
-    "status": "Tým aktivně rozrůstáme - vidíš se v něčem z toho? Ozvi se.",
+    "status": "Tým aktivně rozšiřujeme. Vidíš se v některé z těchto pozic? Ozvi se.",
+    "openRoles": {
+      "title": "Otevřené pozice"
+    },
     "hiringProcess": {
       "title": "Tvoje cesta k nám",
       "description": "Krátké, jednoduché, bez tlaku. Takhle to u nás obvykle chodí.",
-      "note": "Jsme flexibilní - kroky se můžou lišit podle role.",
+      "note": "Jsme flexibilní, kroky se můžou lišit podle pozice.",
       "steps": [
         {
           "title": "Napiš Martymu",
-          "description": "Pošli co nejvíc info: CV, GitHub, portfolio, cokoliv, co ukáže, jak přemýšlíš."
+          "description": "Pošli toho co nejvíc: CV, GitHub, portfolio, cokoli, co ukáže, jak přemýšlíš."
         },
         {
           "title": "Ozveme se",
-          "description": "Když to bude dávat smysl, ozveme se zpátky."
+          "description": "Když to bude dávat smysl, dáme ti vědět."
         },
         {
           "title": "Malý úkol",
-          "description": "Jednoduchý task, ne na znalosti, spíš na způsob uvažování."
+          "description": "Jednoduchý úkol. Nezkoušíme encyklopedické znalosti, zajímá nás tvůj přístup."
         },
         {
           "title": "Review",
-          "description": "Projdeme, co od tebe máme, a probereme to."
+          "description": "Projdeme tvoje řešení a probereme ho s tebou."
         },
         {
           "title": "První pohovor",
-          "description": "Potkáš se s team leadery a HR v našem HQ v Praze. Probereme zkušenosti, způsob práce a jak role vypadá v praxi."
+          "description": "Potkáš se s team leady a HR u nás v pražské kanceláři. Probereme tvoje zkušenosti, jak pracuješ a jak pozice vypadá v praxi."
         },
         {
           "title": "Druhé kolo",
-          "description": "Kratší setkání s founderem - spíš o tom, jestli si sedíme po lidské stránce, co tě baví a jestli jsme na stejné vlně."
+          "description": "Kratší setkání se zakladatelem studia. Spíš o tom, jestli si sedneme lidsky, co tě baví a jestli jsme na stejné vlně."
         },
         {
           "title": "Když to klapne",
@@ -143,7 +290,8 @@
     },
     "martyAlt": "Marty z Flying Rat Studia",
     "team": {
-      "imageAlt": "Tým Flying Rat Studia v sídle na Bubenské"
+      "imageAlt": "Tým Flying Rat Studia v sídle na Bubenské",
+      "caption": "Naše parta v sídle na Bubenské 1 v Praze"
     },
     "sections": {
       "engineering": "Engineering",
@@ -151,19 +299,18 @@
       "production": "Produkce",
       "marketing": "Marketing",
       "it": "IT",
-      "operations": "Provoz",
       "previously": "Dřívější pozice"
     },
     "contact": {
       "title": "Nevidíš svou pozici?",
-      "description": "Stále hledáme talentované lidi. Pošli nám CV a napiš, co tě baví."
+      "description": "Šikovné lidi hledáme pořád. Pošli nám CV a napiš, co tě baví."
     },
     "positions": {
       "unrealEngineer": {
         "title": "Unreal Engineer",
         "description": "Pracuj na AAA titulech v Unreal Enginu. Budeš řešit herní systémy, optimalizovat výkon a pomáhat s vydáním na PC a konzole. Vyžadujeme zkušenosti s Blueprinty a C++. Budeš spolupracovat přímo s partnerskými studii na projektech, které si zahrají miliony hráčů.",
         "points": [
-          "2+ roky s Unreal (Blueprints & C++)",
+          "2+ roky s Unrealem (Blueprinty a C++)",
           "Implementace herních systémů",
           "Profilování a optimalizace",
           "Zkušenosti s konzolemi výhodou"
@@ -171,29 +318,29 @@
       },
       "unityEngineer": {
         "title": "Unity Engineer",
-        "description": "Vyvíjej a vydávej hry na různé platformy v Unity. Od mobilů po konzolové porty budeš pracovat na rozmanitých projektech vyžadujících silné C# znalosti a porozumění renderingu a fyzice v Unity. Zkušenosti s optimalizací pro specifické platformy jsou výhodou.",
+        "description": "Vyvíjej a vydávej hry na různé platformy v Unity. Od mobilů po konzolové porty budeš pracovat na rozmanitých projektech, které vyžadují výbornou znalost C# a porozumění renderingu a fyzice v Unity. Zkušenosti s optimalizací pro konkrétní platformy jsou výhodou.",
         "points": [
           "2+ roky s Unity (C#)",
           "Znalost renderingu a fyziky",
-          "Debugging platform-specific issues",
-          "Konzole/VR zkušenosti výhodou"
+          "Ladění problémů specifických pro platformy",
+          "Zkušenosti s konzolemi/VR výhodou"
         ]
       },
       "cppMediorEngineer": {
         "title": "C/C++ Engineer",
-        "description": "Pracuj na herních systémech a výkonu v C/C++. Budeš implementovat gameplay funkce, optimalizovat kritické cesty a pomáhat vydávat tituly na PC a konzole. Potřebujeme solidní C/C++ a zkušenosti s herními nebo real-time systémy. Skvělý krok pro inženýry, kteří chtějí mít na starosti smysluplnou technickou práci.",
+        "description": "Pracuj na herních systémech a výkonu v C/C++. Budeš implementovat gameplay funkce, optimalizovat kritické části kódu a pomáhat vydávat tituly na PC a konzole. Potřebujeme solidní znalost C/C++ a zkušenosti s herními nebo real-time systémy. Skvělý krok pro programátory, kteří chtějí mít na starosti smysluplnou technickou práci.",
         "points": [
-          "2+ roky C/C++",
+          "2+ roky s C/C++",
           "Zkušenosti s hrami nebo real-time systémy",
           "Debugging a profilování",
-          "Konzole nebo cross-platform výhodou"
+          "Zkušenosti s konzolemi nebo cross-platform vývojem výhodou"
         ]
       },
       "cppRustEngineer": {
         "title": "C/C++ nebo Rust Engineer",
-        "description": "Ponoř se do práce na úrovni enginu. Budeš optimalizovat renderovací pipeline, implementovat nízkoúrovňové systémy a řešit nejtěžší technické výzvy ve vývoji her. Vyžadujeme zkušenosti s proprietárními enginy, grafickými API nebo systémovým programováním. Tato role je pro inženýry, kteří milují práci blízko hardwaru.",
+        "description": "Ponoř se do práce na úrovni enginu. Budeš optimalizovat renderovací pipeline, implementovat nízkoúrovňové systémy a řešit nejtěžší technické výzvy ve vývoji her. Vyžadujeme zkušenosti s proprietárními enginy, grafickými API nebo systémovým programováním. Role pro programátory, kteří milují práci blízko hardwaru.",
         "points": [
-          "5+ let v C/C++ nebo Rust",
+          "5+ let s C/C++ nebo Rustem",
           "Low-level optimalizace a profilování",
           "Architektura enginu a návrh systémů",
           "Grafická API výhodou"
@@ -201,9 +348,9 @@
       },
       "backendEngineer": {
         "title": "Backend Engineer",
-        "description": "Stavěj služby, které pohání hry. Budeš pracovat na API, herních backendech a cloudové infrastruktuře na AWS a Azure. Záleží nám na spolehlivosti, čisté architektuře a systémech, které škálují. Pokud rád řešíš reálné problémy bez enterprise balastu, tohle je tvoje místo.",
+        "description": "Stavěj služby, které pohánějí hry. Budeš pracovat na API, herních backendech a cloudové infrastruktuře na AWS a Azure. Záleží nám na spolehlivosti, čisté architektuře a systémech, které škálují. Pokud tě baví řešit skutečné problémy bez korporátního balastu, tohle je místo pro tebe.",
         "points": [
-          "2+ roky backend vývoje",
+          "2+ roky backendového vývoje",
           "Zkušenosti s AWS nebo Azure",
           "Node.js, Go nebo Python",
           "SQL a NoSQL databáze",
@@ -211,29 +358,29 @@
         ]
       },
       "pythonProgrammer": {
-        "title": "Python Programátor (Tooling & Integrace)",
-        "description": "Vytvářej interní nástroje a pipeline integrace, které zrychlí vývoj her. Budeš řešit automatizaci, datové workflow a integrace DCC nástrojů včetně Blenderu, Mayi, Houdini a Unreal Python tooling používaného art a produkčními týmy. Hledáme někoho, kdo umí převést komplexní produkční požadavky do spolehlivých skriptů a služeb.",
+        "title": "Python programátor (tooling a integrace)",
+        "description": "Vytvářej interní nástroje a integrace do pipeline, které zrychlí vývoj her. Budeš řešit automatizaci, datová workflow a integrace DCC nástrojů včetně Blenderu, Mayi, Houdini a pythonového toolingu pro Unreal, který používají art a produkční týmy. Hledáme někoho, kdo umí převést složité produkční požadavky do spolehlivých skriptů a služeb.",
         "points": [
           "2+ roky vývoje v Pythonu",
           "Tooling a automatizace pipeline",
-          "Zkušenost s Blender, Maya nebo Houdini Python API",
+          "Zkušenost s Python API Blenderu, Mayi nebo Houdini",
           "CLI nástroje, packaging a debugging",
           "Spolupráce s art, tech a produkcí"
         ]
       },
       "qaEngineer": {
         "title": "QA Engineer",
-        "description": "Udržuj kvalitu napříč platformami. Budeš pracovat přímo s inženýry, chytat problémy včas, provádět compliance kontroly a pomáhat shipovat buildy, které projdou certifikací napoprvé. Ceníme si bystrého oka, jasných bug reportů a lidí, kteří rozumí hráčům i technice.",
+        "description": "Hlídej kvalitu napříč platformami. Budeš pracovat přímo s programátory, chytat problémy včas, kontrolovat požadavky platforem a pomáhat vydávat buildy, které projdou certifikací napoprvé. Ceníme si bystrého oka, jasných bug reportů a lidí, kteří rozumí hráčům i technice.",
         "points": [
           "2+ roky v herním QA",
           "Zkušenosti s certifikací konzolí",
-          "Bug tracking a správa test cases",
+          "Bug tracking a správa testovacích scénářů",
           "Skriptování nebo automatizace výhodou"
         ]
       },
       "mediorProducer": {
         "title": "Producer",
-        "description": "Měj na starosti produkci co-dev, portovacích i interních projektů, často několika najednou. Budeš držet plány reálné, partnery v obraze a engineering s QA bez zbytečných blokací, včetně certifikace, odevzdek na platformy a updatů po releasu. Dost blízko technice, abys s inženýry mluvil o buildech a omezeních, a dost rozhodný na to, ořezat scope, když termín platí. Mediorská role: už jsi shipnul, neschováváš se za proces a tvoje plány jsou takové, kterým tým věří.",
+        "description": "Měj na starosti produkci co-dev, portovacích i interních projektů, často několika najednou. Budeš držet plány při zemi, partnery v obraze a programátory i QA bez zbytečných blokerů, včetně certifikace, odevzdávání buildů do obchodů a updatů po vydání. Technice rozumíš natolik, že se s programátory bavíš o buildech a omezeních, a máš odvahu ořezat scope, když termín opravdu platí. Mediorská pozice: máš za sebou vydanou hru, neschováváš se za procesy a tvým plánům tým věří.",
         "points": [
           "3+ roky v herní produkci",
           "Alespoň jeden vydaný titul nebo velký milník",
@@ -244,7 +391,7 @@
       },
       "marketingManager": {
         "title": "Marketing Manager",
-        "description": "Formuj způsob, jakým se Flying Rat Studio propojuje se světem herního vývoje. Budeš tvořit naše sdělení, spravovat sociální sítě, koordinovat oznámení s partnerskými studii a pomáhat budovat naši reputaci jako spolehlivého technického partnera. Preferujeme zkušenosti s marketingem v herním průmyslu nebo B2B tech sektoru.",
+        "description": "Urči, jak Flying Rat Studio mluví se světem herního vývoje. Budeš tvořit naši komunikaci, spravovat sociální sítě, koordinovat oznámení s partnerskými studii a pomáhat budovat naši pověst spolehlivého technického partnera. Výhodou jsou zkušenosti s marketingem v herním průmyslu nebo v B2B tech sektoru.",
         "points": [
           "2+ roky v B2B/herním marketingu",
           "Sociální sítě a obsahová strategie",
@@ -253,19 +400,19 @@
         ]
       },
       "juniorIt": {
-        "title": "IT Specialista",
-        "description": "Udržuj náš 30+ členný tým v chodu. Budeš spravovat pracovní stanice, řešit UniFi/Ubiquiti síťování, podporovat vývojová prostředí a udržovat naše Dell EMC servery s VMware ESXi virtualizací. Používáme Synology pro úložiště a provozujeme různé linuxové distribuce pro VM. Skvělá příležitost rozvíjet IT dovednosti v rychlém prostředí herního vývoje.",
+        "title": "IT specialista",
+        "description": "Postarej se, aby náš tým o více než 30 lidech běžel hladce. Budeš spravovat pracovní stanice, starat se o síť na UniFi/Ubiquiti, podporovat vývojová prostředí a udržovat naše servery Dell EMC s virtualizací VMware ESXi. Na úložiště používáme Synology a ve virtuálních strojích provozujeme různé linuxové distribuce. Skvělá příležitost rozvíjet IT dovednosti v dynamickém prostředí herního vývoje.",
         "points": [
-          "Základy síťování (UniFi/Ubiquiti)",
-          "Administrace Windows a Linux",
-          "VMware/Synology zkušenosti výhodou",
+          "Základy sítí (UniFi/Ubiquiti)",
+          "Administrace Windows a Linuxu",
+          "Zkušenosti s VMware/Synology výhodou",
           "Řešení HW a SW problémů",
           "Chuť se učit a růst"
         ]
       },
       "officeCultureManager": {
         "title": "Office & Culture Manager",
-        "description": "Udržuj naše pražské HQ v chodu a dělej z něj skvělé místo k práci. Postaráš se o každodenní kancelářskou agendu, rozpočty a dodavatele, zorganizuješ firemní akce a interní aktivity a podpoříš HR při onboardingu, náboru a komunikaci s kandidáty. Role pro někoho, kdo miluje pořádek a spokojený tým.",
+        "description": "Udržuj naši pražskou kancelář v chodu a dělej z ní skvělé místo pro práci. Postaráš se o každodenní kancelářskou agendu, rozpočty a dodavatele, zorganizuješ firemní akce a interní aktivity a podpoříš HR při onboardingu, náboru a komunikaci s kandidáty. Role pro někoho, kdo miluje pořádek a spokojený tým.",
         "points": [
           "Kancelářská agenda a rozpočty",
           "Akce, teambuilding a kultura",
@@ -278,10 +425,9 @@
   },
   "pressKit": {
     "title": "Pro média",
-    "subtitle": "Stáhněte si oficiální loga a brand assety Flying Rat Studia pro tisk a média.",
-    "backHome": "Zpět na hlavní stránku",
+    "subtitle": "Stáhněte si oficiální loga a materiály značky Flying Rat Studio pro tisk a média.",
     "logos": {
-      "title": "Ke stažení",
+      "title": "Loga ke stažení",
       "description": "Naše logo je k dispozici v několika formátech a barevných variantách. Všechny soubory jsou v barevném prostoru RGB. Vyberte si verzi, která nejlépe odpovídá vašemu pozadí.",
       "center": "Centrované logo",
       "horizontal": "Horizontální logo",
@@ -303,22 +449,22 @@
         "title": "Ano",
         "item1": "Používejte logo v původních proporcích",
         "item2": "Zachovejte dostatečný volný prostor kolem loga",
-        "item3": "Použijte vhodnou barevnou variantu pro vaše pozadí",
+        "item3": "Zvolte barevnou variantu vhodnou pro vaše pozadí",
         "item4": "Používejte čisté pozadí s dobrým kontrastem"
       },
       "dont": {
         "title": "Ne",
-        "item1": "Nenatahujte, nezkreslujte ani neotáčejte logo",
+        "item1": "Logo nenatahujte, nedeformujte ani neotáčejte",
         "item2": "Neměňte barvy loga",
-        "item3": "Nepřidávejte efekty jako stíny nebo obrysy",
-        "item4": "Neumisťujte logo na rušná nebo málo kontrastní pozadí",
+        "item3": "Nepřidávejte efekty, jako jsou stíny nebo obrysy",
+        "item4": "Neumisťujte logo na rušná ani málo kontrastní pozadí",
         "item5": "Neořezávejte logo ani ho nepoužívejte jako vzor",
-        "item6": "Neumisťujte logo na gradienty nebo texturované povrchy"
+        "item6": "Neumisťujte logo na přechody ani texturované povrchy"
       }
     },
     "about": {
-      "title": "O Flying Rat Studio",
-      "boilerplate": "Flying Rat Studio je pražský tým pro vývoj her specializující se na herní systémy, optimalizaci výkonu, renderingové pipeline a portování na PlayStation, Xbox, Switch a handheldy. Studio pracuje přímo v enginech Unreal, Unity a Godot a dobře se orientuje i v proprietárních technologiích na bázi C/C++ a Rustu. Flying Rat Studio poskytuje také interní QA, release management, backendové služby a vlastní AI modely, aby týmy spolehlivě shipovaly napříč platformami.",
+      "title": "O Flying Rat Studiu",
+      "boilerplate": "Flying Rat Studio je pražský herní vývojářský tým, který se specializuje na herní systémy, optimalizaci výkonu, renderovací pipeline a portování na PlayStation, Xbox, Switch a handheldy. Studio pracuje v enginech Unreal, Unity a Godot a stejně dobře se orientuje v proprietárních enginech postavených na C/C++ a Rustu. Flying Rat Studio nabízí také interní QA, release management, backendové služby a vlastní AI modely, aby týmy mohly spolehlivě vydávat hry na všech platformách.",
       "copyButton": "Kopírovat",
       "copied": "Zkopírováno!"
     },
@@ -334,12 +480,16 @@
       "legalEntityName": "GADEN ALPHA s.r.o.",
       "legalEntityIds": "IČO: 09949194 | DIČ: CZ09949194",
       "legalEntityAddress": "Polní 21, 252 64 Velké Přílepy",
-      "legalEntityRegistry": "Zapsáno u MS v Praze, C 345227",
+      "legalEntityRegistry": "Zapsáno u Městského soudu v Praze, sp. zn. C 345227",
       "contactLabel": "Kontakt pro média"
+    },
+    "work": {
+      "title": "Vybrané projekty",
+      "description": "Hry, na kterých jsme se podíleli, a ty, které vyvíjíme sami."
     },
     "brandName": {
       "title": "Název značky",
-      "description": "Náš oficiální název je \"Flying Rat Studio\" - v tiskových materiálech vždy používejte celý název.",
+      "description": "Náš oficiální název je „Flying Rat Studio“. V tiskových materiálech prosím vždy používejte celý název.",
       "correct": "Správně",
       "incorrect": "Špatně",
       "examples": {
@@ -352,11 +502,11 @@
     },
     "clearSpace": {
       "title": "Ochranná zóna",
-      "description": "Vždy dodržujte minimální volný prostor kolem loga odpovídající výšce písmene 'F' ve slovní značce. To zajistí čitelnost a působivost loga."
+      "description": "Kolem loga vždy dodržujte ochrannou zónu alespoň o výšce písmene „F“ v logotypu. Logo tak zůstane čitelné a dobře vynikne."
     },
     "contact": {
       "title": "Potřebujete něco jiného?",
-      "description": "Pokud potřebujete další materiály, jiné formáty nebo máte dotazy ohledně použití značky, neváhejte nás kontaktovat."
+      "description": "Pokud potřebujete další materiály, jiné formáty nebo máte dotazy k použití značky, ozvěte se nám."
     },
     "logoColors": {
       "black": "Černá",
@@ -375,8 +525,6 @@
       "colors": "Barvy",
       "guidelines": "Pravidla",
       "brand": "Název"
-    },
-    "toggleTheme": "Přepnout motiv",
-    "martyAlt": "Marty z Flying Rat Studia"
+    }
   }
 }

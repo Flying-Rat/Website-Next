@@ -6,12 +6,21 @@
     "jobs": "Jobs",
     "blog": "Tech Blog",
     "contact": "Contact",
-    "toggleMenu": "Toggle menu"
+    "toggleMenu": "Toggle menu",
+    "toggleTheme": "Switch theme",
+    "language": "Language",
+    "primary": "Main",
+    "onThisPage": "On this page",
+    "backHome": "Back to Home",
+    "skipToContent": "Skip to content"
   },
   "hero": {
+    "place": "Prague, CZ",
     "tagline": "Unlocking Adventures",
     "subtitle": "Prague-based studio helping teams ship great games, from gameplay to console ports.",
     "trustedBy": "Trusted by teams at",
+    "unlocked": "Achievement unlocked",
+    "photoAlt": "The Flying Rat Studio team",
     "cta": {
       "projects": "See Our Work",
       "contact": "Let's Talk"
@@ -20,75 +29,209 @@
   "about": {
     "title": "Hard Problems, Solved",
     "description1": "We're a Prague-based development team that tackles the tough stuff: gameplay systems, performance optimization, rendering pipelines, and porting to PlayStation, Xbox, Switch, and handhelds.",
-    "description2": "Studios call us when they need complex technical challenges solved and shipped on time.",
+    "description2": "Studios call us when they need complex technical problems solved and their game shipped on time.",
     "stats": {
       "projects": "Projects",
-      "years": "Years Experience",
+      "years": "Years of Experience",
       "passion": "Passion"
     },
     "focus": {
-      "title": "Technical Excellence",
-      "subtitle": "We obsess over performance and polish."
+      "title": "Technical Excellence"
     }
   },
   "whatWeDo": {
     "title": "What We Do",
-    "subtitle": "A focused team built to ship ambitious games across platforms fast.",
+    "subtitle": "Not just engineers. Engineering, art, QA, and release under one roof, built to ship ambitious games across platforms.",
     "engineering": {
       "title": "Engineering",
       "body": "We work hands-on with Unreal, Unity, and Godot, and are comfortable with proprietary engines built in C/C++ and Rust. We focus on clean, stable systems and performance that holds up in production."
     },
     "porting": {
       "title": "Porting",
-      "body": "We ship to Xbox One, Xbox Series, PlayStation 4, PlayStation 5, Nintendo Switch, Nintendo Switch 2, and VR platforms like Meta Quest. We handle platform specifics carefully so gameplay, performance, and certification stay on track."
+      "body": "We ship to Xbox One, Xbox Series X|S, PlayStation 4, PlayStation 5, Nintendo Switch, Nintendo Switch 2, and VR platforms like Meta Quest. We handle platform specifics carefully so gameplay, performance, and certification stay on track."
+    },
+    "art": {
+      "title": "Art",
+      "body": "Our artists work shoulder to shoulder with engineering: 3D, technical art, and in-engine integration. Assets look right and run right on every platform."
     },
     "qa": {
-      "title": "In-House QA",
-      "body": "Our QA team works alongside engineers to validate changes quickly and reduce turnaround time. They also run platform compliance checks on each build to keep releases safe and predictable."
-    },
-    "release": {
-      "title": "Release Management",
-      "body": "We set up titles, fine-tune profiles, and move builds through the full pipeline to production. The process is structured, repeatable, and easy to follow for partners."
+      "title": "QA and Release",
+      "body": "Our in-house QA team sits with engineering, tests changes fast, and runs platform compliance checks on every build. Then we take care of release: we set up titles on each platform and move builds through the full pipeline to production. Structured, repeatable, predictable."
     },
     "backend": {
       "title": "Backend and Cloud",
-      "body": "We build APIs and backend services on AWS and Azure using modern, production-ready stacks. Reliability, observability, and maintainability guide how we ship and operate."
+      "body": "We build APIs and backend services on AWS, Azure, and Vercel using modern, production-ready stacks. Reliability, observability, and maintainability guide how we ship and operate."
     },
     "ai": {
       "title": "AI",
-      "body": "We develop and train in-house models to support teams across every development step, from prototyping to polish. The goal is practical acceleration, not hype."
+      "body": "We develop and train in-house models that support teams at every stage of development, from prototyping to polish. The goal is to make real work faster, not to chase hype."
     }
   },
   "projects": {
     "title": "Our Work",
     "subtitle": "Proud to be part of these amazing projects.",
     "internal": "Our game",
-    "comingSoon": "Coming soon",
-    "tba": "TBA"
+    "tba": "TBA",
+    "playDemo": "Play the demo",
+    "platforms": "Platforms",
+    "privacy": {
+      "label": "Policy & Data",
+      "title": "Telemetry, analytics, and player data practices for our games.",
+      "cta": "Privacy Policy"
+    }
+  },
+  "community": {
+    "title": "Giving Back to the Community",
+    "items": {
+      "gda": {
+        "tag": "Board member",
+        "name": "GDACZ",
+        "body": "Czech Game Developers Association."
+      },
+      "bnf": {
+        "tag": "Community",
+        "name": "Bonfire Events",
+        "body": "Game dev meetups in Prague and Zlín."
+      },
+      "dekoder": {
+        "tag": "Podcast",
+        "name": "Dekodér",
+        "body": "Game design meets technology. With Jan Tomášik and Martin Pernica."
+      },
+      "events": {
+        "tag": "Support",
+        "name": "Game events",
+        "body": "Jams, meetups, anything about games. Tell us what you need."
+      }
+    }
   },
   "contact": {
     "title": "Got a Project in Mind?",
     "subtitle": "We'd love to hear about it. Drop us a line and let's see what we can build together.",
     "cta": "Email Marty",
+    "person": {
+      "role": "Founder",
+      "cta": "Email Martin"
+    },
+    "other": "Events, community or anything else? Write Marty at",
     "social": "Or find us on social.",
     "statusAvailable": "Available",
     "martyAlt": "Marty from Flying Rat Studio"
   },
   "footer": {
     "rights": "All rights reserved.",
-    "cookies": "No cookies here, we ate them all. 🍪",
+    "cookies": "No cookies here. We ate them all. 🍪",
     "jobs": "Jobs",
-    "press": "Press Kit"
+    "press": "Press Kit",
+    "navLabel": "Footer"
   },
   "techStack": {
-    "title": "Our stack"
+    "title": "Fluent in"
+  },
+  "aiPolicy": {
+    "title": "AI where it matters. Creativity first.",
+    "subtitle": "AI is here, and we use it every day. But games are made by people, and that part is not up for automation.",
+    "switch": {
+      "label": "AI on your project",
+      "on": "On",
+      "off": "Off",
+      "onTitle": "We use it where it matters.",
+      "onBody": "Production and process: planning, pipelines, documentation, handoffs. That keeps information current, easy to find, and inside the team.",
+      "offTitle": "No AI. No problem.",
+      "offBody": "Not the right fit for your game? We switch it off and build it the way we always have: by hand. Same team, same standards.",
+      "note": "Your call, project by project."
+    },
+    "ledger": {
+      "title": "Where the line is",
+      "ai": {
+        "label": "AI speeds up",
+        "items": [
+          "Production planning",
+          "Pipelines and builds",
+          "Documentation and knowledge",
+          "Process and handoffs",
+          "Repetitive groundwork"
+        ]
+      },
+      "people": {
+        "label": "People create",
+        "items": [
+          "Game design",
+          "Art and art direction",
+          "Story and writing",
+          "Feel and polish",
+          "Every final call"
+        ]
+      }
+    },
+    "principles": {
+      "creative": {
+        "title": "Creativity first. Always.",
+        "body": "Games are creative work. Design, art, story, and feel come from people, and no model replaces that here. Not now, not later."
+      },
+      "care": {
+        "title": "Deliberate, not default.",
+        "body": "Every use of AI is a decision, not a habit. If it doesn't make the work better or the team faster, we don't use it.",
+        "note": "It's the greener way, too: no compute and no energy spent where AI isn't needed."
+      },
+      "local": {
+        "title": "Our models. Our hardware.",
+        "body": "We build our own models and run them on our own inference infrastructure, offline. Your code and assets stay on machines we own.",
+        "partner": {
+          "before": "We work closely with",
+          "name": "Zet Labs",
+          "after": ", our sister company."
+        }
+      }
+    }
+  },
+  "howWeWork": {
+    "title": "How We Work",
+    "subtitle": "Three ways to plug us in. One goal: it should feel like one team.",
+    "legend": {
+      "you": "Your team",
+      "us": "Flying Rat Studio"
+    },
+    "models": {
+      "embedded": {
+        "label": "Embedded",
+        "title": "You drive.",
+        "body": "Our engineers join your team: your stand-ups, your backlog, your direction. You point, we build."
+      },
+      "scoped": {
+        "label": "Owned scope",
+        "title": "Hand it over.",
+        "body": "Give us a piece of the project: a port, a system, a platform. We plan it, build it, and bring it back finished."
+      },
+      "mixed": {
+        "label": "Mixed",
+        "title": "Both at once.",
+        "body": "Engineers embedded in your day-to-day, plus a dedicated crew on the part you'd rather not think about."
+      }
+    },
+    "team": {
+      "title": "No distance.",
+      "body": "Our goal is to feel like your team, not a vendor. Same channels, same reviews, same standards. No layer in between."
+    },
+    "tools": {
+      "title": "Your tools. Our backup.",
+      "body": "We work in your stack and your pipeline. Need more muscle? Plug into our in-house infrastructure, tuned for heavy workloads and massive data.",
+      "specs": [
+        { "name": "Scribe", "label": "Hyper-scale version control" },
+        { "name": "CI/CD", "label": "On-prem" },
+        { "name": "Backups", "label": "Built in" },
+        { "name": "Security", "label": "Private, need-to-know access" },
+        { "name": "Tooling", "label": "To match your project" }
+      ]
+    }
   },
   "jobs": {
     "title": "Join the Team",
     "subtitle": {
-      "intro": "We work on games people actually play - Beat Saber, Darkest Dungeon, titles you'll find on Steam and console storefronts. Our 30+ person team in Prague tackles hard technical problems and ships quality work for studios worldwide.",
+      "intro": "We work on games you might already have in your library: Beat Saber, Darkest Dungeon, and other titles on Steam and consoles. Our team of 30+ in Prague tackles hard technical problems and ships quality work for studios worldwide.",
       "culture": "No crunch culture, no endless meetings. Just solid engineering, real ownership, and projects worth talking about. If that sounds like your kind of place, keep reading."
     },
+    "perksLabel": "Life at the studio",
     "perks": [
       "Friendly crew",
       "Board games",
@@ -98,42 +241,46 @@
       "Learn from seniors"
     ],
     "location": "On-site, Prague",
-    "apply": "Apply",
+    "apply": "Apply for this role",
     "copyLink": "Copy link",
+    "linkCopied": "Link copied",
     "levels": {
       "junior": "Junior",
       "medior": "Medior",
       "senior": "Senior"
     },
-    "status": "We're actively growing the team - see yourself in any of these? Say hi.",
+    "status": "We're actively growing the team. See yourself in any of these? Say hi.",
+    "openRoles": {
+      "title": "Open Positions"
+    },
     "hiringProcess": {
-      "title": "Your way in",
+      "title": "Your Way In",
       "description": "Short, simple, no pressure. Here's how it usually goes.",
-      "note": "We keep it flexible - steps can vary by role.",
+      "note": "We keep it flexible, so steps can vary by role.",
       "steps": [
         {
-          "title": "Write Marty",
+          "title": "Email Marty",
           "description": "Send as much as you can: CV, GitHub, portfolio, anything that shows how you think."
         },
         {
           "title": "We get back to you",
-          "description": "If it feels like a fit, we'll get back to you."
+          "description": "If it looks like a fit, you'll hear from us."
         },
         {
           "title": "Small task",
-          "description": "A simple task, not to test trivia, just to see your approach."
+          "description": "A simple task. Not a trivia test, just a way to see how you approach a problem."
         },
         {
           "title": "Review",
-          "description": "We review what you sent and talk it through."
+          "description": "We review what you sent and talk it through with you."
         },
         {
           "title": "First interview",
-          "description": "You'll meet team leaders and HR at our HQ in Prague. We talk about your experience, how you work, and what the role looks like day to day."
+          "description": "You'll meet our team leads and HR at our HQ in Prague. We'll talk about your experience, how you work, and what the role looks like day to day."
         },
         {
           "title": "Second round",
-          "description": "A shorter conversation with our founder - usually more about culture fit, motivation, and whether we're aligned on both sides."
+          "description": "A shorter conversation with our founder, usually more about culture fit, motivation, and whether it works for both sides."
         },
         {
           "title": "If it clicks",
@@ -143,7 +290,8 @@
     },
     "martyAlt": "Marty from Flying Rat Studio",
     "team": {
-      "imageAlt": "Flying Rat Studio team at Bubenska headquarters"
+      "imageAlt": "The Flying Rat Studio team at the Bubenská headquarters in Prague",
+      "caption": "The crew at our HQ, Bubenská 1, Prague"
     },
     "sections": {
       "engineering": "Engineering",
@@ -151,7 +299,6 @@
       "production": "Production",
       "marketing": "Marketing",
       "it": "IT",
-      "operations": "Operations",
       "previously": "Past Positions"
     },
     "contact": {
@@ -161,9 +308,9 @@
     "positions": {
       "unrealEngineer": {
         "title": "Unreal Engineer",
-        "description": "Work on AAA titles using Unreal Engine. You'll tackle gameplay systems, optimize performance, and help ship to PC and consoles. Experience with Blueprints and C++ required. You'll collaborate directly with partner studios on projects that millions of players will enjoy.",
+        "description": "Work on AAA titles using Unreal Engine. You'll tackle gameplay systems, optimize performance, and help ship to PC and consoles. Experience with Blueprints and C++ is required. You'll collaborate directly with partner studios on projects that millions of players will enjoy.",
         "points": [
-          "2+ yrs Unreal (Blueprints & C++)",
+          "2+ years of Unreal (Blueprints & C++)",
           "Gameplay systems implementation",
           "Profiling & optimization",
           "Console experience a plus"
@@ -171,9 +318,9 @@
       },
       "unityEngineer": {
         "title": "Unity Engineer",
-        "description": "Build and ship games across multiple platforms using Unity. From mobile to console ports, you'll work on diverse projects requiring strong C# skills and understanding of Unity's rendering and physics systems. Experience with platform-specific optimizations is a plus.",
+        "description": "Build and ship games across multiple platforms using Unity. From mobile to console ports, you'll work on diverse projects that call for strong C# skills and a solid understanding of Unity's rendering and physics systems. Experience with platform-specific optimization is a plus.",
         "points": [
-          "2+ yrs Unity (C#)",
+          "2+ years of Unity (C#)",
           "Rendering & physics knowledge",
           "Platform-specific debugging",
           "Console/VR experience a plus"
@@ -181,9 +328,9 @@
       },
       "cppMediorEngineer": {
         "title": "C/C++ Engineer",
-        "description": "Work on game systems and performance in C/C++. You'll implement gameplay features, optimize code paths, and help ship titles on PC and consoles. Solid C/C++ skills and experience with game or real-time systems required. A great step for engineers ready to own meaningful technical work.",
+        "description": "Work on game systems and performance in C/C++. You'll implement gameplay features, optimize code paths, and help ship titles on PC and consoles. Solid C/C++ skills and experience with game or real-time systems are required. A great step for engineers ready to own meaningful technical work.",
         "points": [
-          "2+ yrs C/C++",
+          "2+ years of C/C++",
           "Game or real-time systems experience",
           "Debugging & profiling",
           "Console or cross-platform a plus"
@@ -191,9 +338,9 @@
       },
       "cppRustEngineer": {
         "title": "C/C++ or Rust Engineer",
-        "description": "Dive deep into engine-level work. You'll optimize rendering pipelines, implement low-level systems, and solve the hardest technical challenges in game development. Experience with proprietary engines, graphics APIs, or systems programming required. This role is for engineers who love the metal.",
+        "description": "Dive deep into engine-level work. You'll optimize rendering pipelines, implement low-level systems, and solve the hardest technical challenges in game development. Experience with proprietary engines, graphics APIs, or systems programming is required. This role is for engineers who love working close to the metal.",
         "points": [
-          "5+ yrs C/C++ or Rust",
+          "5+ years of C/C++ or Rust",
           "Low-level optimization & profiling",
           "Engine architecture & systems design",
           "Graphics APIs a plus"
@@ -203,7 +350,7 @@
         "title": "Backend Engineer",
         "description": "Build the services that power games. You'll work on APIs, game backends, and cloud infrastructure on AWS and Azure. We care about reliability, clean architecture, and systems that scale. If you like solving real problems without the enterprise bloat, this is your spot.",
         "points": [
-          "2+ yrs backend development",
+          "2+ years of backend development",
           "AWS or Azure experience",
           "Node.js, Go, or Python",
           "SQL & NoSQL databases",
@@ -214,7 +361,7 @@
         "title": "Python Programmer (Tooling & Integrations)",
         "description": "Build internal tools and pipeline integrations that speed up game development. You'll work on automation, data workflows, and DCC integrations, including Blender, Maya, Houdini, and Unreal Python tooling used by art and production teams. We need someone who can turn complex production requirements into reliable scripts and services.",
         "points": [
-          "2+ yrs Python development",
+          "2+ years of Python development",
           "Tooling and pipeline automation",
           "Blender, Maya, or Houdini Python API experience",
           "CLI tools, packaging, and debugging",
@@ -223,9 +370,9 @@
       },
       "qaEngineer": {
         "title": "QA Engineer",
-        "description": "Keep quality high across platforms. You'll work directly with engineers, catch issues early, run platform compliance checks, and help us ship builds that pass certification first time. We value sharp eyes, clear bug reports, and people who understand both the player and the tech side.",
+        "description": "Keep quality high across platforms. You'll work directly with engineers, catch issues early, run platform compliance checks, and help us ship builds that pass certification the first time. We value sharp eyes, clear bug reports, and people who understand both players and the tech.",
         "points": [
-          "2+ yrs in game QA",
+          "2+ years in game QA",
           "Console certification experience",
           "Bug tracking & test case management",
           "Scripting or automation a plus"
@@ -233,9 +380,9 @@
       },
       "mediorProducer": {
         "title": "Producer",
-        "description": "Run production on co-dev, porting, and internal work - often several streams at once. You'll keep plans honest, partners informed, and engineering and QA unblocked, including cert, storefront submissions, and the update after ship. Close enough to the tech to talk builds and constraints with engineers; clear enough to cut scope when the date is real. Mid-level: you've shipped, you don't hide behind process, and the schedule you keep is one people trust.",
+        "description": "Run production on co-dev, porting, and internal work, often several streams at once. You'll keep plans honest, partners informed, and engineering and QA unblocked, all the way through cert, storefront submissions, and post-launch updates. You're close enough to the tech to talk builds and constraints with engineers, and clear-headed enough to cut scope when the date is real. This is a mid-level role: you've shipped, you don't hide behind process, and people trust the schedule you keep.",
         "points": [
-          "3+ yrs game production",
+          "3+ years in game production",
           "Shipped at least one title or major milestone",
           "Co-dev / multi-project delivery",
           "Platform cert & storefronts a plus",
@@ -244,9 +391,9 @@
       },
       "marketingManager": {
         "title": "Marketing Manager",
-        "description": "Shape how Flying Rat Studio connects with the game development world. You'll craft our messaging, manage social presence, coordinate with partner studios on announcements, and help grow our reputation as a go-to technical partner. Experience in games or tech B2B marketing preferred.",
+        "description": "Shape how Flying Rat Studio connects with the game development world. You'll craft our messaging, manage our social presence, coordinate with partner studios on announcements, and help grow our reputation as a go-to technical partner. Experience in games or B2B tech marketing is preferred.",
         "points": [
-          "2+ yrs B2B/games marketing",
+          "2+ years in B2B or games marketing",
           "Social & content strategy",
           "Partner coordination",
           "Campaign tracking & analytics"
@@ -254,7 +401,7 @@
       },
       "juniorIt": {
         "title": "IT Specialist",
-        "description": "Keep our 30+ person team running smoothly. You'll manage workstations, handle UniFi/Ubiquiti networking, support dev environments, and maintain our Dell EMC servers with VMware ESXi virtualization. We use Synology for storage and run various Linux distributions for VMs. A great opportunity to grow your IT skills in a fast-paced game development environment.",
+        "description": "Keep our team of 30+ running smoothly. You'll manage workstations, handle UniFi/Ubiquiti networking, support dev environments, and maintain our Dell EMC servers with VMware ESXi virtualization. We use Synology for storage and run various Linux distributions for VMs. A great opportunity to grow your IT skills in a fast-paced game development environment.",
         "points": [
           "Networking basics (UniFi/Ubiquiti)",
           "Windows & Linux administration",
@@ -279,10 +426,9 @@
   "pressKit": {
     "title": "Press Kit",
     "subtitle": "Download official Flying Rat Studio logos and brand assets for press and media use.",
-    "backHome": "Back to Home",
     "logos": {
       "title": "Logo Downloads",
-      "description": "Our logo is available in multiple formats and color variants. All files are in RGB color space. Choose the version that works best for your background.",
+      "description": "Our logo is available in multiple formats and color variants. All files use the RGB color space. Choose the version that works best for your background.",
       "center": "Centered Logo",
       "horizontal": "Horizontal Logo",
       "downloadAll": "Download All Logos",
@@ -290,7 +436,7 @@
     },
     "colors": {
       "title": "Brand Colors",
-      "description": "Our primary brand colors. Click to copy hex code.",
+      "description": "Our primary brand colors. Click a color to copy its hex code.",
       "copied": "Copied!",
       "primary": "Primary",
       "dark": "Dark",
@@ -334,12 +480,16 @@
       "legalEntityName": "GADEN ALPHA s.r.o.",
       "legalEntityIds": "IČO: 09949194 | DIČ: CZ09949194",
       "legalEntityAddress": "Polní 21, 252 64 Velké Přílepy",
-      "legalEntityRegistry": "Zapsáno u MS v Praze, C 345227",
+      "legalEntityRegistry": "Registered with the Municipal Court in Prague, file no. C 345227",
       "contactLabel": "Press Contact"
+    },
+    "work": {
+      "title": "Selected Work",
+      "description": "Games we've contributed to, and the ones we're making ourselves."
     },
     "brandName": {
       "title": "Brand Name",
-      "description": "Our official name is \"Flying Rat Studio\" - always use the full name in press materials.",
+      "description": "Our official name is \"Flying Rat Studio\". Please always use the full name in press materials.",
       "correct": "Correct",
       "incorrect": "Incorrect",
       "examples": {
@@ -352,11 +502,11 @@
     },
     "clearSpace": {
       "title": "Clear Space",
-      "description": "Always maintain a minimum clear space around the logo equal to the height of the 'F' in the wordmark. This ensures the logo remains legible and impactful."
+      "description": "Always keep a clear space around the logo at least as tall as the \"F\" in the wordmark. This keeps the logo legible and gives it room to stand out."
     },
     "contact": {
       "title": "Need Something Else?",
-      "description": "If you need additional assets, different formats, or have questions about brand usage, please get in touch."
+      "description": "If you need additional assets or different formats, or have questions about brand usage, please get in touch."
     },
     "logoColors": {
       "black": "Black",
@@ -373,10 +523,8 @@
       "facts": "Facts",
       "logos": "Logos",
       "colors": "Colors",
-      "guidelines": "Guides",
+      "guidelines": "Usage",
       "brand": "Name"
-    },
-    "toggleTheme": "Toggle theme",
-    "martyAlt": "Marty from Flying Rat Studio"
+    }
   }
 }

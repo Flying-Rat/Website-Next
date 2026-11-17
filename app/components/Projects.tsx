@@ -2,261 +2,317 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { memo, useCallback, useState } from 'react';
+import { useReducer, useRef } from 'react';
 
-import { projects } from '../data/projects';
-import { useLanguage, useTranslation } from '../i18n';
+import { type Project, projects } from '../data/projects';
+import { useAnimationsEnabled } from '../hooks/useAnimationsEnabled';
+import { useInView } from '../hooks/useInView';
+import { type Language, useLanguage, useTranslation } from '../i18n';
+import { pad2 } from '../utils/pad2';
 import { renderSimpleMarkdown } from '../utils/renderSimpleMarkdown';
 import { FadeInView } from './FadeInView';
-import { PlatformIcon } from './icons';
+import { ArrowRightIcon, ExternalLinkIcon, PlatformIcon } from './icons';
+import { SectionHeader } from './SectionHeader';
 
 const PRIVACY_POLICY_HREF = '/games/privacy-policy';
+/** From this width up, the detail sits beside the list; below it, it opens under the tapped row. */
+const SIDE_BY_SIDE = '(min-width: 1024px)';
 
-const privacyCalloutCopy = {
-  en: {
-    label: 'Policy & Data',
-    title: 'Telemetry, analytics, and player data practices for our games.',
-    cta: 'Privacy Policy',
-  },
-  cs: {
-    label: 'Zasady a data',
-    title: 'Jak v nasich hrach pracujeme s telemetrii, analytikou a daty hracu.',
-    cta: 'Zasady ochrany soukromi',
-  },
-} as const;
+interface ReelState {
+  active: number;
+  /** The project that was showing before, kept mounted underneath for the crossfade. */
+  previous: number | null;
+  /** Bumped on every change; keys the progress bar so its animation restarts. */
+  tick: number;
+  /** Small screens only: whether the active row's detail is expanded. */
+  open: boolean;
+}
+
+type ReelAction = { type: 'select'; index: number } | { type: 'toggle' };
+
+function reelReducer(state: ReelState, action: ReelAction): ReelState {
+  if (action.type === 'toggle') {
+    return { ...state, open: !state.open };
+  }
+  if (action.index === state.active) {
+    return state.open ? state : { ...state, open: true };
+  }
+  return { active: action.index, previous: state.active, tick: state.tick + 1, open: true };
+}
+
+function handleRowKeyDown(event: React.KeyboardEvent<HTMLButtonElement>) {
+  if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') {
+    return;
+  }
+  const list = event.currentTarget.closest('ul');
+  const rows = [...(list?.querySelectorAll<HTMLElement>('.work-row-button') ?? [])];
+  event.preventDefault();
+  const offset = event.key === 'ArrowDown' ? 1 : -1;
+  rows[(rows.indexOf(event.currentTarget) + offset + rows.length) % rows.length]?.focus();
+}
 
 export const Projects = () => {
   const [currentLang] = useLanguage();
   const { t } = useTranslation();
-  const [expandedId, setExpandedId] = useState<string | null>(null);
-  const privacyCopy = privacyCalloutCopy[currentLang];
-  const translate = useCallback((key: string) => t(key, { lng: currentLang }), [t, currentLang]);
+  const shouldAnimate = useAnimationsEnabled();
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const [reel, dispatch] = useReducer(reelReducer, {
+    active: 0,
+    previous: null,
+    tick: 0,
+    open: true,
+  });
+  const inView = useInView(sectionRef, { threshold: 0.2 });
 
-  const toggleExpand = useCallback((id: string) => {
-    setExpandedId((prev) => (prev === id ? null : id));
-  }, []);
+  const activeProject = projects[reel.active];
+  const previousProject = reel.previous === null ? null : projects[reel.previous];
+  const nextProject = projects[(reel.active + 1) % projects.length];
+
+  const handleRowClick = (event: React.MouseEvent<HTMLElement>, index: number) => {
+    if (window.matchMedia(SIDE_BY_SIDE).matches) {
+      dispatch({ type: 'select', index });
+      return;
+    }
+
+    // Accordion. Rows above may collapse; hold the tapped row still under the finger.
+    const row = event.currentTarget;
+    const before = row.getBoundingClientRect().top;
+    dispatch(index === reel.active ? { type: 'toggle' } : { type: 'select', index });
+    requestAnimationFrame(() => {
+      const shift = row.getBoundingClientRect().top - before;
+      if (Math.abs(shift) > 1) {
+        window.scrollBy({ top: shift, behavior: 'instant' });
+      }
+    });
+  };
 
   return (
-    <section id="projects" className="section-pad bg-[var(--color-surface)] relative">
-      <div className="absolute inset-0 opacity-5">
-        <div className="w-full h-full pattern-dots" />
+    <section ref={sectionRef} id="projects" className="work section-pad">
+      <div className="work-ambient" aria-hidden="true">
+        {previousProject?.image && (
+          <Image
+            key={previousProject.id}
+            src={previousProject.image}
+            alt=""
+            fill
+            sizes="96px"
+            className="work-ambient-image work-ambient-out"
+          />
+        )}
+        {activeProject.image && (
+          <Image
+            key={activeProject.id}
+            src={activeProject.image}
+            alt=""
+            fill
+            sizes="96px"
+            className="work-ambient-image work-ambient-in"
+          />
+        )}
       </div>
 
-      <div className="container mx-auto px-6 relative z-10">
-        <div className="max-w-6xl mx-auto">
-          <FadeInView animation="up" className="text-center mb-10 md:mb-16">
-            <h2 className="section-title mb-3 md:mb-4">{translate('projects.title')}</h2>
-            <p className="section-subtitle max-w-2xl mx-auto">{translate('projects.subtitle')}</p>
-          </FadeInView>
+      <div className="relative container">
+        <SectionHeader title={t('projects.title')} subtitle={t('projects.subtitle')} />
 
-          <div className="grid grid-cols-1 min-[420px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
-            {projects.map((project, index) => (
-              <ProjectCard
-                key={project.id}
-                project={project}
-                index={index}
-                isExpanded={expandedId === project.id}
-                onToggle={toggleExpand}
-                t={translate}
-                currentLang={currentLang}
-              />
-            ))}
-          </div>
+        <div className="work-reel lg:grid lg:grid-cols-12 lg:gap-x-12 xl:gap-x-16">
+          <ul className="work-list lg:col-span-7">
+            {projects.map((project, index) => {
+              const isActive = index === reel.active;
+              const isOpen = isActive && reel.open;
 
-          <FadeInView animation="scale" delay={0.2} margin="-30px" className="mt-5 md:mt-6">
-            <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)]/55 backdrop-blur-sm">
-              <div className="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5 sm:py-4">
-                <div className="min-w-0 sm:pr-4">
-                  <div className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.16em] text-[var(--color-text-subtle)]">
-                    <span className="h-px w-4 bg-accent/60" />
-                    <span>{privacyCopy.label}</span>
-                  </div>
-                  <p className="mt-1.5 max-w-2xl text-sm text-[var(--color-text-secondary)] md:text-[15px]">
-                    {privacyCopy.title}
-                  </p>
-                </div>
-                <Link
-                  href={PRIVACY_POLICY_HREF}
-                  className="inline-flex w-full shrink-0 items-center justify-center gap-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)]/50 px-3 py-2 text-sm font-medium text-[var(--color-text-secondary)] transition-colors hover:border-[var(--color-border-hover)] hover:text-[var(--color-text)] sm:w-auto"
-                >
-                  {privacyCopy.cta}
-                  <svg
-                    aria-hidden="true"
-                    viewBox="0 0 16 16"
-                    className="size-3.5 text-accent"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.75"
+              return (
+                <li key={project.id} className="work-row" data-active={isActive} data-open={isOpen}>
+                  <button
+                    type="button"
+                    className="work-row-button"
+                    aria-current={isActive ? 'true' : undefined}
+                    aria-expanded={isOpen}
+                    onClick={(event) => handleRowClick(event, index)}
+                    onKeyDown={handleRowKeyDown}
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M3.5 8h9m0 0-3-3m3 3-3 3"
+                    <span className="work-index">{pad2(index + 1)}</span>
+                    <span className="work-title">
+                      {project.title}
+                      {project.isInternal && (
+                        <span className="work-badge">{t('projects.internal')}</span>
+                      )}
+                    </span>
+                    <span className="work-studio">{project.studio}</span>
+                    <span className="work-row-icon" aria-hidden="true">
+                      <ArrowRightIcon className="work-row-arrow" />
+                      <svg
+                        className="work-row-plus"
+                        viewBox="0 0 20 20"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.75"
+                        strokeLinecap="round"
+                      >
+                        <path d="M10 4v12M4 10h12" />
+                      </svg>
+                    </span>
+                  </button>
+
+                  {isActive && shouldAnimate && inView && (
+                    <span
+                      key={reel.tick}
+                      className="work-progress"
+                      onAnimationEnd={() =>
+                        dispatch({ type: 'select', index: (reel.active + 1) % projects.length })
+                      }
+                      aria-hidden="true"
                     />
-                  </svg>
-                </Link>
-              </div>
+                  )}
+
+                  {isOpen && (
+                    <div className="work-inline lg:hidden">
+                      <ProjectDetail
+                        project={project}
+                        previous={null}
+                        position={index}
+                        lang={currentLang}
+                        t={t}
+                      />
+                    </div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+
+          <div className="hidden lg:col-span-5 lg:block">
+            <div className="sticky top-24">
+              <ProjectDetail
+                project={activeProject}
+                previous={previousProject}
+                position={reel.active}
+                lang={currentLang}
+                t={t}
+              />
+              {/* Warm the next key art so the reel never cuts to an empty screen. */}
+              {nextProject.image && (
+                <Image
+                  key={`preload-${nextProject.id}`}
+                  src={nextProject.image}
+                  alt=""
+                  width={616}
+                  height={353}
+                  sizes="(min-width: 1024px) 40vw, 100vw"
+                  className="pointer-events-none absolute size-px opacity-0"
+                  aria-hidden="true"
+                />
+              )}
             </div>
-          </FadeInView>
+          </div>
         </div>
+
+        <FadeInView margin="-30px" className="mt-12 md:mt-16">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <p className="eyebrow">{t('projects.privacy.label')}</p>
+              <p className="mt-1.5 max-w-2xl text-sm text-secondary md:text-md">
+                {t('projects.privacy.title')}
+              </p>
+            </div>
+            <Link href={PRIVACY_POLICY_HREF} className="btn btn-sm btn-secondary shrink-0">
+              {t('projects.privacy.cta')}
+              <ArrowRightIcon className="btn-arrow size-3.5" />
+            </Link>
+          </div>
+        </FadeInView>
       </div>
     </section>
   );
 };
 
-interface ProjectCardProps {
-  project: (typeof projects)[0];
-  index: number;
-  isExpanded: boolean;
-  onToggle: (id: string) => void;
-  t: (key: string) => string;
-  currentLang: 'en' | 'cs';
+function ScreenFrame({ project, entering }: { project: Project; entering: boolean }) {
+  return (
+    <div className={`work-frame ${entering ? 'work-frame-in' : ''}`}>
+      <Image src={project.image} alt="" fill sizes="96px" className="work-fill" />
+      <Image
+        src={project.image}
+        alt={entering ? project.title : ''}
+        fill
+        sizes="(min-width: 1024px) 40vw, 100vw"
+        className="work-art"
+      />
+    </div>
+  );
 }
 
-const ProjectCard = memo(function ProjectCard({
+function ProjectDetail({
   project,
-  index,
-  isExpanded,
-  onToggle,
+  previous,
+  position,
+  lang,
   t,
-  currentLang,
-}: ProjectCardProps) {
-  const descriptionId = `${project.id}-description`;
-
+}: {
+  project: Project;
+  previous: Project | null;
+  position: number;
+  lang: Language;
+  t: (key: string) => string;
+}) {
   return (
-    <FadeInView animation="scale" delay={index * 0.06} margin="-30px">
-      <article className="project-card relative bg-[var(--color-surface)] rounded-xl sm:rounded-2xl overflow-hidden group border border-[var(--color-border)] h-full">
-        <button
-          type="button"
-          className="block w-full text-left cursor-pointer"
-          onClick={() => onToggle(project.id)}
-          aria-expanded={isExpanded}
-          aria-controls={project.description ? descriptionId : undefined}
-        >
-          <div className="project-image-frame aspect-video bg-[var(--color-surface-light)] relative overflow-hidden">
-            <div className="project-image-layer absolute -inset-1 transition-transform duration-[500ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.025] will-change-transform">
-              {project.image ? (
-                <Image
-                  src={project.image}
-                  alt={project.title}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                />
-              ) : (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center">
-                    <span className="text-4xl">🧀</span>
-                    <p className="text-xs text-[var(--color-text-subtle)] mt-2">
-                      {t('projects.comingSoon')}
-                    </p>
-                  </div>
-                </div>
-              )}
-              <div className="project-image-wash pointer-events-none absolute" />
-            </div>
-
-            {project.isInternal && (
-              <div className="project-internal-badge absolute top-2 right-2 z-10 sm:top-3 sm:right-3 px-1.5 py-0.5 sm:px-2 sm:py-1 bg-accent text-[10px] sm:text-xs font-semibold rounded">
-                {t('projects.internal')}
-              </div>
-            )}
-          </div>
-
-          <div className="project-card-body p-3 pt-4 pb-3 sm:p-4 sm:pt-5">
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <h3 className="text-sm sm:text-base font-semibold leading-tight mb-1 group-hover:text-accent transition-colors truncate">
-                  {project.title}
-                </h3>
-                <p className="text-[11px] sm:text-xs text-[var(--color-text-subtle)] truncate">
-                  {project.studio}
-                </p>
-              </div>
-              <div
-                className={`mt-0.5 shrink-0 text-[var(--color-text-subtle)] transition-transform duration-200 ${isExpanded ? 'rotate-180 text-accent' : ''}`}
-              >
-                <svg
-                  aria-hidden="true"
-                  viewBox="0 0 24 24"
-                  className="size-4"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-              </div>
-            </div>
-          </div>
-        </button>
-
-        <div className="project-platform-footer px-3 pt-2.5 pb-3 sm:px-4 sm:pt-3 sm:pb-4">
-          <fieldset className="flex flex-wrap gap-1.5" aria-label="Platforms">
-            {project.platforms.map((platform) => (
-              <a
-                key={platform.name}
-                href={platform.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="platform-badge project-platform-badge"
-                title={`${project.title} on ${platform.name}`}
-              >
-                <PlatformIcon name={platform.name} />
-                <span className="hidden sm:inline">{platform.name}</span>
-              </a>
-            ))}
-            {project.isInternal && project.platforms.length === 0 && (
-              <span className="platform-badge project-platform-badge">🔜 {t('projects.tba')}</span>
-            )}
-          </fieldset>
+    <div className="work-detail">
+      {project.image && (
+        <div className="work-glow" aria-hidden="true">
+          <Image
+            key={project.id}
+            src={project.image}
+            alt=""
+            fill
+            sizes="96px"
+            className="work-glow-image"
+          />
         </div>
+      )}
 
-        {project.description && isExpanded && (
-          <div
-            id={descriptionId}
-            className="project-detail-overlay flex min-h-0 flex-col absolute inset-0 z-20 overflow-hidden p-3 sm:p-4"
-            role="region"
-            aria-label={`${project.title} details`}
-          >
-            <button
-              type="button"
-              className="project-detail-close absolute right-3 top-3 sm:right-4 sm:top-4"
-              onClick={() => onToggle(project.id)}
-              aria-label={`Close ${project.title} details`}
-            >
-              <svg
-                aria-hidden="true"
-                viewBox="0 0 20 20"
-                className="size-4"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              >
-                <path d="M5 5l10 10M15 5 5 15" />
-              </svg>
-            </button>
+      <div className="work-screen">
+        {previous?.image && <ScreenFrame key={previous.id} project={previous} entering={false} />}
+        {project.image && <ScreenFrame key={project.id} project={project} entering />}
+      </div>
 
-            <div className="project-detail-copy min-h-0 flex-1">
-              <div className="max-w-[calc(100%-2.75rem)] sm:max-w-[calc(100%-2.5rem)]">
-                <p className="text-[9px] sm:text-[10px] font-medium uppercase tracking-[0.18em] text-accent">
-                  {project.studio}
-                </p>
-                <h3 className="mt-1 text-sm font-semibold leading-tight text-[var(--color-text)] sm:text-base">
-                  {project.title}
-                </h3>
-              </div>
-
-              <p className="mt-3 text-xs leading-snug text-pretty text-[var(--color-text-secondary)] sm:mt-4 sm:text-sm sm:leading-relaxed">
-                {renderSimpleMarkdown(project.description[currentLang])}
-              </p>
-            </div>
-          </div>
+      <div key={project.id} className="work-copy">
+        {/* Stacked, the row above already shows the index, title and studio. */}
+        <p className="eyebrow hidden items-baseline justify-between gap-4 lg:flex">
+          <span className="truncate">{project.studio}</span>
+          <span className="shrink-0 tabular-nums">
+            {pad2(position + 1)} / {pad2(projects.length)}
+          </span>
+        </p>
+        <h3 className="work-detail-title font-display mt-3 hidden text-2xl leading-tight font-semibold lg:block xl:text-3xl">
+          {project.title}
+        </h3>
+        {project.description && (
+          <div className="work-blurb">{renderSimpleMarkdown(project.description[lang])}</div>
         )}
-      </article>
-    </FadeInView>
+        <ul className="mt-5 flex flex-wrap gap-2" aria-label={t('projects.platforms')}>
+          {project.platforms.map((platform) => {
+            // A playable demo is the one thing here a visitor can do right now, so
+            // it leads the row as the primary button; store pages stay secondary.
+            const isDemo = platform.name === 'Demo';
+            return (
+              <li key={platform.name}>
+                <a
+                  href={platform.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`work-platform ${isDemo ? 'work-platform-primary' : ''}`}
+                  title={`${project.title} on ${platform.name}`}
+                >
+                  <PlatformIcon name={platform.name} />
+                  {isDemo ? t('projects.playDemo') : platform.name}
+                  <ExternalLinkIcon className="work-platform-arrow" />
+                </a>
+              </li>
+            );
+          })}
+          {project.isInternal && project.platforms.length === 0 && (
+            <li className="work-platform">{t('projects.tba')}</li>
+          )}
+        </ul>
+      </div>
+    </div>
   );
-});
+}

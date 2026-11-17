@@ -133,66 +133,6 @@ export function CheckIcon({ className }: IconProps) {
   );
 }
 
-export function CalendarIcon({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={1.8}
-      aria-hidden="true"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M8 3v3M16 3v3M4 9h16M5 6h14a1 1 0 011 1v12a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1z"
-      />
-    </svg>
-  );
-}
-
-export function UsersIcon({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={1.8}
-      aria-hidden="true"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M7 13a4 4 0 100-8 4 4 0 000 8zm10-2a3 3 0 100-6 3 3 0 000 6z"
-      />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M3 20a6 6 0 0112 0m2 0a5 5 0 015 0" />
-    </svg>
-  );
-}
-
-export function DocumentIcon({ className }: IconProps) {
-  return (
-    <svg
-      className={className}
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={1.8}
-      aria-hidden="true"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M7 3h7l5 5v13a1 1 0 01-1 1H7a1 1 0 01-1-1V4a1 1 0 011-1z"
-      />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M14 3v6h6" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9 13h6M9 17h6" />
-    </svg>
-  );
-}
-
 export function MapPinIcon({ className }: IconProps) {
   return (
     <svg
@@ -276,6 +216,17 @@ export function PortingIcon({ className }: IconProps) {
   );
 }
 
+export function ArtIcon({ className }: IconProps) {
+  return (
+    <StrokeIcon className={className} title="Art">
+      <path d="M12 3a9 9 0 0 0 0 18h1.4a2 2 0 0 0 1.6-3.2 1.6 1.6 0 0 1 1.3-2.6H18a3 3 0 0 0 3-3c0-5-4-9.2-9-9.2Z" />
+      <circle cx="7.6" cy="12" r="0.6" />
+      <circle cx="9.6" cy="7.8" r="0.6" />
+      <circle cx="14.2" cy="7.2" r="0.6" />
+    </StrokeIcon>
+  );
+}
+
 export function QaIcon({ className }: IconProps) {
   return (
     <StrokeIcon className={className} title="In-House QA">
@@ -290,17 +241,6 @@ export function QaIcon({ className }: IconProps) {
       <path d="M20.97 5c0 2.1-1.6 3.8-3.5 4" />
       <path d="M22 13h-4" />
       <path d="M17.2 17c2.1.1 3.8 1.9 3.8 4" />
-    </StrokeIcon>
-  );
-}
-
-export function ReleaseIcon({ className }: IconProps) {
-  return (
-    <StrokeIcon className={className} title="Release Management">
-      <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" />
-      <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" />
-      <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" />
-      <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
     </StrokeIcon>
   );
 }
@@ -375,6 +315,56 @@ function FacebookIcon({ className }: IconProps) {
     <svg className={className} viewBox="0 0 24 24" fill="currentColor">
       <title>Facebook</title>
       <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+    </svg>
+  );
+}
+
+export function ArrowRightIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M5 12h14m0 0-6-6m6 6-6 6" />
+    </svg>
+  );
+}
+
+export function CrossIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      aria-hidden="true"
+    >
+      <path d="M6 6l12 12M18 6 6 18" />
+    </svg>
+  );
+}
+
+export function ArrowLeftIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M19 12H5m0 0 6-6m-6 6 6 6" />
     </svg>
   );
 }

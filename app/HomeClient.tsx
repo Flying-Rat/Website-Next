@@ -2,34 +2,42 @@
 
 import {
   About,
+  AiPolicy,
+  Community,
   Contact,
   Footer,
   Header,
   Hero,
+  HowWeWork,
   Projects,
+  CONTENT_ID,
   ScrollProgress,
+  SkipLink,
   TechStack,
   WhatWeDo,
 } from './components';
-import { AnimationGateProvider } from './hooks/useAnimationsEnabled';
 import { useSectionObserver } from './hooks/useSectionObserver';
 
-export function HomeClient({ initialShouldAnimate }: { initialShouldAnimate: boolean }) {
+export function HomeClient() {
   useSectionObserver();
 
   return (
-    <AnimationGateProvider initialShouldAnimate={initialShouldAnimate}>
+    <>
+      <SkipLink />
       <ScrollProgress />
       <Header />
-      <main>
+      <main id={CONTENT_ID} tabIndex={-1}>
         <Hero />
         <About />
         <WhatWeDo />
         <TechStack />
         <Projects />
+        <HowWeWork />
+        <AiPolicy />
+        <Community />
         <Contact />
       </main>
       <Footer />
-    </AnimationGateProvider>
+    </>
   );
 }

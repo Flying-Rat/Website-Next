@@ -1,14 +1,10 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
-import type { CSSProperties } from 'react';
-import { useEffect, useRef, useState } from 'react';
 
-import { useAnimationsEnabled } from '../hooks/useAnimationsEnabled';
-import { useTheme } from '../hooks/useTheme';
-import { useLanguage, useTranslation } from '../i18n';
-import { ExternalLinkIcon, MonitorIcon, MoonIcon, SunIcon } from './icons';
+import { useTranslation } from '../i18n';
+import { Logo } from './Logo';
+import { SiteHeader } from './SiteHeader';
 
 const navSections = [
   { href: '#about', key: 'nav.about' },
@@ -20,217 +16,17 @@ const navSections = [
 ];
 
 export function Header() {
-  const [currentLang, setLanguage] = useLanguage();
   const { t } = useTranslation();
-  const { theme, cycleTheme, mounted: themeMounted, resolvedTheme } = useTheme();
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const shouldAnimate = useAnimationsEnabled();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setMounted(true), 50);
-    return () => clearTimeout(timer);
-  }, []);
-
-  const frameRef = useRef<number>(0);
-  useEffect(() => {
-    let current = false;
-
-    const update = () => {
-      frameRef.current = 0;
-      const next = window.scrollY > 50;
-      if (next !== current) {
-        current = next;
-        setIsScrolled(next);
-      }
-    };
-
-    const onScroll = () => {
-      if (frameRef.current === 0) {
-        frameRef.current = window.requestAnimationFrame(update);
-      }
-    };
-
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => {
-      if (frameRef.current !== 0) {
-        window.cancelAnimationFrame(frameRef.current);
-      }
-      window.removeEventListener('scroll', onScroll);
-    };
-  }, []);
-
-  const headerStyle: CSSProperties = shouldAnimate
-    ? {
-        opacity: mounted ? 1 : 0,
-        transform: mounted ? 'none' : 'translateY(-100%)',
-        transition:
-          'opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
-      }
-    : {};
-
-  const logoSrc =
-    themeMounted && resolvedTheme === 'dark'
-      ? '/fr_horizontal_white.png'
-      : '/fr_horizontal_black.png';
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-[padding] duration-300 ${isScrolled ? 'glass py-3' : 'py-6'}`}
-      style={headerStyle}
-    >
-      <div className="container mx-auto px-6 flex items-center justify-between">
-        <Link href="/" className="group">
-          <Image
-            src={logoSrc}
-            alt="Flying Rat Studio"
-            width={160}
-            height={40}
-            className="max-h-8 md:max-h-10"
-            style={{ width: 'auto', height: 'auto', aspectRatio: '160 / 40' }}
-            priority
-          />
+    <SiteHeader
+      navLabel={t('nav.primary')}
+      links={navSections.map(({ href, key }) => ({ href, label: t(key) }))}
+      brand={
+        <Link href="/" className="shrink-0">
+          <Logo className="h-8 md:h-9" />
         </Link>
-
-        <nav className="hidden md:flex items-center gap-8">
-          {navSections.map((item) => {
-            const isExternal = item.href.startsWith('http');
-            return (
-              <a
-                key={item.href}
-                href={item.href}
-                target={isExternal ? '_blank' : undefined}
-                rel={isExternal ? 'noopener noreferrer' : undefined}
-                className="text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-all relative group flex items-center gap-1 hover:-translate-y-0.5"
-              >
-                {t(item.key)}
-                {isExternal && <ExternalLinkIcon className="size-2.5 opacity-50" />}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all group-hover:w-full" />
-              </a>
-            );
-          })}
-
-          <div className="flex items-center gap-3 ml-4 border-l border-[var(--color-border-hover)] pl-4 text-sm text-[var(--color-text-muted)]">
-            <div className="flex items-center">
-              <button
-                type="button"
-                onClick={() => setLanguage('en')}
-                className={`px-1.5 py-1 rounded transition-all active:scale-95 cursor-pointer ${currentLang === 'en' ? 'text-[var(--color-text)]' : 'hover:text-[var(--color-text)]'}`}
-              >
-                EN
-              </button>
-              <span className="opacity-30">|</span>
-              <button
-                type="button"
-                onClick={() => setLanguage('cs')}
-                className={`px-1.5 py-1 rounded transition-all active:scale-95 cursor-pointer ${currentLang === 'cs' ? 'text-[var(--color-text)]' : 'hover:text-[var(--color-text)]'}`}
-              >
-                CS
-              </button>
-            </div>
-            <button
-              type="button"
-              onClick={cycleTheme}
-              className="p-1.5 rounded-lg hover:text-[var(--color-text)] hover:bg-[var(--color-surface-light)] transition-all hover:scale-110 active:scale-90 cursor-pointer"
-              aria-label="Switch theme"
-            >
-              {themeMounted &&
-                (theme === 'dark' ? (
-                  <MoonIcon className="size-4" />
-                ) : theme === 'system' ? (
-                  <MonitorIcon className="size-4" />
-                ) : (
-                  <SunIcon className="size-4" />
-                ))}
-            </button>
-          </div>
-        </nav>
-
-        <button
-          type="button"
-          className="md:hidden p-2 shrink-0"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          aria-label={t('nav.toggleMenu')}
-          aria-expanded={isMobileMenuOpen}
-        >
-          <div className="w-6 h-5 relative flex flex-col justify-between">
-            <span
-              className={`w-full h-0.5 bg-[var(--color-text)] transition-all duration-200 origin-center ${isMobileMenuOpen ? 'rotate-45 translate-y-[9px]' : ''}`}
-            />
-            <span
-              className={`w-full h-0.5 bg-[var(--color-text)] transition-all duration-200 ${isMobileMenuOpen ? 'opacity-0' : ''}`}
-            />
-            <span
-              className={`w-full h-0.5 bg-[var(--color-text)] transition-all duration-200 origin-center ${isMobileMenuOpen ? '-rotate-45 -translate-y-[9px]' : ''}`}
-            />
-          </div>
-        </button>
-      </div>
-
-      <div
-        className={`md:hidden glass mt-2 mx-4 rounded-lg overflow-hidden transition-all duration-300 ${isMobileMenuOpen ? 'max-h-[70vh] opacity-100 p-4' : 'max-h-0 opacity-0 p-0'}`}
-      >
-        <nav className="flex flex-col gap-4">
-          {navSections.map((item) => {
-            const isExternal = item.href.startsWith('http');
-            return (
-              <a
-                key={item.href}
-                href={item.href}
-                target={isExternal ? '_blank' : undefined}
-                rel={isExternal ? 'noopener noreferrer' : undefined}
-                className="text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-colors py-2 flex items-center gap-2"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {t(item.key)}
-                {isExternal && <ExternalLinkIcon className="size-2.5 opacity-50" />}
-              </a>
-            );
-          })}
-          <div className="flex items-center gap-3 pt-4 border-t border-[var(--color-border-hover)] text-sm text-[var(--color-text-muted)]">
-            <div className="flex items-center">
-              <button
-                type="button"
-                onClick={() => {
-                  setLanguage('en');
-                  setIsMobileMenuOpen(false);
-                }}
-                className={`px-1.5 py-1 rounded transition-colors cursor-pointer ${currentLang === 'en' ? 'text-[var(--color-text)]' : 'hover:text-[var(--color-text)]'}`}
-              >
-                EN
-              </button>
-              <span className="opacity-30">|</span>
-              <button
-                type="button"
-                onClick={() => {
-                  setLanguage('cs');
-                  setIsMobileMenuOpen(false);
-                }}
-                className={`px-1.5 py-1 rounded transition-colors cursor-pointer ${currentLang === 'cs' ? 'text-[var(--color-text)]' : 'hover:text-[var(--color-text)]'}`}
-              >
-                CS
-              </button>
-            </div>
-            <button
-              type="button"
-              onClick={cycleTheme}
-              className="p-1.5 rounded-lg hover:text-[var(--color-text)] hover:bg-[var(--color-surface-light)] transition-colors cursor-pointer"
-              aria-label="Switch theme"
-            >
-              {themeMounted &&
-                (theme === 'dark' ? (
-                  <MoonIcon className="size-4" />
-                ) : theme === 'system' ? (
-                  <MonitorIcon className="size-4" />
-                ) : (
-                  <SunIcon className="size-4" />
-                ))}
-            </button>
-          </div>
-        </nav>
-      </div>
-    </header>
+      }
+    />
   );
 }

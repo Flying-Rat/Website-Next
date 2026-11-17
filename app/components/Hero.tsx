@@ -2,134 +2,118 @@
 
 import Image from 'next/image';
 import type { CSSProperties } from 'react';
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 
 import { useAnimationsEnabled } from '../hooks/useAnimationsEnabled';
 import { useTranslation } from '../i18n';
+import { ArrowRightIcon } from './icons';
+import { LabelledList } from './LabelledList';
+import { UnlockToast } from './UnlockToast';
 
 const trustedStudios = ['Meta', 'Red Hook Studios', '3D Realms', 'Bohemia Incubator'];
+
+const pragueClock = new Intl.DateTimeFormat('en-GB', {
+  hour: '2-digit',
+  minute: '2-digit',
+  timeZone: 'Europe/Prague',
+});
+
+function subscribeToClock(onTick: () => void) {
+  const interval = setInterval(onTick, 15_000);
+  return () => clearInterval(interval);
+}
+
+const getPragueTime = () => pragueClock.format(new Date());
+/** The server cannot know when the page will be read, so it prints no time. */
+const getServerTime = () => null;
+
+/** Wall-clock time at the studio, e.g. "14:32"; null on the server and until hydration. */
+function usePragueTime() {
+  return useSyncExternalStore(subscribeToClock, getPragueTime, getServerTime);
+}
+
+function reveal(delayMs: number, distance = 20) {
+  return {
+    '--reveal-delay': `${delayMs}ms`,
+    '--reveal-duration': '1s',
+    '--reveal-from': `translateY(${distance}px)`,
+  } as CSSProperties;
+}
 
 export function Hero() {
   const { t } = useTranslation();
   const shouldAnimate = useAnimationsEnabled();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setMounted(true), 50);
-    return () => clearTimeout(timer);
-  }, []);
-
-  const getStyle = (delayMs: number): CSSProperties => {
-    if (!shouldAnimate) {
-      return {};
-    }
-    const isVisible = mounted;
-    return {
-      opacity: isVisible ? 1 : 0,
-      transform: isVisible ? 'none' : 'translateY(30px)',
-      transition: `opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${delayMs}ms, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${delayMs}ms`,
-    };
-  };
+  const pragueTime = usePragueTime();
 
   return (
-    <section
-      id="hero"
-      className="min-h-[100dvh] flex items-center justify-center relative overflow-hidden pt-20 pb-32 md:pt-0 md:pb-0"
-    >
-      <div className="absolute inset-0">
-        <Image
-          src="/images/team.png"
-          alt=""
-          fill
-          className="hero-image object-cover object-center opacity-40"
-          priority
-          sizes="100vw"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-[var(--color-bg)]/70 via-[var(--color-bg)]/50 to-[var(--color-bg)]" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[var(--color-bg)]/60 via-transparent to-[var(--color-bg)]/60" />
-      </div>
-
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 size-96 bg-accent/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 size-80 bg-accent/5 rounded-full blur-3xl" />
-      </div>
-
-      <div className="container mx-auto px-6 relative z-10">
-        <div className="max-w-4xl mx-auto text-center">
+    <section id="hero" className="hero relative pt-28 sm:pt-32 md:pt-40 lg:pt-44">
+      <div className="container">
+        {/* Source order is headline, copy, photo; small screens show the photo
+            second so the headline can stand in it. */}
+        <div className="hero-grid flex flex-col">
           <h1
-            className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-semibold mb-4 md:mb-6"
-            style={getStyle(0)}
+            className="hero-title reveal-on-load pointer-events-none relative z-10 order-1"
+            style={reveal(0, 28)}
           >
-            <span className="gradient-text">{t('hero.tagline')}</span>
+            {t('hero.tagline')}
           </h1>
 
-          <p
-            className="text-lg sm:text-xl md:text-2xl text-[var(--color-text-secondary)] mb-8 md:mb-12 max-w-2xl mx-auto"
-            style={getStyle(100)}
+          <div
+            className="hero-aside reveal-on-load order-3 mt-7 lg:order-2 lg:mt-0"
+            style={reveal(140)}
           >
-            {t('hero.subtitle')}
-          </p>
+            <p className="eyebrow flex items-baseline justify-between gap-4">
+              <span>{t('hero.place')}</span>
+              <time className="text-muted tabular-nums">{pragueTime ?? '--:--'}</time>
+            </p>
+            <p className="hero-lede mt-4 max-w-xl text-pretty">{t('hero.subtitle')}</p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <a href="#projects" className="btn btn-primary">
+                {t('hero.cta.projects')}
+                <ArrowRightIcon className="btn-arrow size-4" />
+              </a>
+              <a href="#contact" className="btn btn-secondary">
+                {t('hero.cta.contact')}
+              </a>
+            </div>
+          </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center" style={getStyle(200)}>
-            <a
-              href="#projects"
-              className="px-6 py-3 sm:px-8 sm:py-4 bg-accent hover:bg-accent-dark text-white font-semibold rounded-xl transition-all hover:shadow-lg hover:shadow-accent/30 hover:scale-105 active:scale-95"
-            >
-              {t('hero.cta.projects')}
-            </a>
-            <a
-              href="#contact"
-              className="px-6 py-3 sm:px-8 sm:py-4 border border-[var(--color-text-muted)] hover:border-accent text-[var(--color-text)] font-semibold rounded-xl transition-all backdrop-blur-sm hover:scale-105 active:scale-95"
-            >
-              {t('hero.cta.contact')}
-            </a>
+          <div className="hero-photo relative order-2 lg:order-3 lg:col-span-2">
+            <div className="hero-photo-crop">
+              {/* Light theme only: the part of the headline that stands in the photo,
+                  redrawn in the accent colour and clipped by the photo's own frame. */}
+              <span
+                className="hero-title hero-title-echo reveal-on-load"
+                style={reveal(0, 28)}
+                aria-hidden="true"
+              >
+                {t('hero.tagline')}
+              </span>
+              <Image
+                src="/images/team.webp"
+                alt={t('hero.photoAlt')}
+                width={2047}
+                height={1166}
+                className="hero-photo-image"
+                preload
+                sizes="(max-width: 639px) 140vw, (max-width: 1536px) 100vw, 1536px"
+              />
+            </div>
+            <UnlockToast
+              label={t('hero.unlocked')}
+              linkLabel={t('hero.cta.projects')}
+              animate={shouldAnimate}
+            />
           </div>
         </div>
-      </div>
 
-      <div
-        className="absolute bottom-24 md:bottom-28 left-1/2 -translate-x-1/2 w-full px-6"
-        style={getStyle(300)}
-      >
-        <div className="flex items-center justify-center gap-4 text-[11px] uppercase tracking-[0.35em] text-[var(--color-text-subtle)]">
-          <span className="h-px w-10 bg-gradient-to-r from-transparent via-[var(--color-text)]/20 to-transparent" />
-          <span>{t('hero.trustedBy')}</span>
-          <span className="h-px w-10 bg-gradient-to-r from-transparent via-[var(--color-text)]/20 to-transparent" />
-        </div>
-        <div className="mt-4 flex flex-wrap items-center justify-center gap-x-0 gap-y-2 text-xs md:text-sm text-[var(--color-text-secondary)]">
-          {trustedStudios.map((studio, index) => (
-            <span key={studio} className="inline-flex items-center">
-              <span className="hover:text-[var(--color-text)] transition-colors">{studio}</span>
-              {index < trustedStudios.length - 1 && (
-                <span className="mx-3 w-3 text-center text-[var(--color-text-subtle)]">•</span>
-              )}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
-        <div className="hidden md:flex w-6 h-10 border-2 border-[var(--color-text-muted)] rounded-full justify-center pt-2">
-          <div
-            className={`w-1 h-2 bg-accent rounded-full ${shouldAnimate ? 'animate-scroll-wheel' : ''}`}
-          />
-        </div>
-        <div className="md:hidden text-[var(--color-text-muted)]">
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <title>Scroll Indicator</title>
-            <path d="M7 7l5 5 5-5" />
-            <path d="M7 13l5 5 5-5" />
-          </svg>
-        </div>
+        <LabelledList
+          label={t('hero.trustedBy')}
+          items={trustedStudios}
+          prominent
+          className="reveal-on-load pt-10 lg:pt-8"
+          style={reveal(360, 12)}
+        />
       </div>
     </section>
   );

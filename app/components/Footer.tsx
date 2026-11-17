@@ -1,76 +1,55 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { useSyncExternalStore } from 'react';
 
-import { useTheme } from '../hooks/useTheme';
 import { useTranslation } from '../i18n';
+import { Logo } from './Logo';
 
-function emptySubscribe() {
-  return () => {};
-}
+/** The year of this build (see next.config.ts): what the server prints, and what
+ *  the browser starts from before swapping in its own year. */
+const BUILD_YEAR = Number(process.env.BUILD_YEAR);
+const subscribeToNothing = () => () => {};
+const getYear = () => new Date().getFullYear();
+const getBuildYear = () => BUILD_YEAR;
 
 export function Footer() {
   const { t } = useTranslation();
-  const { mounted: themeMounted, resolvedTheme } = useTheme();
-  const isClient = useSyncExternalStore(
-    emptySubscribe,
-    () => true,
-    () => false,
-  );
-
-  const logoSrc =
-    themeMounted && resolvedTheme === 'dark'
-      ? '/fr_horizontal_white.png'
-      : '/fr_horizontal_black.png';
+  const year = useSyncExternalStore(subscribeToNothing, getYear, getBuildYear);
 
   return (
-    <footer className="py-8 border-t border-[var(--color-border)]">
-      <div className="container mx-auto px-6">
-        <div className="flex flex-col items-center gap-6 md:flex-row md:justify-between md:gap-4">
-          <div className="flex flex-col items-center gap-3 md:flex-row md:gap-4">
-            <Image
-              src={logoSrc}
-              alt="Flying Rat Studio"
-              width={120}
-              height={30}
-              className="max-h-6 opacity-70"
-              style={{ width: 'auto', height: 'auto', aspectRatio: '120 / 30' }}
-            />
-            <span suppressHydrationWarning className="text-[var(--color-text-muted)] text-sm">
-              © {isClient ? new Date().getFullYear() : 2026} {t('footer.rights')}
+    <footer className="border-t border-line pt-10 pb-[max(2.5rem,env(safe-area-inset-bottom))] md:pt-12 md:pb-12">
+      <div className="container">
+        <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
+          <div className="flex flex-col gap-4">
+            <Logo className="h-7 self-start" />
+            <p className="max-w-xs text-sm text-subtle">{t('footer.cookies')}</p>
+          </div>
+          {/* Negative margin + padding: finger-sized targets without moving the text. */}
+          <nav aria-label={t('footer.navLabel')} className="-my-3 flex gap-6 text-sm text-muted">
+            <Link href="/jobs" className="py-3 transition-colors hover:text-ink">
+              {t('footer.jobs')}
+            </Link>
+            <Link href="/press" className="py-3 transition-colors hover:text-ink">
+              {t('footer.press')}
+            </Link>
+          </nav>
+        </div>
+
+        <div className="mt-10 flex flex-col gap-2 border-t border-line pt-6 font-mono text-[11px] leading-relaxed text-subtle md:flex-row md:justify-between md:gap-8">
+          <span className="shrink-0">
+            © {year} {t('footer.rights')}
+          </span>
+          <p className="md:text-right">
+            {/* Each part stays whole, so a narrow screen breaks between them, not inside a number. */}
+            <span className="whitespace-nowrap">GADEN ALPHA s.r.o.</span> |{' '}
+            <span className="whitespace-nowrap">IČO: 09949194</span> |{' '}
+            <span className="whitespace-nowrap">DIČ: CZ09949194</span>
+            <span className="hidden md:inline">
+              {' '}
+              | Polní 21, 252 64 Velké Přílepy | Zapsáno u&nbsp;MS v&nbsp;Praze, C 345227
             </span>
-          </div>
-          <div className="flex flex-col items-center gap-3 md:items-end md:gap-1">
-            <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[var(--color-text-subtle)] text-sm">
-              <p className="hidden sm:block">{t('footer.cookies')}</p>
-              <span className="hidden sm:block opacity-30">|</span>
-              <Link
-                href="/jobs"
-                className="hover:text-[var(--color-text-muted)] transition-colors inline-flex items-center gap-1"
-              >
-                {t('footer.jobs')} 💼
-              </Link>
-              <span className="opacity-30">|</span>
-              <Link
-                href="/press"
-                className="hover:text-[var(--color-text-muted)] transition-colors inline-flex items-center gap-1"
-              >
-                {t('footer.press')} 📰
-              </Link>
-            </div>
-            <p
-              suppressHydrationWarning
-              className="text-[var(--color-text-subtle)] text-[10px] opacity-50 text-center md:text-right max-w-xs md:max-w-none"
-            >
-              GADEN ALPHA s.r.o. | IČO: 09949194 | DIČ: CZ09949194
-              <span className="hidden md:inline">
-                {' '}
-                | Polní 21, 252 64 Velké Přílepy | Zapsáno u MS v Praze, C 345227
-              </span>
-            </p>
-          </div>
+          </p>
         </div>
       </div>
     </footer>

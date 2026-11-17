@@ -11,6 +11,8 @@
     "lint:fix": "oxlint --fix",
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",
+    "typecheck": "tsc --noEmit",
+    "check": "oxlint && oxfmt --check && tsc --noEmit",
     "fix": "oxlint --fix && oxfmt",
     "clean": "bun pm cache rm && rm -rf node_modules bun.lock && bun install"
   },
@@ -19,13 +21,13 @@
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.1.0",
     "babel-plugin-react-compiler": "^1.0.0",
-    "i18next": "^27.1.1",
+    "i18next": "^27.1.5",
     "next": "^16.4.6",
     "next-themes": "^0.4.6",
-    "postcss": "^8.5.32",
+    "postcss": "^8.5.33",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
-    "react-i18next": "^18.0.1",
+    "react-i18next": "^18.0.2",
     "sharp": "^0.35.5",
     "tailwindcss": "^4.3.5",
     "three": "^0.187.0",
@@ -40,8 +42,8 @@
     "@types/three": "^0.187.0",
     "@types/uuid": "^11.0.0",
     "eslint-plugin-react-hooks": "^7.1.1",
-    "oxfmt": "^0.78.0",
-    "oxlint": "^1.93.0",
+    "oxfmt": "^0.79.0",
+    "oxlint": "^1.94.0",
     "typescript": "^7.0.2"
   }
 }

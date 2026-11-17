@@ -1,65 +1,28 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 
-import { useAnimationsEnabled } from '../hooks/useAnimationsEnabled';
+import { useScrollFrame } from '../hooks/useScrollFrame';
 
 export function ScrollProgress() {
   const barRef = useRef<HTMLDivElement | null>(null);
-  const frameRef = useRef(0);
-  const lastRef = useRef(-1);
-  const shouldAnimate = useAnimationsEnabled();
 
-  useEffect(() => {
-    const updateProgress = () => {
-      frameRef.current = 0;
+  useScrollFrame(
+    () => {
       const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
       const maxScroll = scrollHeight - clientHeight;
-      const next = maxScroll > 0 ? scrollTop / maxScroll : 0;
-      if (Math.abs(next - lastRef.current) < 0.001) {
-        return;
+      if (barRef.current) {
+        barRef.current.style.transform = `scaleX(${maxScroll > 0 ? scrollTop / maxScroll : 0})`;
       }
-      lastRef.current = next;
-      const bar = barRef.current;
-      if (bar) {
-        bar.style.transform = `scaleX(${next})`;
-      }
-    };
-
-    const requestUpdate = () => {
-      if (frameRef.current === 0) {
-        frameRef.current = window.requestAnimationFrame(updateProgress);
-      }
-    };
-
-    if (shouldAnimate) {
-      requestUpdate();
-      window.addEventListener('scroll', requestUpdate, { passive: true });
-      window.addEventListener('resize', requestUpdate);
-    } else {
-      updateProgress();
-      window.addEventListener('scroll', updateProgress, { passive: true });
-      window.addEventListener('resize', updateProgress);
-    }
-    return () => {
-      if (frameRef.current !== 0) {
-        window.cancelAnimationFrame(frameRef.current);
-      }
-      if (shouldAnimate) {
-        window.removeEventListener('scroll', requestUpdate);
-        window.removeEventListener('resize', requestUpdate);
-      } else {
-        window.removeEventListener('scroll', updateProgress);
-        window.removeEventListener('resize', updateProgress);
-      }
-    };
-  }, [shouldAnimate]);
+    },
+    { resize: true },
+  );
 
   return (
-    <div className="fixed top-0 left-0 right-0 h-[2px] z-[100]">
+    <div className="fixed top-0 right-0 left-0 z-[100] h-[2px]" aria-hidden="true">
       <div
         ref={barRef}
-        className="scroll-progress-bar h-full transition-transform duration-150 ease-out bg-gradient-to-r from-accent via-accent to-accent/50"
+        className="scroll-progress-bar h-full bg-accent transition-transform duration-150 ease-out"
         style={{ transform: 'scaleX(0)' }}
       />
     </div>

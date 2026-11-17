@@ -1,3 +1,5 @@
+import type { Language } from '../i18n';
+import { tieShortWords } from '../utils/czechTypography';
 import projectsData from './projects.json';
 
 interface PlatformLink {
@@ -5,17 +7,20 @@ interface PlatformLink {
   url: string;
 }
 
-interface Project {
+export interface Project {
   id: string;
   title: string;
   studio: string;
   platforms: PlatformLink[];
   image: string;
   isInternal?: boolean;
-  description?: {
-    en: string;
-    cs: string;
-  };
+  /** One short line for the hero's achievement feed: what we did, said warmly. */
+  achievement: Record<Language, string>;
+  description: Record<Language, string>;
 }
 
-export const projects: Project[] = projectsData;
+export const projects: Project[] = projectsData.map((project) => ({
+  ...project,
+  achievement: { ...project.achievement, cs: tieShortWords(project.achievement.cs) },
+  description: { ...project.description, cs: tieShortWords(project.description.cs) },
+}));

@@ -29,7 +29,7 @@ export function PlatformIcon({ name }: { name: string }) {
   }
 
   return (
-    <svg className="size-3 fill-current shrink-0" viewBox="0 0 24 24">
+    <svg className="size-3 shrink-0 fill-current" viewBox="0 0 24 24">
       <title>{name}</title>
       <path d={ICON_PATHS[name] || DEFAULT_PATH} />
     </svg>

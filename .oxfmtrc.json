@@ -1,5 +1,14 @@
 {
   "$schema": "./node_modules/oxfmt/configuration_schema.json",
   "printWidth": 100,
-  "experimentalSortImports": {}
+  "singleQuote": true,
+  "trailingComma": "all",
+  "sortImports": {
+    "newlinesBetween": true
+  },
+  "sortPackageJson": true,
+  "sortTailwindcss": {
+    "stylesheet": "./app/globals.css"
+  },
+  "ignorePatterns": [".next", "public", "bun.lock", "package-lock.json", "next-env.d.ts"]
 }

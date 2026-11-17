@@ -1,5 +1,5 @@
 export const fallbackLng = 'en';
-const languages = ['en', 'cs'] as const;
+export const languages = ['en', 'cs'] as const;
 export type Language = (typeof languages)[number];
 
 const defaultNS = 'common';

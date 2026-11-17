@@ -4,12 +4,88 @@
   --color-accent: #fa5565;
   --color-accent-dark: #e04555;
   --color-online: #22c55e;
-  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-sans: var(--font-mona), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, 'SF Mono', Menlo, monospace;
+  --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Two steps the default type scale lacks: body copy between `sm` and `base`,
+     and mono details (addresses, spec names) between `xs` and `sm`. */
+  --text-md: 0.9375rem;
+  --text-meta: 0.8125rem;
 }
+
+/* Utility names for the per-theme tokens below: `text-ink`, `border-line`,
+   `bg-page` and so on. Nothing is emitted for this block (`reference`), and each
+   utility reads its token where it is used (`inline`), so the `html.light` /
+   `html.dark` values and local overrides such as the toast's all apply. */
+@theme inline reference {
+  --color-ink: var(--color-text);
+  --color-secondary: var(--color-text-secondary);
+  --color-muted: var(--color-text-muted);
+  --color-subtle: var(--color-text-subtle);
+  --color-page: var(--color-bg);
+  --color-surface: var(--color-surface);
+  --color-surface-light: var(--color-surface-light);
+  --color-surface-lighter: var(--color-surface-lighter);
+  --color-line: var(--color-border);
+  --color-line-strong: var(--color-border-hover);
+  --color-on-accent: var(--color-on-accent);
+  /* Coral and green deep enough to read as small text; fills use `accent` / `online`. */
+  --color-accent-ink: var(--color-accent-text);
+  --color-online-ink: var(--color-online-text);
+}
+
+@utility container {
+  margin-inline: auto;
+  padding-inline: max(1.5rem, env(safe-area-inset-left)) max(1.5rem, env(safe-area-inset-right));
+}
+
+/* ---------------------------------------------------------------- tokens */
+
+html.dark {
+  --color-bg: #0a0a0b;
+  --color-surface: #111113;
+  --color-surface-light: #19191c;
+  --color-surface-lighter: #242428;
+  --color-text: #f4f4f1;
+  --color-text-secondary: #c8c8c4;
+  --color-text-muted: #9b9b97;
+  /* Subtle text and the accent used as small text are tuned to keep 4.5:1
+     against every surface of the theme. */
+  --color-text-subtle: #828280;
+  --color-accent-text: var(--color-accent);
+  --color-online-text: var(--color-online);
+  --color-border: rgba(255, 255, 255, 0.09);
+  --color-border-hover: rgba(255, 255, 255, 0.2);
+  --color-on-accent: #0a0a0b;
+  color-scheme: dark;
+}
+
+html.light {
+  --color-bg: #f6f6f3;
+  --color-surface: #ffffff;
+  --color-surface-light: #eeeeea;
+  --color-surface-lighter: #e2e2dd;
+  --color-text: #0c0c0d;
+  --color-text-secondary: #2a2a2c;
+  --color-text-muted: #55555a;
+  --color-text-subtle: #66666b;
+  /* The brand coral and green are too light to read as small text on a light
+     page, so text (and the focus ring) use a deeper cut; fills keep the brand. */
+  --color-accent-text: #c92d41;
+  --color-online-text: #187a3c;
+  --color-border: rgba(0, 0, 0, 0.1);
+  --color-border-hover: rgba(0, 0, 0, 0.24);
+  --color-on-accent: #0a0a0b;
+  color-scheme: light;
+}
+
+/* ------------------------------------------------------------------ base */
 
 html {
   box-sizing: border-box;
   -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
 }
 
 *,
@@ -18,141 +94,1667 @@ html {
   box-sizing: inherit;
 }
 
-.section-pad {
-  padding-top: 5rem;
-  padding-bottom: 5rem;
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
-@media (min-width: 768px) {
-  .section-pad {
-    padding-top: 8rem;
-    padding-bottom: 8rem;
+::selection {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent-text);
+  outline-offset: 3px;
+}
+
+/* The skip link's target takes focus so reading continues from it, but a ring
+   around the whole page would say nothing. */
+main:focus-visible {
+  outline: none;
+}
+
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 200;
+  padding: 0.625rem 1rem;
+  border-radius: 999px;
+  background: var(--color-text);
+  color: var(--color-bg);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transform: translateY(-250%);
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-surface-lighter);
+  border: 2px solid var(--color-bg);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-subtle);
+}
+
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  html {
+    scrollbar-width: none;
   }
 }
 
-.section-title {
-  font-size: clamp(1.5rem, 1.2rem + 1.6vw, 3rem);
-  line-height: 1.1;
-  font-weight: 700;
+/* ------------------------------------------------------------ typography */
+
+@layer components {
+  /* Mona Sans carries a width axis: headings use the wide cut, body the regular one. */
+  .font-display {
+    font-stretch: 114%;
+    letter-spacing: -0.035em;
+  }
+
+  .hero-title {
+    font-size: clamp(2.375rem, 1rem + 6.6vw, 7.25rem);
+    line-height: 0.96;
+    font-weight: 600;
+    font-stretch: 116%;
+    letter-spacing: -0.045em;
+    text-wrap: balance;
+  }
+
+  .section-title {
+    font-size: clamp(1.875rem, 1.35rem + 2.4vw, 3.5rem);
+    line-height: 1.02;
+    font-weight: 600;
+    font-stretch: 114%;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+  }
+
+  .cta-title {
+    font-size: clamp(2.125rem, 1.3rem + 3.9vw, 5rem);
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+  }
+
+  .section-subtitle {
+    color: var(--color-text-muted);
+    font-size: clamp(1rem, 0.95rem + 0.3vw, 1.125rem);
+    line-height: 1.6;
+    text-wrap: pretty;
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    line-height: 1.4;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .section-pad {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+  }
+
+  @media (min-width: 768px) {
+    .section-pad {
+      padding-top: 8.5rem;
+      padding-bottom: 8.5rem;
+    }
+  }
+
+  /* --------------------------------------------------------------- buttons */
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 3rem;
+    padding: 0 1.375rem;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    font-size: 0.9375rem;
+    font-weight: 550;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      background-color 0.25s var(--ease-smooth),
+      border-color 0.25s var(--ease-smooth),
+      color 0.25s var(--ease-smooth),
+      transform 0.25s var(--ease-smooth);
+  }
+
+  .btn:active {
+    transform: scale(0.98);
+  }
+
+  .btn-sm {
+    height: 2.5rem;
+    padding: 0 1.125rem;
+    font-size: 0.875rem;
+  }
+
+  .btn-primary {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+
+  .btn-primary:hover {
+    background: var(--color-text);
+    color: var(--color-bg);
+  }
+
+  .btn-secondary {
+    border-color: var(--color-border-hover);
+    color: var(--color-text);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--color-text);
+    background: var(--color-text);
+    color: var(--color-bg);
+  }
+
+  .btn-arrow {
+    transition: transform 0.3s var(--ease-smooth);
+  }
+
+  .btn:hover .btn-arrow {
+    transform: translateX(3px);
+  }
+
+  .link-underline {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0% 1px;
+    transition:
+      background-size 0.35s var(--ease-smooth),
+      color 0.2s ease;
+  }
+
+  .link-underline:hover {
+    background-size: 100% 1px;
+  }
+
+  .text-link {
+    color: var(--color-text);
+    text-decoration: underline;
+    text-decoration-color: var(--color-border-hover);
+    text-underline-offset: 4px;
+    transition: text-decoration-color 0.2s var(--ease-smooth);
+  }
+
+  .text-link:hover {
+    text-decoration-color: var(--color-text);
+  }
+
+  /* ---------------------------------------------------------------- cards */
+
+  .surface-card {
+    border: 1px solid var(--color-border);
+    border-radius: 1rem;
+    background: var(--color-surface);
+  }
 }
 
-.section-subtitle {
-  color: var(--color-text-muted);
-  font-size: clamp(1rem, 0.95rem + 0.4vw, 1.125rem);
+/* ---------------------------------------------------------------- header */
+
+.glass {
+  background: color-mix(in srgb, var(--color-bg) 78%, transparent);
+  /* Unprefixed only: the CSS pipeline adds -webkit- itself, and declaring both
+     makes it drop the standard property (which is the one Chromium reads). */
+  backdrop-filter: blur(16px) saturate(160%);
+  border-bottom: 1px solid var(--color-border);
 }
 
-html.dark {
-  --color-bg: #000000;
-  --color-surface: #111111;
-  --color-surface-light: #1a1a1a;
-  --color-surface-lighter: #222222;
-  --color-text: #ffffff;
-  --color-text-secondary: #d1d5db;
-  --color-text-muted: #9ca3af;
-  --color-text-subtle: #6b7280;
-  --color-border: rgba(255, 255, 255, 0.05);
-  --color-border-hover: rgba(255, 255, 255, 0.1);
+.site-header {
+  transition:
+    padding 0.3s var(--ease-smooth),
+    background-color 0.3s var(--ease-smooth),
+    border-color 0.3s var(--ease-smooth),
+    opacity 0.8s var(--ease-smooth);
 }
 
-html.light {
-  --color-bg: #fafafa;
-  --color-surface: #ffffff;
-  --color-surface-light: #f5f5f5;
-  --color-surface-lighter: #e8e8e8;
-  --color-text: #0a0a0a;
-  --color-text-secondary: #262626;
-  --color-text-muted: #404040;
-  --color-text-subtle: #525252;
-  --color-border: rgba(0, 0, 0, 0.16);
-  --color-border-hover: rgba(0, 0, 0, 0.26);
+@starting-style {
+  .site-header {
+    opacity: 0;
+  }
 }
 
-html.light .glass {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+/* --------------------------------------------------------------- reveals */
+
+/* Entrances share one motion: ease in from `--reveal-from`. `.reveal` waits for
+   `data-pending` to be lifted (FadeInView does that on scroll); `.reveal-on-load`
+   plays as the page first paints, with no script involved. */
+.reveal,
+.reveal-on-load {
+  transition:
+    opacity var(--reveal-duration, 0.9s) var(--ease-smooth) var(--reveal-delay, 0s),
+    transform var(--reveal-duration, 0.9s) var(--ease-smooth) var(--reveal-delay, 0s);
+}
+
+.reveal[data-pending] {
+  opacity: 0;
+  transform: var(--reveal-from, translateY(20px));
+}
+
+@starting-style {
+  .reveal-on-load {
+    opacity: 0;
+    transform: var(--reveal-from, translateY(20px));
+  }
+}
+
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari specific fixes */
+  html {
+    -webkit-touch-callout: none;
+  }
+
+  .glass {
+    background: color-mix(in srgb, var(--color-bg) 94%, transparent);
+    backdrop-filter: none;
+  }
+
+  [class*='backdrop-blur'] {
+    backdrop-filter: none;
+  }
+
+  .unlock-toast,
+  html.light .unlock-toast {
+    --toast-tint: color-mix(in srgb, var(--color-surface) 94%, transparent);
+    backdrop-filter: none;
+  }
+}
+
+.scroll-progress-bar {
+  transform-origin: left;
+  will-change: transform;
+}
+
+/* ------------------------------------------------------------------ hero */
+
+.hero {
+  --hero-title-size: clamp(2.375rem, 1rem + 6.6vw, 7.25rem);
+  --hero-overlap: calc(var(--hero-title-size) * 0.48);
+  --hero-radius: 1rem;
+  /* Own backdrop for the headline's blend mode, whatever the ancestors do. */
+  isolation: isolate;
+  background: var(--color-bg);
+}
+
+@media (min-width: 768px) {
+  .hero {
+    --hero-radius: 1.5rem;
+  }
+}
+
+/* Headline and copy sit side by side from lg up. The column sizes are variables
+   because the headline's echo inside the photo has to wrap at exactly the same width. */
+@media (min-width: 1024px) {
+  .hero {
+    --hero-aside-width: 20rem;
+    --hero-gap: 3rem;
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--hero-aside-width);
+    column-gap: var(--hero-gap);
+    align-items: end;
+  }
+}
+
+@media (min-width: 1280px) {
+  .hero {
+    --hero-aside-width: 25rem;
+  }
+}
+
+/* Dark theme: white + difference reads as the page's text colour over the page
+   background and inverts wherever the letters cross the photo. */
+.hero .hero-title {
+  font-size: var(--hero-title-size);
+  color: #fff;
+  mix-blend-mode: difference;
+}
+
+/* Light theme: page and sky are both pale, so no blend mode can tell them apart.
+   Instead the headline is cut off where the photo begins, and a second copy
+   inside the photo's frame continues it in the accent colour. */
+.hero .hero-title-echo {
+  display: none;
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  bottom: calc(100% - var(--hero-overlap));
+  width: 100%;
+  color: var(--color-accent-dark);
+  mix-blend-mode: normal;
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (min-width: 1024px) {
+  .hero .hero-title-echo {
+    width: calc(100% - var(--hero-aside-width) - var(--hero-gap));
+  }
+}
+
+html.light .hero .hero-title-echo {
+  display: block;
+}
+
+html.light .hero h1.hero-title {
+  color: var(--color-text);
+  mix-blend-mode: normal;
+  /* Everything above the photo, plus the sliver outside its rounded corners. */
+  mask-repeat: no-repeat;
+  mask-image:
+    linear-gradient(#000, #000),
+    radial-gradient(
+      circle at 100% 100%,
+      transparent calc(var(--hero-radius) - 0.5px),
+      #000 var(--hero-radius)
+    ),
+    radial-gradient(
+      circle at 0% 100%,
+      transparent calc(var(--hero-radius) - 0.5px),
+      #000 var(--hero-radius)
+    );
+  mask-size:
+    100% calc(100% - var(--hero-overlap)),
+    var(--hero-radius) var(--hero-radius),
+    var(--hero-radius) var(--hero-radius);
+  mask-position:
+    0 0,
+    left 0 bottom calc(var(--hero-overlap) - var(--hero-radius)),
+    right 0 bottom calc(var(--hero-overlap) - var(--hero-radius));
+}
+
+@media (min-width: 1024px) {
+  /* The headline no longer spans the photo, so its right edge is not a corner. */
+  html.light .hero h1.hero-title {
+    mask-image:
+      linear-gradient(#000, #000),
+      radial-gradient(
+        circle at 100% 100%,
+        transparent calc(var(--hero-radius) - 0.5px),
+        #000 var(--hero-radius)
+      );
+    mask-size:
+      100% calc(100% - var(--hero-overlap)),
+      var(--hero-radius) var(--hero-radius);
+    mask-position:
+      0 0,
+      left 0 bottom calc(var(--hero-overlap) - var(--hero-radius));
+  }
+}
+
+.hero-photo {
+  margin-top: calc(var(--hero-overlap) * -1);
+}
+
+.hero-lede {
+  font-size: clamp(1.125rem, 1rem + 0.5vw, 1.375rem);
+  line-height: 1.32;
+  letter-spacing: -0.01em;
+  color: var(--color-text);
+}
+
+/* The photo paints over the last stretch of this rule, so the padding ends it on the frame. */
+@media (min-width: 1024px) {
+  .hero-aside {
+    padding-bottom: calc(var(--hero-overlap) + 1.75rem);
+    padding-left: 1.5rem;
+    border-left: 1px solid var(--color-border-hover);
+  }
+}
+
+/* The team photo (2047x1166) ships with a blank strip down its left edge and a
+   large rounded corner cut out of its bottom-left: a circle of radius ~625
+   centred on (639, 526), in source pixels.
+
+   --photo-* is the window onto the photo in source pixels, always starting at
+   the top. Each window is the widest one centred on the team whose bottom-left
+   corner still clears that curve, so the frame can stay a plain rectangle.
+   Changing a window means re-checking that corner: at height h the curve sits
+   at x = 639 - sqrt(620^2 - (h - 526)^2), and --photo-x must stay right of it. */
+.hero {
+  --photo-x: 314;
+  --photo-w: 1400;
+  --photo-h: 1050;
+}
+
+@media (min-width: 640px) {
+  .hero {
+    --photo-x: 96;
+    --photo-w: 1900;
+    --photo-h: 814;
+  }
+}
+
+.hero-photo-crop {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: var(--photo-w) / var(--photo-h);
+  border-radius: var(--hero-radius);
+  background: var(--color-surface-light);
+}
+
+.hero-photo-image {
+  position: absolute;
+  top: 0;
+  left: calc(var(--photo-x) / var(--photo-w) * -100%);
+  width: calc(2047 / var(--photo-w) * 100%);
+  max-width: none;
+  height: auto;
+  /* Zooming from the top-right only ever pushes the blank corner further out. */
+  transform-origin: 100% 0%;
+}
+
+.unlock-toast {
+  position: absolute;
+  left: 0.75rem;
+  bottom: 0.75rem;
+  z-index: 1;
+  width: min(22rem, calc(100% - 1.5rem));
+  overflow: hidden;
+  border-radius: 0.875rem;
+  color: var(--color-text);
+
+  --toast-tint: color-mix(in srgb, var(--color-surface) 66%, transparent);
+  --toast-rim: rgb(255 255 255 / 0.18);
+  --toast-rim-hover: rgb(255 255 255 / 0.34);
+  --toast-sheen: rgb(255 255 255 / 0.12);
+  --toast-highlight: rgb(255 255 255 / 0.22);
+  /* Small text needs more contrast on glass than on a solid surface. */
+  --color-text-muted: #d2d2ce;
+  --color-text-subtle: #b2b2ae;
+  border: 1px solid var(--toast-rim);
+  background: linear-gradient(140deg, var(--toast-sheen), transparent 46%), var(--toast-tint);
+  backdrop-filter: blur(18px) saturate(170%);
   box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.08),
-    0 1px 2px rgba(0, 0, 0, 0.04);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    inset 0 1px 0 var(--toast-highlight),
+    0 1px 1px rgb(0 0 0 / 0.2),
+    0 6px 12px -4px rgb(0 0 0 / 0.32),
+    0 24px 44px -18px rgb(0 0 0 / 0.65);
+  transition: border-color 0.25s var(--ease-smooth);
 }
 
-html.light .project-card {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-html.light .project-card:hover {
+html.light .unlock-toast {
+  --toast-tint: color-mix(in srgb, #fff 78%, transparent);
+  --toast-rim: rgb(255 255 255 / 0.75);
+  --toast-rim-hover: rgb(255 255 255 / 1);
+  --toast-sheen: rgb(255 255 255 / 0.55);
+  --toast-highlight: rgb(255 255 255 / 0.95);
+  --color-text-muted: #3c3c40;
+  --color-text-subtle: #4c4c51;
   box-shadow:
-    0 12px 24px rgba(0, 0, 0, 0.12),
-    0 0 0 1px rgba(250, 85, 101, 0.2);
+    inset 0 1px 0 var(--toast-highlight),
+    0 1px 1px rgb(0 0 0 / 0.08),
+    0 6px 12px -4px rgb(0 0 0 / 0.16),
+    0 24px 44px -18px rgb(0 0 0 / 0.38);
 }
 
-html.light .platform-badge {
-  background: #e8e8e8;
-  color: var(--color-text-muted);
-  border-color: rgba(0, 0, 0, 0.08);
+.unlock-toast:hover {
+  border-color: var(--toast-rim-hover);
 }
 
-html.light .avatar-ring {
+.unlock-item > :first-child {
   box-shadow:
-    0 0 0 2px color-mix(in srgb, var(--color-accent) 50%, transparent),
-    0 0 0 4px var(--color-bg),
-    0 4px 12px rgba(0, 0, 0, 0.15);
+    0 0 0 1px rgb(255 255 255 / 0.12),
+    0 3px 8px -2px rgb(0 0 0 / 0.45);
 }
 
-html.light .avatar-ring:hover {
-  box-shadow:
-    0 0 0 2px var(--color-accent),
-    0 0 0 4px var(--color-bg),
-    0 8px 24px rgba(250, 85, 101, 0.25);
+@media (min-width: 768px) {
+  .unlock-toast {
+    left: 1.25rem;
+    bottom: 1.25rem;
+  }
 }
 
-.surface-card {
-  border: 1px solid var(--color-border);
-  border-radius: 0.75rem;
-  background: var(--color-surface);
+/* Phones: the photo is small, so the block straddles its bottom edge instead of
+   sitting on the team's faces, and the copy below makes room for the half that hangs out. */
+@media (max-width: 639px) {
+  .unlock-toast {
+    right: 0.75rem;
+    bottom: -1.875rem;
+    width: auto;
+  }
+
+  .hero .hero-aside {
+    margin-top: 3.75rem;
+  }
 }
 
-html.light .gradient-text {
-  background: linear-gradient(135deg, #000000 0%, var(--color-accent) 50%, #000000 100%);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
+.unlock-slot {
+  position: relative;
+  display: block;
+  height: 3.75rem;
 }
 
-html.light section {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+.unlock-item {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.875rem 0.5rem 0.5rem;
 }
 
-html.light footer {
-  background: #f0f0f0;
+@media (max-width: 379px) {
+  .unlock-cover {
+    aspect-ratio: 1;
+  }
+
+  .unlock-item {
+    gap: 0.5rem;
+  }
 }
 
-html.light .pattern-dots {
-  background-image: radial-gradient(rgba(0, 0, 0, 0.15) 1px, transparent 1px);
+.unlock-roll {
+  display: grid;
+  overflow: hidden;
+  /* Room for the accents above Czech capitals, which a tight line box would clip;
+     the negative margin keeps the row the height it would have without it. */
+  line-height: 1.6;
+  margin-block: -0.3em;
 }
 
-html.light ::selection {
+.unlock-label,
+.unlock-line {
+  grid-area: 1 / 1;
+  min-width: 0;
+}
+
+/* Without motion the label simply stays put. */
+.unlock-line {
+  opacity: 0;
+}
+
+/* The feed's clock (see UnlockToast): runs for the hold, then once more, briefly,
+   for the exit. Declared outside the motion query so the feed always advances. */
+.unlock-timer {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
   background: var(--color-accent);
-  color: #ffffff;
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: unlock-timer 4.4s linear calc(var(--unlock-delay, 0s) + 0.6s) both;
 }
 
-html.light ::-webkit-scrollbar-track {
-  background: #f0f0f0;
+.unlock-timer-out {
+  animation: unlock-timer-out 0.36s linear both;
 }
 
-html.light ::-webkit-scrollbar-thumb {
-  background: #cccccc;
+.unlock-toast:hover .unlock-timer:not(.unlock-timer-out),
+.unlock-toast:focus-visible .unlock-timer:not(.unlock-timer-out) {
+  animation-play-state: paused;
 }
 
-html.light .hero-image {
+@media (prefers-reduced-motion: no-preference) {
+  /* On the frame, not its wrapper: the achievement block hangs off the frame's
+     bottom edge on phones and must not be clipped along with the photo. */
+  html:not(.no-motion) .hero-photo-crop {
+    animation: hero-photo-unlock 1.5s var(--ease-smooth) 0.25s both;
+  }
+
+  html:not(.no-motion) .hero-photo-image {
+    animation: hero-photo-settle 2.6s var(--ease-smooth) 0.25s both;
+  }
+
+  html:not(.no-motion) .unlock-toast {
+    animation: unlock-pop 0.6s cubic-bezier(0.3, 1.35, 0.5, 1) var(--unlock-delay, 0s) both;
+  }
+
+  html:not(.no-motion) .unlock-toast[data-leaving] {
+    animation: unlock-dismiss 0.36s cubic-bezier(0.5, 0, 0.9, 0.4) both;
+  }
+
+  html:not(.no-motion) .unlock-cover {
+    animation: unlock-stamp 0.55s cubic-bezier(0.3, 1.5, 0.5, 1)
+      calc(var(--unlock-delay, 0s) + 0.12s) both;
+  }
+
+  html:not(.no-motion) .unlock-text {
+    animation: unlock-unfold 0.5s var(--ease-smooth) calc(var(--unlock-delay, 0s) + 0.22s) both;
+  }
+
+  html:not(.no-motion) .unlock-label {
+    animation: unlock-roll-out 0.5s var(--ease-smooth) calc(var(--unlock-delay, 0s) + 1.7s) both;
+  }
+
+  html:not(.no-motion) .unlock-line {
+    animation: unlock-roll-in 0.5s var(--ease-smooth) calc(var(--unlock-delay, 0s) + 1.7s) both;
+  }
+}
+
+@keyframes hero-photo-unlock {
+  from {
+    clip-path: inset(49% 4% 49% 4% round 999px);
+  }
+
+  to {
+    clip-path: inset(0 0 0 0 round var(--hero-radius));
+  }
+}
+
+@keyframes hero-photo-settle {
+  from {
+    transform: scale(1.12);
+  }
+
+  to {
+    transform: none;
+  }
+}
+
+@keyframes unlock-pop {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.94);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes unlock-dismiss {
+  to {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+}
+
+@keyframes unlock-stamp {
+  from {
+    opacity: 0;
+    transform: scale(0.55);
+  }
+}
+
+@keyframes unlock-unfold {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+}
+
+@keyframes unlock-roll-out {
+  to {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+}
+
+@keyframes unlock-roll-in {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes unlock-timer {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes unlock-timer-out {
+  from {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: scaleX(1);
+  }
+}
+
+/* ----------------------------------------------------------------- about */
+
+/* Fade the canvas (and the wipe line that travels over it) into the page. Only
+   those: the easter-egg overlays that share the container must stay fully visible. */
+.about-scene canvas,
+.scene-wipe-layer {
+  /* Two gradients intersected: the scene dissolves on every side it does not
+     share with the viewport edge, so the ground grid never ends in a hard line. */
+  mask-image:
+    linear-gradient(to bottom, #000 60%, transparent),
+    linear-gradient(to right, transparent, #000 9%, #000 91%, transparent);
+  mask-composite: intersect;
+}
+
+@media (min-width: 768px) {
+  .about-scene canvas,
+  .scene-wipe-layer {
+    mask-image:
+      linear-gradient(to right, transparent, #000 30%),
+      linear-gradient(to bottom, transparent, #000 16%, #000 78%, transparent);
+  }
+}
+
+.scene-wipe-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Leading edge of a view-mode wipe; positioned every frame by the scene runtime. */
+.scene-wipe {
+  position: absolute;
+  top: 8%;
+  bottom: 8%;
+  left: 0;
+  width: 1px;
+  background: var(--color-accent);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.scene-wipe-tag {
+  position: absolute;
+  top: 0;
+  left: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--color-accent-text);
+}
+
+.scene-hud {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.625rem;
+  pointer-events: auto;
+}
+
+@media (min-width: 768px) {
+  .scene-hud {
+    align-items: flex-end;
+  }
+}
+
+.scene-modes,
+.scene-stats {
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-bg) 88%, transparent);
+  backdrop-filter: blur(10px);
+}
+
+.scene-modes {
+  display: inline-flex;
+  padding: 3px;
+}
+
+.scene-mode {
+  padding: 0.4375rem 0.75rem;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition:
+    background-color 0.25s var(--ease-smooth),
+    color 0.25s var(--ease-smooth);
+}
+
+@media (pointer: coarse) {
+  .scene-mode {
+    padding: 0.75rem 0.875rem;
+  }
+}
+
+.scene-mode:hover {
+  color: var(--color-text);
+}
+
+.scene-mode[aria-pressed='true'] {
+  background: var(--color-text);
+  color: var(--color-bg);
+}
+
+.scene-stats {
+  display: none;
+  align-items: center;
+  /* A fixed height, so the plate does not jump when the first numbers arrive. */
+  height: 1.75rem;
+  padding: 0 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--color-text-secondary);
+}
+
+@media (min-width: 640px) {
+  .scene-stats {
+    display: inline-flex;
+  }
+}
+
+/* Nothing to show until the renderer has reported once. */
+.scene-stats:empty {
+  visibility: hidden;
+}
+
+/* -------------------------------------------------------------- projects */
+
+.work {
+  --work-ambient: 0.3;
+  --work-glow: 0.55;
+  --work-shadow: 0.9;
+  position: relative;
+  isolation: isolate;
+  /* The screen's glow is wider than the screen; without this it makes the whole
+     page scroll sideways on phones. `clip` (unlike `hidden`) keeps sticky working. */
+  overflow-x: clip;
+}
+
+html.light .work {
+  --work-ambient: 0.4;
+  --work-glow: 0.5;
+  --work-shadow: 0.32;
+}
+
+.work-ambient {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+  opacity: 0.45;
+}
+
+@media (min-width: 1024px) {
+  .work-ambient {
+    mask-image: radial-gradient(ellipse 75% 70% at 68% 46%, #000 0%, transparent 78%);
+    opacity: 1;
+  }
+}
+
+.work-ambient-image {
+  object-fit: cover;
+  opacity: var(--work-ambient);
+  filter: blur(90px) saturate(1.7);
+  transform: scale(1.35);
+}
+
+.work-ambient-out {
+  opacity: 0;
+}
+
+.work-list {
+  border-top: 1px solid var(--color-border);
+}
+
+.work-row {
+  position: relative;
+  border-bottom: 1px solid var(--color-border);
+  /* Clear the fixed header when a row is brought into view. */
+  scroll-margin-top: 5.5rem;
+}
+
+.work-row-button {
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1fr) 1.5rem;
+  grid-template-areas:
+    'index title icon'
+    '. studio .';
+  align-items: baseline;
+  column-gap: 0.75rem;
+  width: 100%;
+  padding: 1.125rem 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+@media (min-width: 640px) {
+  .work-row-button {
+    grid-template-columns: 2.75rem minmax(0, 1fr) auto 1.25rem;
+    grid-template-areas: 'index title studio icon';
+    column-gap: 1rem;
+  }
+}
+
+.work-index {
+  grid-area: index;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text-subtle);
+  transition: color 0.4s var(--ease-smooth);
+}
+
+.work-title {
+  grid-area: title;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem 0.875rem;
+  font-size: clamp(1.5rem, 1.05rem + 1.9vw, 2.625rem);
+  font-weight: 600;
+  font-stretch: 114%;
+  line-height: 1.06;
+  letter-spacing: -0.035em;
+  /* Dimmed through colour, not opacity, so the badge inside stays at full strength. */
+  color: color-mix(in srgb, var(--color-text) 36%, transparent);
+  transition:
+    color 0.45s var(--ease-smooth),
+    transform 0.45s var(--ease-smooth);
+}
+
+.work-studio {
+  grid-area: studio;
+  margin-top: 0.375rem;
+  font-size: 0.8125rem;
+  color: var(--color-text-subtle);
+  transition: color 0.4s var(--ease-smooth);
+}
+
+@media (min-width: 640px) {
+  .work-studio {
+    margin-top: 0;
+    white-space: nowrap;
+    text-align: right;
+  }
+}
+
+.work-badge {
+  padding: 0.3125rem 0.625rem;
+  border-radius: 999px;
+  background: var(--color-accent);
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  font-stretch: 100%;
+  line-height: 1;
+  letter-spacing: 0;
+  color: var(--color-on-accent);
+}
+
+/* What choosing a row does differs by layout, and so does its icon: side by side
+   it sends the title to the screen (arrow); stacked it opens the detail underneath (plus). */
+.work-row-icon {
+  grid-area: icon;
+  display: flex;
+  align-self: center;
+  justify-self: end;
+}
+
+.work-row-arrow {
+  display: none;
+  width: 1rem;
+  height: 1rem;
+  color: var(--color-text);
+  opacity: 0;
+  transform: translateX(-6px);
+  transition:
+    opacity 0.35s var(--ease-smooth),
+    transform 0.35s var(--ease-smooth);
+}
+
+.work-row-plus {
+  width: 1rem;
+  height: 1rem;
+  color: var(--color-text-subtle);
+  transition:
+    color 0.35s var(--ease-smooth),
+    transform 0.35s var(--ease-smooth);
+}
+
+@media (min-width: 1024px) {
+  .work-row-arrow {
+    display: block;
+  }
+
+  .work-row-plus {
+    display: none;
+  }
+}
+
+.work-row[data-open='true'] .work-row-plus {
+  color: var(--color-text);
+  transform: rotate(45deg);
+}
+
+@media (hover: hover) {
+  .work-row-button:hover .work-title {
+    color: color-mix(in srgb, var(--color-text) 72%, transparent);
+  }
+
+  .work-row-button:hover .work-row-arrow {
+    opacity: 0.55;
+    transform: none;
+  }
+}
+
+.work-row[data-active='true'] .work-title {
+  color: var(--color-text);
+}
+
+@media (min-width: 1024px) {
+  /* Side by side, the playing title leans toward the screen. Stacked, it stays
+     put so it lines up with the studio name and the detail under it. */
+  .work-row[data-active='true'] .work-title {
+    transform: translateX(0.375rem);
+  }
+}
+
+.work-row[data-active='true'] .work-index {
+  color: var(--color-accent-text);
+}
+
+.work-row[data-active='true'] .work-studio {
+  color: var(--color-text-secondary);
+}
+
+.work-row[data-active='true'] .work-row-arrow {
+  opacity: 1;
+  transform: none;
+}
+
+/* The reel's clock: when this bar fills, the next title takes the screen.
+   Stacked layouts show the detail inline, so nothing advances on its own there. */
+.work-progress {
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  display: none;
+  width: 100%;
+  height: 1px;
+  background: var(--color-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: work-progress 7s linear both;
+}
+
+@media (min-width: 1024px) {
+  .work-progress {
+    display: block;
+  }
+}
+
+.work-reel:hover .work-progress,
+.work-reel:focus-within .work-progress {
+  animation-play-state: paused;
+}
+
+.work-inline {
+  padding: 0.25rem 0 1.75rem;
+}
+
+.work-detail {
+  position: relative;
+}
+
+.work-glow {
+  position: absolute;
+  top: -6%;
+  right: -8%;
+  left: -8%;
+  z-index: -1;
+  aspect-ratio: 616 / 353;
+  pointer-events: none;
+}
+
+.work-glow-image {
+  object-fit: cover;
+  opacity: var(--work-glow);
+  filter: blur(48px) saturate(1.8);
+}
+
+/* Most key art is Steam's 616x353 capsule, so the screen takes that shape. Art of
+   any other shape is letterboxed over a blurred copy of itself, never cropped. */
+.work-screen {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 616 / 353;
+  border-radius: 0.875rem;
+  background: var(--color-surface-light);
+  box-shadow:
+    0 0 0 1px var(--color-border),
+    0 36px 70px -36px rgb(0 0 0 / var(--work-shadow));
+}
+
+.work-frame {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.work-fill {
+  object-fit: cover;
+  filter: blur(18px) saturate(1.2) brightness(0.72);
+  transform: scale(1.25);
+}
+
+.work-art {
+  object-fit: contain;
+}
+
+.work-copy {
+  margin-top: 1.5rem;
+}
+
+.work-blurb {
+  max-width: 65ch;
+  color: var(--color-text-secondary);
+}
+
+.work-blurb > * + * {
+  margin-top: 0.875rem;
+}
+
+.work-blurb > p {
+  line-height: 1.55;
+  text-wrap: pretty;
+  color: var(--color-text);
+}
+
+.work-blurb strong {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.blurb-list {
+  display: grid;
+  gap: 0.5rem;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.blurb-list li {
+  position: relative;
+  padding-left: 1.125rem;
+  text-wrap: pretty;
+}
+
+.blurb-list li::before {
+  content: '';
+  position: absolute;
+  top: 0.72em;
+  left: 0;
+  width: 0.4375rem;
+  height: 1.5px;
+  background: var(--color-accent);
+}
+
+@media (min-width: 1024px) {
+  .work-blurb {
+    margin-top: 0.75rem;
+  }
+
+  /* The detail is pinned, so it must never be taller than the viewport. The art
+     and the store buttons always stay in view; if a blurb runs long on a short
+     screen, the blurb alone scrolls. */
+  .work-detail {
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100dvh - 7.5rem);
+  }
+
+  .work-screen {
+    flex-shrink: 0;
+    max-height: 36dvh;
+  }
+
+  .work-copy {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .work-copy > * {
+    flex-shrink: 0;
+  }
+
+  .work-copy > .work-blurb {
+    flex-shrink: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-surface-lighter) transparent;
+  }
+}
+
+/* The detail is pinned, so it has to fit the viewport. On short screens the
+   title goes (the lit row beside it already says it) and the spacing tightens. */
+@media (min-width: 1024px) and (max-height: 820px) {
+  .work-copy {
+    margin-top: 1.125rem;
+  }
+
+  .work-copy .work-detail-title {
+    display: none;
+  }
+}
+
+.work-platform {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4375rem;
+  /* A comfortable tap target; trimmed where there is a pointer to aim with. */
+  height: 2.625rem;
+  padding: 0 1rem;
+  border: 1px solid var(--color-border-hover);
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  white-space: nowrap;
+  color: var(--color-text-secondary);
+  transition:
+    background-color 0.25s var(--ease-smooth),
+    border-color 0.25s var(--ease-smooth),
+    color 0.25s var(--ease-smooth);
+}
+
+.work-platform svg {
+  flex-shrink: 0;
+}
+
+.work-platform-arrow {
+  width: 0.625rem;
+  height: 0.625rem;
   opacity: 0.5;
 }
 
-html {
-  scroll-behavior: smooth;
-  -webkit-tap-highlight-color: transparent;
+@media (min-width: 1024px) {
+  .work-platform {
+    height: 2.25rem;
+    padding: 0 0.875rem;
+  }
 }
+
+a.work-platform:hover {
+  border-color: var(--color-text);
+  background: var(--color-text);
+  color: var(--color-bg);
+}
+
+.work-platform-primary {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  font-weight: 550;
+  color: var(--color-on-accent);
+}
+
+.work-platform-primary .work-platform-arrow {
+  opacity: 0.7;
+}
+
+.blurb-link {
+  color: var(--color-text);
+  text-decoration: underline;
+  text-decoration-color: var(--color-accent);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 0.2em;
+  transition: color 0.2s var(--ease-smooth);
+}
+
+.blurb-link:hover {
+  color: var(--color-accent-text);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.no-motion) .work-ambient-in {
+    animation: work-ambient-in 1.4s var(--ease-smooth) both;
+  }
+
+  html:not(.no-motion) .work-ambient-out {
+    animation: work-ambient-out 1.4s var(--ease-smooth) both;
+  }
+
+  html:not(.no-motion) .work-glow-image {
+    animation: work-glow-in 1.2s var(--ease-smooth) both;
+  }
+
+  html:not(.no-motion) .work-frame-in {
+    animation: work-frame-in 1s var(--ease-smooth) both;
+  }
+
+  html:not(.no-motion) .work-frame-in .work-art {
+    animation: work-art-drift 16s ease-in-out 1s infinite alternate;
+  }
+
+  html:not(.no-motion) .work-copy > * {
+    animation: work-copy-in 0.7s var(--ease-smooth) both;
+  }
+
+  html:not(.no-motion) .work-copy > :nth-child(2) {
+    animation-delay: 0.06s;
+  }
+
+  html:not(.no-motion) .work-copy > :nth-child(3) {
+    animation-delay: 0.12s;
+  }
+
+  html:not(.no-motion) .work-copy > :nth-child(4) {
+    animation-delay: 0.18s;
+  }
+}
+
+@keyframes work-progress {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes work-ambient-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: var(--work-ambient);
+  }
+}
+
+@keyframes work-ambient-out {
+  from {
+    opacity: var(--work-ambient);
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes work-glow-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: var(--work-glow);
+  }
+}
+
+@keyframes work-frame-in {
+  from {
+    opacity: 0;
+    transform: scale(1.07);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes work-art-drift {
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(1.04);
+  }
+}
+
+@keyframes work-copy-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* --------------------------------------------------------------- contact */
+
+.status-dot {
+  position: relative;
+  width: 0.5rem;
+  height: 0.5rem;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: var(--color-online);
+}
+
+.status-dot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: inherit;
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.no-motion) .status-dot::after {
+    animation: status-ping 2.4s var(--ease-smooth) infinite;
+  }
+}
+
+@keyframes status-ping {
+  0% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(2.8);
+  }
+}
+
+/* ------------------------------------------------------------------ jobs */
+
+.timeline-marker-current::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border: 1px solid var(--color-accent);
+  border-radius: inherit;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.no-motion) .timeline-marker-current::after {
+    animation: timeline-ping 2.6s var(--ease-smooth) infinite;
+  }
+}
+
+@keyframes timeline-ping {
+  0% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(1.9);
+  }
+}
+
+.job-card {
+  transition:
+    border-color 0.35s var(--ease-smooth),
+    box-shadow 0.35s var(--ease-smooth);
+}
+
+.job-card:hover,
+.job-card:focus-within {
+  border-color: var(--color-border-hover);
+  box-shadow: 0 24px 48px -36px rgb(0 0 0 / 0.45);
+}
+
+/* ----------------------------------------------------------- how we work */
+
+.seat-dot,
+.seat-join,
+.seat-crew {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* Every animation here starts paused and only runs while its plan is on screen
+   (`data-live`), so the seating plays when first seen and the idle loop costs
+   nothing off screen. Until its turn comes, `both` holds each piece at its first
+   keyframe: hidden. */
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.no-motion) .seat-join {
+    animation: seat-join 0.7s cubic-bezier(0.34, 1.45, 0.64, 1) both paused;
+    animation-delay: calc(0.3s + var(--seat) * 0.11s);
+  }
+
+  html:not(.no-motion) .seat-crew {
+    animation: seat-crew 0.7s var(--ease-smooth) both paused;
+    animation-delay: calc(0.3s + var(--seat) * 0.11s);
+  }
+
+  html:not(.no-motion) .seat-link {
+    animation:
+      seat-link 0.6s var(--ease-smooth) both paused,
+      seat-flow 1.8s linear infinite paused;
+    animation-delay: calc(0.3s + var(--seat) * 0.11s), 0s;
+  }
+
+  html:not(.no-motion) .seat-outline {
+    animation: seat-crew-crawl 4s linear infinite paused;
+  }
+
+  html:not(.no-motion) .seat-dot {
+    animation: seat-ripple 9s ease-in-out infinite paused;
+    animation-delay: calc(2.6s + var(--plan) * 0.95s + var(--pos) * 0.12s);
+  }
+
+  html:not(.no-motion)
+    .seat-plan[data-live='true']
+    :is(.seat-join, .seat-crew, .seat-link, .seat-outline, .seat-dot) {
+    animation-play-state: running;
+  }
+}
+
+@keyframes seat-join {
+  from {
+    opacity: 0;
+    transform: translateY(-14px) scale(0.4);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes seat-crew {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes seat-link {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* One dash period of the link, travelling from the crew back to the team. */
+@keyframes seat-flow {
+  to {
+    stroke-dashoffset: 6;
+  }
+}
+
+/* One dash period of the crew outline. */
+@keyframes seat-crew-crawl {
+  to {
+    stroke-dashoffset: -8;
+  }
+}
+
+/* Every plan has eight seats, so the delays above hand the ripple from one plan
+   to the next and it crosses the row as a single wave. */
+@keyframes seat-ripple {
+  0%,
+  8%,
+  100% {
+    transform: scale(1);
+  }
+
+  3% {
+    transform: scale(1.2);
+  }
+}
+
+/* ---------------------------------------------------------------- motion */
 
 html.no-motion {
   scroll-behavior: auto;
@@ -167,38 +1769,111 @@ html.no-motion *::after {
   transition-delay: 0ms;
 }
 
-@media (max-width: 768px) {
-  ::-webkit-scrollbar {
-    display: none;
-  }
-
-  html {
-    scrollbar-width: none;
-  }
-}
-
-body {
-  font-family: var(--font-sans);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms;
     animation-iteration-count: 1;
     transition-duration: 0.01ms;
+    transition-delay: 0ms;
   }
 }
 
-html.no-motion .crt-overlay {
-  animation: none;
+/* ------------------------------------------------------------------ jobs */
+
+/* The crew photo keeps its native 3:2 so the building and its sign stay in the
+   picture. It is not a framed card like the home hero: phones show it edge to
+   edge, and from lg up it runs off the right side of the screen beside the copy. */
+.jobs-crew-frame {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 3 / 2;
+  background: var(--color-surface-light);
 }
 
-html.crt-mode body {
-  filter: none;
+.jobs-crew-image {
+  object-fit: cover;
+  object-position: 50% 80%;
+  /* Slightly oversized so the scroll drift below never uncovers an edge. Scaled
+     from the top, so the extra is taken off the paving and not the building's sign. */
+  scale: 1.08;
+  transform-origin: 50% 0%;
+}
+
+/* Tablets: a full-width 3:2 would fill the screen, so crop to a wider band. */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .jobs-crew-frame {
+    aspect-ratio: 2 / 1;
+  }
+}
+
+@media (min-width: 1024px) {
+  .jobs-intro {
+    --crew-width: min(56vw, 64rem);
+    position: relative;
+    display: flex;
+    align-items: center;
+    /* Room for the photo plus its caption, whatever the copy's height. */
+    min-height: calc(var(--crew-width) * 2 / 3 + 2.25rem);
+  }
+
+  .jobs-crew {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    width: var(--crew-width);
+    transform: translateY(-50%);
+  }
+
+  .jobs-crew-frame {
+    border-radius: 1.5rem 0 0 1.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.no-motion) .jobs-crew-image {
+    animation: crew-settle 2.4s var(--ease-smooth) both;
+  }
+
+  /* Scroll-linked drift, where the browser can tie an animation to scroll position. */
+  @supports (animation-timeline: scroll()) {
+    html:not(.no-motion) .jobs-crew-image {
+      animation:
+        crew-settle 2.4s var(--ease-smooth) both,
+        crew-drift linear both;
+      animation-timeline: auto, scroll(root);
+      animation-range:
+        normal,
+        0 110vh;
+    }
+  }
+}
+
+@keyframes crew-settle {
+  from {
+    scale: 1.18;
+  }
+
+  to {
+    scale: 1.08;
+  }
+}
+
+@keyframes crew-drift {
+  to {
+    translate: 0 -3.5%;
+  }
+}
+
+/* ------------------------------------------------------ easter egg (CRT) */
+
+html.no-motion .crt-overlay {
+  animation: none;
 }
 
 html.crt-mode body > :not(.crt-overlay) {
@@ -291,535 +1966,132 @@ html.crt-mode .scroll-progress-bar {
   }
 }
 
-@keyframes timeline-appear {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
+/* ------------------------------------------------------------ AI section */
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .timeline-item {
-    opacity: 0;
-    transform: translateY(16px);
-    animation: timeline-appear 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-}
-
-.jobs-banner {
-  box-shadow: 0 0 18px rgba(34, 197, 94, 0.12);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .jobs-banner {
-    animation: jobs-banner-pulse 4s ease-in-out infinite;
-  }
-}
-
-@keyframes jobs-banner-pulse {
-  0%,
-  100% {
-    background-color: rgba(34, 197, 94, 0.08);
-    border-color: rgba(34, 197, 94, 0.18);
-  }
-
-  50% {
-    background-color: rgba(34, 197, 94, 0.16);
-    border-color: rgba(34, 197, 94, 0.28);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .jobs-banner-dot {
-    animation: pulse-online 2s ease-in-out infinite;
-  }
-}
-
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--color-surface);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--color-surface-lighter);
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-accent);
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-
-  100% {
-    background-position: 200% 0;
-  }
-}
-
-@keyframes timeline-scanline {
-  0% {
-    transform: translateY(-80%);
-    opacity: 0;
-  }
-
-  12% {
-    opacity: 0.9;
-  }
-
-  88% {
-    opacity: 0.9;
-  }
-
-  100% {
-    transform: translateY(200%);
-    opacity: 0;
-  }
-}
-
-.timeline-scanline {
-  animation: timeline-scanline 4.5s linear infinite;
-  will-change: transform, opacity;
-}
-
-html.light .timeline-connector {
-  background-image: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--color-accent) 85%, #000000 15%),
-    color-mix(in srgb, var(--color-accent) 55%, #000000 15%),
-    transparent
-  );
-  box-shadow: 0 0 20px rgba(250, 85, 101, 0.35);
-}
-
-html.light .timeline-scanline {
-  background-image: linear-gradient(
-    180deg,
-    transparent,
-    color-mix(in srgb, var(--color-accent) 75%, #ffffff 25%),
-    transparent
-  );
-  opacity: 0.85;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .timeline-scanline {
-    animation: none;
-    opacity: 0.4;
-  }
-}
-
-.gradient-text {
-  background: linear-gradient(
-    135deg,
-    var(--color-text) 0%,
-    var(--color-accent) 50%,
-    var(--color-text) 100%
-  );
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.glass {
-  background: color-mix(in srgb, var(--color-bg) 85%, transparent);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 1px solid var(--color-border);
-}
-
-@supports (-webkit-touch-callout: none) {
-  /* iOS Safari specific fixes */
-  html {
-    -webkit-touch-callout: none;
-  }
-
-  .glass {
-    background: color-mix(in srgb, var(--color-bg) 92%, transparent);
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
-
-  [class*='backdrop-blur'] {
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
-
-  /* Prevent iOS Safari zoom on input focus */
-  input,
-  textarea,
-  button,
-  select {
-    font-size: 16px;
-  }
-}
-
-.scroll-progress-bar {
-  transform-origin: left;
-  will-change: transform;
-}
-
-.project-card {
-  transition:
-    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.project-card:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    0 14px 28px -22px rgba(0, 0, 0, 0.5),
-    0 0 0 1px color-mix(in srgb, var(--color-accent) 14%, transparent);
-}
-
-.project-internal-badge {
-  border: 1px solid color-mix(in srgb, var(--color-accent) 72%, white 28%);
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--color-accent) 36%, transparent),
-    0 0 12px color-mix(in srgb, var(--color-accent) 52%, transparent),
-    0 0 26px color-mix(in srgb, var(--color-accent) 24%, transparent);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .project-internal-badge {
-    animation: project-internal-pulse 2.8s ease-in-out infinite;
-  }
-}
-
-@keyframes project-internal-pulse {
-  0%,
-  100% {
-    box-shadow:
-      0 0 0 1px color-mix(in srgb, var(--color-accent) 34%, transparent),
-      0 0 10px color-mix(in srgb, var(--color-accent) 42%, transparent),
-      0 0 22px color-mix(in srgb, var(--color-accent) 18%, transparent);
-  }
-
-  50% {
-    box-shadow:
-      0 0 0 1px color-mix(in srgb, var(--color-accent) 52%, transparent),
-      0 0 16px color-mix(in srgb, var(--color-accent) 68%, transparent),
-      0 0 34px color-mix(in srgb, var(--color-accent) 34%, transparent);
-  }
-}
-
-.project-image-layer {
-  backface-visibility: hidden;
-  transform: translateZ(0);
-}
-
-.project-image-frame {
-  isolation: isolate;
-  transform: translateZ(0);
-}
-
-.project-image-wash {
+.ai-tint {
+  --ai-tint: 11%;
+  position: absolute;
   inset: 0;
-  z-index: 1;
-  background: linear-gradient(
-    to top,
-    var(--color-surface) 0%,
-    color-mix(in srgb, var(--color-surface-light) 82%, transparent) 22%,
-    transparent 76%
-  );
-  backface-visibility: hidden;
-  transform: translateZ(0);
-}
-
-.project-card-body {
-  position: relative;
-  z-index: 2;
-  margin-top: -0.5rem;
-  background: var(--color-surface);
-}
-
-.project-platform-footer {
-  border-top: 1px solid var(--color-border);
-}
-
-.project-platform-badge {
-  border-color: transparent;
-  border-radius: 0.375rem;
-  background: transparent;
-  padding: 0.2rem 0.35rem;
-  font-size: 0.6875rem;
-  color: var(--color-text-subtle);
-}
-
-.project-platform-badge:hover {
-  transform: translateY(-1px);
-  background: color-mix(in srgb, var(--color-accent) 12%, transparent);
-  color: var(--color-accent);
-  border-color: color-mix(in srgb, var(--color-accent) 30%, transparent);
-  box-shadow: none;
-}
-
-.project-detail-overlay {
+  pointer-events: none;
   background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--color-surface) 86%, transparent),
-      color-mix(in srgb, var(--color-surface) 94%, transparent)
+    radial-gradient(
+      70% 80% at 100% 0%,
+      color-mix(in srgb, var(--color-accent) var(--ai-tint), transparent),
+      transparent 72%
     ),
     radial-gradient(
-      circle at top right,
-      color-mix(in srgb, var(--color-accent) 12%, transparent),
-      transparent 45%
+      50% 60% at 0% 100%,
+      color-mix(in srgb, var(--color-accent) calc(var(--ai-tint) * 0.55), transparent),
+      transparent 70%
     );
-  backdrop-filter: blur(14px) saturate(125%);
-  -webkit-backdrop-filter: blur(14px) saturate(125%);
-  animation: project-detail-in 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
-  transform-origin: 50% 48%;
-  will-change: opacity, transform;
+  transition: opacity 0.6s var(--ease-smooth);
 }
 
-.project-detail-copy {
-  max-height: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding-right: 0.25rem;
-  scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--color-accent) 45%, transparent) transparent;
+/* Coral on near-black reads weaker than on white, so the dark theme gets more. */
+html.dark .ai-tint {
+  --ai-tint: 15%;
 }
 
-.project-detail-copy::-webkit-scrollbar {
-  width: 5px;
+.ai-tint[data-dimmed='true'] {
+  opacity: 0;
 }
 
-.project-detail-copy::-webkit-scrollbar-track {
-  background: transparent;
+/* Neuron-style backdrop, anchored to the section's top-right corner.
+   The drawing (`-art`) is static and sits behind a mask that fades it out before
+   it reaches the cards, so it is rasterised once and never repainted. The live
+   nodes are separate elements outside that mask: they animate opacity only,
+   which runs on the compositor, and carry their share of the fade as a fixed
+   opacity (see `fadeAt` in AiPolicy.tsx, which must match the mask below). */
+.ai-network {
+  --network-line: 0.13;
+  --network-node: 0.26;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 150%;
+  max-width: 75rem;
+  aspect-ratio: 1200 / 640;
+  pointer-events: none;
+  /* Nothing inside can affect, or be affected by, layout and paint outside. */
+  contain: layout paint style;
+  transition: opacity 0.6s var(--ease-smooth);
 }
 
-.project-detail-copy::-webkit-scrollbar-thumb {
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--color-accent) 38%, transparent);
+/* Line and node strength are per theme: thin light marks on near-black need far
+   more presence than dark ones on white. */
+html.dark .ai-network {
+  --network-line: 0.24;
+  --network-node: 0.42;
 }
 
-.project-detail-copy::-webkit-scrollbar-thumb:hover {
-  background: color-mix(in srgb, var(--color-accent) 55%, transparent);
+.ai-network[data-dimmed='true'] {
+  opacity: 0.3;
 }
 
-.project-detail-close {
-  display: inline-flex;
-  width: 1.75rem;
-  height: 1.75rem;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--color-border);
-  border-radius: 9999px;
-  color: var(--color-text-secondary);
-  background: color-mix(in srgb, var(--color-bg) 38%, transparent);
-  transition:
-    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-    background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-    border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-    color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+@media (max-width: 767px) {
+  .ai-network {
+    width: 115%;
+    opacity: 0.55;
+  }
+
+  .ai-network[data-dimmed='true'] {
+    opacity: 0.18;
+  }
 }
 
-.project-detail-close:hover {
-  transform: scale(1.06);
-  border-color: var(--color-accent);
+.ai-network-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: var(--color-text);
+  mask-image: radial-gradient(115% 100% at 100% 0%, #000 8%, transparent 72%);
+}
+
+.ai-network-links {
+  fill: none;
+  stroke: currentColor;
+  stroke-opacity: var(--network-line);
+  vector-effect: non-scaling-stroke;
+}
+
+.ai-network-nodes {
+  fill: currentColor;
+  fill-opacity: var(--network-node);
+}
+
+.ai-node-live {
+  position: absolute;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+}
+
+.ai-node-pulse {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
   background: var(--color-accent);
-  color: white;
 }
 
-@media (max-width: 639px) {
-  .project-detail-close {
-    width: 2.25rem;
-    height: 2.25rem;
-    background: color-mix(in srgb, var(--color-bg) 58%, transparent);
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.no-motion) .ai-node-pulse {
+    animation: ai-node-pulse 5.5s ease-in-out infinite paused;
+  }
+
+  /* Only spend frames on the pulse while the backdrop is on screen. */
+  html:not(.no-motion) .ai-network[data-live='true'] .ai-node-pulse {
+    animation-play-state: running;
   }
 }
 
-@keyframes project-detail-in {
-  from {
-    opacity: 0;
-    transform: translateY(7px) scale(0.975);
+@keyframes ai-node-pulse {
+  0%,
+  100% {
+    opacity: 0.25;
   }
 
-  to {
+  50% {
     opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.card-hover {
-  transition:
-    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-    border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-    background-color 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.card-hover:hover {
-  transform: translateY(-6px);
-  box-shadow:
-    0 18px 32px -18px rgba(0, 0, 0, 0.45),
-    0 0 28px color-mix(in srgb, var(--color-accent) 14%, transparent);
-}
-
-.pattern-dots {
-  background-image: radial-gradient(var(--color-accent) 1px, transparent 1px);
-  background-size: 30px 30px;
-}
-
-.platform-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-size: 0.75rem;
-  padding: 0.25rem 0.5rem;
-  background: var(--color-surface);
-  border-radius: 9999px;
-  color: var(--color-text-muted);
-  transition:
-    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-    background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-    color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-    border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  border: 1px solid var(--color-border);
-  white-space: nowrap;
-}
-
-.platform-badge svg {
-  width: 0.75rem;
-  height: 0.75rem;
-  flex-shrink: 0;
-}
-
-.platform-badge:hover {
-  background: var(--color-accent);
-  color: white;
-  border-color: var(--color-accent);
-  transform: translateY(-2px) scale(1.02);
-  box-shadow:
-    0 4px 12px color-mix(in srgb, var(--color-accent) 40%, transparent),
-    0 0 20px color-mix(in srgb, var(--color-accent) 20%, transparent);
-}
-
-.avatar-ring {
-  border-radius: 9999px;
-  box-shadow:
-    0 0 0 2px color-mix(in srgb, var(--color-accent) 40%, transparent),
-    0 0 0 4px var(--color-bg),
-    0 0 30px color-mix(in srgb, var(--color-accent) 30%, transparent);
-  transition: box-shadow 0.3s ease;
-}
-
-.avatar-ring:hover {
-  box-shadow:
-    0 0 0 2px color-mix(in srgb, var(--color-accent) 60%, transparent),
-    0 0 0 4px var(--color-bg),
-    0 0 50px color-mix(in srgb, var(--color-accent) 50%, transparent);
-}
-
-.status-online {
-  width: 1.5rem;
-  height: 1.5rem;
-  background: var(--color-online);
-  border-radius: 9999px;
-  border: 2px solid var(--color-bg);
-  box-shadow: 0 0 12px color-mix(in srgb, var(--color-online) 60%, transparent);
-  animation: pulse-online 2s ease-in-out infinite;
-}
-
-@keyframes pulse-online {
-  0%,
-  100% {
-    box-shadow: 0 0 12px color-mix(in srgb, var(--color-online) 60%, transparent);
-  }
-
-  50% {
-    box-shadow: 0 0 20px color-mix(in srgb, var(--color-online) 90%, transparent);
-  }
-}
-
-::selection {
-  background: var(--color-accent);
-  color: white;
-}
-
-:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
-}
-
-img {
-  transition: opacity 0.3s ease;
-}
-
-@supports (padding: max(0px)) {
-  .container {
-    padding-left: max(1.5rem, env(safe-area-inset-left));
-    padding-right: max(1.5rem, env(safe-area-inset-right));
-  }
-}
-
-button,
-a {
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-}
-
-@keyframes bounce-slow {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(8px);
-  }
-}
-
-@keyframes scroll-wheel {
-  0%,
-  100% {
-    transform: translateY(0);
-    opacity: 0.35;
-  }
-
-  50% {
-    transform: translateY(6px);
-    opacity: 1;
-  }
-}
-
-.animate-bounce-slow {
-  animation: bounce-slow 1.5s ease-in-out infinite;
-}
-
-.animate-scroll-wheel {
-  animation: scroll-wheel 1.4s ease-in-out infinite;
-}
-
-html.no-motion .animate-bounce-slow {
-  animation: none;
-}
-
-html.no-motion .animate-scroll-wheel {
-  animation: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .timeline-scanline,
-  .status-online,
-  .animate-bounce-slow,
-  .animate-scroll-wheel,
-  .jobs-banner-dot {
-    animation: none;
   }
 }

@@ -1,9 +1,13 @@
 export { About } from './About';
+export { AiPolicy } from './AiPolicy';
+export { Community } from './Community';
 export { Contact } from './Contact';
 export { Footer } from './Footer';
 export { Header } from './Header';
 export { Hero } from './Hero';
+export { HowWeWork } from './HowWeWork';
 export { Projects } from './Projects';
 export { ScrollProgress } from './ScrollProgress';
+export { CONTENT_ID, SkipLink } from './SkipLink';
 export { TechStack } from './TechStack';
 export { WhatWeDo } from './WhatWeDo';

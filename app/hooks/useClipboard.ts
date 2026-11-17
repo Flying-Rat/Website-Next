@@ -29,13 +29,14 @@ export function useClipboard<T extends string>(options: UseClipboardOptions<T> =
     [timeoutMs],
   );
 
-  useEffect(() => {
-    return () => {
+  useEffect(
+    () => () => {
       if (timeoutRef.current) {
         window.clearTimeout(timeoutRef.current);
       }
-    };
-  }, []);
+    },
+    [],
+  );
 
   return { copied, copy };
 }

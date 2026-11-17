@@ -1,11 +1,25 @@
+# https://editorconfig.org
+# Shared with oxfmt: 2-space indent, 100 columns, single quotes, LF.
+
 root = true
 
 [*]
 indent_style = space
 indent_size = 2
-max_line_length = 100
 end_of_line = lf
 charset = utf-8
-trim_trailing_whitespace = false
+trim_trailing_whitespace = true
 insert_final_newline = true
+max_line_length = 100
 quote_type = single
+
+# Two trailing spaces are a Markdown hard break, and oxfmt does not reflow prose.
+[*.md]
+max_line_length = off
+trim_trailing_whitespace = false
+
+# Generated lockfiles are not hand-edited.
+[{package-lock.json,bun.lock}]
+indent_size = unset
+max_line_length = off
+trim_trailing_whitespace = unset

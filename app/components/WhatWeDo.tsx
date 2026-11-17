@@ -1,81 +1,55 @@
 'use client';
 
 import { useTranslation } from '../i18n';
+import { pad2 } from '../utils/pad2';
 import { FadeInView } from './FadeInView';
-import { AiIcon, BackendIcon, EngineeringIcon, PortingIcon, QaIcon, ReleaseIcon } from './icons';
+import { AiIcon, ArtIcon, BackendIcon, EngineeringIcon, PortingIcon, QaIcon } from './icons';
+import { SectionHeader } from './SectionHeader';
 
 const whatWeDoItems = [
   { key: 'engineering', Icon: EngineeringIcon },
   { key: 'porting', Icon: PortingIcon },
+  { key: 'art', Icon: ArtIcon },
   { key: 'qa', Icon: QaIcon },
-  { key: 'release', Icon: ReleaseIcon },
   { key: 'backend', Icon: BackendIcon },
   { key: 'ai', Icon: AiIcon },
 ];
-
-function WhatWeDoCard({
-  item,
-  index,
-  t,
-}: {
-  item: (typeof whatWeDoItems)[0];
-  index: number;
-  t: (key: string) => string;
-}) {
-  const title = t(`whatWeDo.${item.key}.title`);
-  const body = t(`whatWeDo.${item.key}.body`);
-  const Icon = item.Icon;
-
-  return (
-    <FadeInView animation="up" delay={index * 0.05} margin="-50px">
-      <div className="card-hover group relative overflow-hidden rounded-2xl sm:rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)]/40 backdrop-blur-xl p-5 sm:p-8 transition-colors duration-500 hover:border-accent/20 hover:bg-[var(--color-surface)]/60 h-full">
-        <div className="absolute inset-0 rounded-2xl sm:rounded-3xl border border-[var(--color-border)]/50 pointer-events-none" />
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-500 bg-gradient-to-br from-accent/30 via-accent/5 to-transparent" />
-
-        <div className="relative z-10">
-          <div className="flex items-center gap-3 sm:gap-4 mb-3">
-            <div className="relative shrink-0">
-              <div className="size-10 sm:size-14 rounded-xl sm:rounded-2xl bg-[var(--color-surface)]/80 border border-[var(--color-border)] flex items-center justify-center text-accent shadow-sm backdrop-blur-md">
-                <Icon className="size-5 sm:size-7" />
-              </div>
-              <div className="absolute inset-0 bg-accent/20 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            </div>
-            <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-[var(--color-text)]">
-              {title}
-            </h3>
-          </div>
-          <p className="text-sm sm:text-base text-[var(--color-text-muted)] leading-relaxed group-hover:text-[var(--color-text-secondary)] transition-colors duration-300">
-            {body}
-          </p>
-        </div>
-
-        <div className="absolute -top-[100%] -left-[100%] size-[300%] bg-gradient-to-br from-[var(--color-text)]/5 to-transparent rotate-45 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-      </div>
-    </FadeInView>
-  );
-}
 
 export function WhatWeDo() {
   const { t } = useTranslation();
 
   return (
-    <section id="what-we-do" className="section-pad relative overflow-x-hidden">
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-accent/5 blur-[120px] rounded-full" />
-        <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-[var(--color-text)]/5 blur-[100px] rounded-full" />
-      </div>
+    <section id="what-we-do" className="section-pad relative">
+      <div className="container">
+        <SectionHeader title={t('whatWeDo.title')} subtitle={t('whatWeDo.subtitle')} />
 
-      <div className="container mx-auto px-6 relative z-10">
-        <FadeInView animation="up" className="max-w-3xl mx-auto text-center mb-10 md:mb-16">
-          <h2 className="section-title mb-3 md:mb-4">{t('whatWeDo.title')}</h2>
-          <p className="section-subtitle max-w-2xl mx-auto">{t('whatWeDo.subtitle')}</p>
+        <FadeInView margin="-60px">
+          {/* 1px gaps over a border-coloured backdrop draw the hairlines between cells. */}
+          <ul className="grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+            {whatWeDoItems.map(({ key, Icon }, index) => (
+              <li
+                key={key}
+                // Phones: icon, title and index share one row (the wrapper below is
+                // `contents`, so its children join this grid). From sm up the icon and
+                // index sit on their own row above the title.
+                className="group grid grid-cols-[auto_1fr_auto] items-center gap-x-3 bg-page p-5 transition-colors duration-300 hover:bg-surface sm:flex sm:flex-col sm:items-stretch sm:p-6 md:p-8"
+              >
+                <div className="contents sm:mb-6 sm:flex sm:items-start sm:justify-between md:mb-8">
+                  <Icon className="size-6 [stroke-width:1.75] text-ink transition-colors duration-300 group-hover:text-accent-ink sm:size-8 sm:[stroke-width:1.5] md:size-9" />
+                  <span className="order-3 font-mono text-xs text-subtle transition-colors duration-300 group-hover:text-accent-ink sm:order-none">
+                    {pad2(index + 1)}
+                  </span>
+                </div>
+                <h3 className="font-display order-2 text-xl font-semibold sm:order-none md:text-2xl">
+                  {t(`whatWeDo.${key}.title`)}
+                </h3>
+                <p className="order-4 col-span-full mt-3 text-md leading-relaxed text-pretty text-muted sm:order-none sm:text-sm md:text-md">
+                  {t(`whatWeDo.${key}.body`)}
+                </p>
+              </li>
+            ))}
+          </ul>
         </FadeInView>
-
-        <div className="grid md:grid-cols-2 gap-4 md:gap-6 lg:gap-8">
-          {whatWeDoItems.map((item, index) => (
-            <WhatWeDoCard key={item.key} item={item} index={index} t={t} />
-          ))}
-        </div>
       </div>
     </section>
   );

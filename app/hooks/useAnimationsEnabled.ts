@@ -1,61 +1,34 @@
-import type { ReactNode } from 'react';
-import {
-  createContext,
-  createElement,
-  use,
-  useLayoutEffect,
-  useMemo,
-  useSyncExternalStore,
-} from 'react';
+import { useLayoutEffect, useSyncExternalStore } from 'react';
 
 import { isPrivacyBrowser } from '../lib/motionDetect';
 
-function getShouldAnimate() {
-  if (typeof window === 'undefined') {
-    return true;
-  }
+const REDUCED_MOTION = '(prefers-reduced-motion: reduce)';
 
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const ua = navigator.userAgent;
-  return !(prefersReducedMotion || isPrivacyBrowser(ua));
+function getShouldAnimate() {
+  return !(window.matchMedia(REDUCED_MOTION).matches || isPrivacyBrowser(navigator.userAgent));
 }
 
 function subscribeToReducedMotion(callback: () => void) {
-  const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-  mq.addEventListener('change', callback);
-  return () => mq.removeEventListener('change', callback);
+  const query = window.matchMedia(REDUCED_MOTION);
+  query.addEventListener('change', callback);
+  return () => query.removeEventListener('change', callback);
 }
 
-const AnimationGateContext = createContext<{ initialShouldAnimate: boolean } | null>(null);
-
-export function AnimationGateProvider({
-  initialShouldAnimate,
-  children,
-}: {
-  initialShouldAnimate: boolean;
-  children: ReactNode;
-}) {
-  const value = useMemo(() => ({ initialShouldAnimate }), [initialShouldAnimate]);
-  return createElement(AnimationGateContext.Provider, { value }, children);
-}
-
+/**
+ * Whether motion is welcome: false when the visitor asked for reduced motion (or
+ * uses a browser that hides that preference). Also mirrors the answer onto
+ * `<html>` as `.no-motion`, which is what the stylesheet keys on.
+ */
 export function useAnimationsEnabled() {
-  const context = use(AnimationGateContext);
-  const initialShouldAnimate = context?.initialShouldAnimate ?? true;
-
+  // The server cannot know, so it assumes motion and the browser corrects it.
   const shouldAnimate = useSyncExternalStore(
     subscribeToReducedMotion,
-    () => getShouldAnimate(),
-    () => initialShouldAnimate,
+    getShouldAnimate,
+    () => true,
   );
 
   useLayoutEffect(() => {
-    const root = document.documentElement;
-    if (shouldAnimate) {
-      root.classList.remove('no-motion');
-    } else {
-      root.classList.add('no-motion');
-    }
+    document.documentElement.classList.toggle('no-motion', !shouldAnimate);
   }, [shouldAnimate]);
 
   return shouldAnimate;

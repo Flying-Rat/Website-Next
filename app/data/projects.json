@@ -17,10 +17,14 @@
         "url": "https://www.meta.com/experiences/2448060205267927/"
       }
     ],
-    "image": "/images/projects/beat-saber.jpg",
+    "image": "/images/projects/beat-saber.webp",
+    "achievement": {
+      "en": "Helping keep the beat going",
+      "cs": "Pomáháme držet rytmus"
+    },
     "description": {
-      "en": "Ongoing engineering support for the world's most popular VR rhythm game. Performance optimization, platform integrations, and new feature development.",
-      "cs": "Dlouhodobá technická podpora pro nejpopulárnější VR rytmickou hru na světě. Optimalizace výkonu, integrace platforem a vývoj nových funkcí."
+      "en": "Ongoing engineering support for the world's most popular VR rhythm game.\n\n- **Performance.** In VR, a dropped frame is felt right away, so optimization is about holding the frame rate steady on every platform the game ships on.\n- **Platform integrations.** Keeping the game working smoothly with the platforms it's released on.\n- **New features.** Building new functionality into a live game, where a rhythm game's precise timing can't slip.",
+      "cs": "Dlouhodobá vývojová podpora nejpopulárnější rytmické VR hry na světě.\n\n- **Výkon.** Ve VR je každý vynechaný snímek okamžitě cítit, takže optimalizace znamená udržet stabilní snímkovou frekvenci na každé platformě, kde hra vychází.\n- **Integrace platforem.** Staráme se, aby hra držela krok s platformami, na kterých vychází.\n- **Nové funkce.** Vývoj nových funkcí pro živou hru, která si jako rytmická nemůže dovolit ztratit přesné načasování."
     }
   },
   {
@@ -49,10 +53,14 @@
         "url": "https://www.nintendo.com/us/store/products/darkest-dungeon-ii-switch/"
       }
     ],
-    "image": "/images/projects/darkest-dungeon-2.jpg",
+    "image": "/images/projects/darkest-dungeon-2-large.webp",
+    "achievement": {
+      "en": "Brought it to consoles",
+      "cs": "Dostali jsme ji na konzole"
+    },
     "description": {
-      "en": "Console ports for PlayStation, Xbox, and Nintendo Switch. Adapted the roguelike experience for controllers and optimized performance across all platforms.",
-      "cs": "Konzolové porty pro PlayStation, Xbox a Nintendo Switch. Přizpůsobení roguelike hratelnosti pro ovladače a optimalizace výkonu napříč všemi platformami."
+      "en": "Console ports of the roguelike for PlayStation, Xbox, and Nintendo Switch.\n\n- **Controls.** Reworked controls that were designed for mouse and keyboard, so the game feels natural on a gamepad.\n- **Performance.** Optimized so it holds up on every platform, from current consoles down to handheld hardware.",
+      "cs": "Konzolové porty roguelike hry pro PlayStation, Xbox a Nintendo Switch.\n\n- **Ovládání.** Přepracovali jsme ovládání navržené pro myš a klávesnici tak, aby hra na gamepadu působila přirozeně.\n- **Výkon.** Optimalizace, díky které hra obstojí na každé platformě, od současných konzolí až po handheldy."
     }
   },
   {
@@ -65,10 +73,14 @@
         "url": "https://store.steampowered.com/app/1494420/Silica/"
       }
     ],
-    "image": "/images/projects/silica.jpg",
+    "image": "/images/projects/silica-large.webp",
+    "achievement": {
+      "en": "Won back the frame rate",
+      "cs": "Získali jsme zpět výkon"
+    },
     "description": {
-      "en": "Executed targeted CPU and GPU performance optimizations. Profiling-driven instruction cycle reduction and render pipeline optimizations.",
-      "cs": "Cílené optimalizace výkonu CPU a GPU. Redukce instrukčních cyklů na základě profilování a optimalizace renderovací pipeline."
+      "en": "Targeted CPU and GPU performance optimization, driven by profiling rather than guesswork.\n\n- **Profiling first.** We measured where frame time was really going, so each change went after a cost we could actually see.\n- **CPU.** Cut instruction cycles in the busiest code paths.\n- **GPU.** Optimized the render pipeline.",
+      "cs": "Cílená optimalizace výkonu CPU a GPU, postavená na profilování, ne na odhadech.\n\n- **Nejdřív profilování.** Změřili jsme, kde se čas snímku skutečně ztrácí, takže každá úprava mířila na konkrétní, změřené úzké hrdlo.\n- **CPU.** Snížení počtu instrukčních cyklů v nejvytíženějších částech kódu.\n- **GPU.** Optimalizace renderovací pipeline."
     }
   },
   {
@@ -93,10 +105,14 @@
         "url": "https://www.nintendo.com/us/store/products/wrath-aeon-of-ruin-switch/"
       }
     ],
-    "image": "/images/projects/wrath.jpg",
+    "image": "/images/projects/wrath-large.webp",
+    "achievement": {
+      "en": "Matched the original, 1:1",
+      "cs": "Trefili jsme originál 1:1"
+    },
     "description": {
-      "en": "Rewrote original Quake-engine logic to Unity C# while maintaining 1:1 physics and rendering parity. Ported optimized console versions.",
-      "cs": "Přepis původní logiky Quake enginu do Unity C# se zachováním fyziky a renderování v poměru 1:1. Portování optimalizovaných verzí pro konzole."
+      "en": "A rewrite of the original Quake-engine logic in Unity C#, followed by console ports.\n\n- **1:1 parity.** Physics and rendering match the original, so the game looks and plays the same. Matching another engine's movement and visuals leaves little room for approximation.\n- **Consoles.** On that foundation, we ported optimized versions to consoles.",
+      "cs": "Přepis původní logiky Quake enginu do Unity C# a následné konzolové porty.\n\n- **Parita 1:1.** Fyzika a renderování odpovídají originálu, takže hra vypadá a hraje se stejně. Když se má trefit pohyb i obraz jiného enginu, na přibližnost není místo.\n- **Konzole.** Na tomto základě jsme připravili optimalizované verze pro konzole."
     }
   },
   {
@@ -117,10 +133,14 @@
         "url": "https://www.xbox.com/en-US/games/store/phantom-fury/9pgmvwh6dd31"
       }
     ],
-    "image": "/images/projects/phantom-fury.jpg",
+    "image": "/images/projects/phantom-fury-large.webp",
+    "achievement": {
+      "en": "Helped build the gameplay",
+      "cs": "Pomohli jsme s gameplayem"
+    },
     "description": {
-      "en": "Extended existing core gameplay architectures and system component logic.",
-      "cs": "Rozšíření existující architektury gameplaye a logiky systémových komponent."
+      "en": "Gameplay engineering inside an established codebase.\n\n- **Core gameplay architecture.** Extended the game's existing architecture rather than replacing it.\n- **System components.** Extended the logic of existing components, so new behavior fits with what was already there.\n- **Approach.** Learn the codebase's conventions first, then build on them.",
+      "cs": "Vývoj gameplaye uvnitř zavedeného kódu.\n\n- **Architektura core gameplaye.** Existující architekturu hry jsme rozšiřovali, nenahrazovali.\n- **Systémové komponenty.** Rozšíření logiky existujících komponent tak, aby nové chování zapadlo do toho, co už ve hře bylo.\n- **Přístup.** Nejdřív si osvojit konvence kódu, potom na nich stavět."
     }
   },
   {
@@ -133,10 +153,14 @@
         "url": "https://www.doarmady.cz/hry/specter"
       }
     ],
-    "image": "/images/projects/specter.jpg",
+    "image": "/images/projects/specter.webp",
+    "achievement": {
+      "en": "From concept to gold master",
+      "cs": "Od konceptu až po vydání"
+    },
     "description": {
-      "en": "Full-cycle engineering from concept to gold master. Architected on web-native stack utilizing TypeScript and BabylonJS with hardware-accelerated WebGL rendering.",
-      "cs": "Kompletní technický vývoj od konceptu po vydání. Postaveno na web-native stacku s využitím TypeScriptu a BabylonJS s hardwarově akcelerovaným WebGL vykreslováním."
+      "en": "Full-cycle engineering, from concept to gold master.\n\n- **Web-native stack.** Built on TypeScript and Babylon.js.\n- **Rendering.** Hardware-accelerated WebGL, so real-time 3D runs directly in the browser.\n- **Ownership.** We owned the whole path, from the first architecture decisions to the final release build.",
+      "cs": "Kompletní technický vývoj od konceptu po vydání.\n\n- **Web-native stack.** Postaveno na TypeScriptu a Babylon.js.\n- **Vykreslování.** Hardwarově akcelerované WebGL, takže 3D v reálném čase běží přímo v prohlížeči.\n- **Odpovědnost.** Měli jsme na starosti celou cestu, od prvních architektonických rozhodnutí až po finální build."
     }
   },
   {
@@ -157,10 +181,14 @@
         "url": "https://www.xbox.com/en-us/games/store/the-last-oricru/9nhsqv0grw9z"
       }
     ],
-    "image": "/images/projects/last-oricru.jpg",
+    "image": "/images/projects/last-oricru-large.webp",
+    "achievement": {
+      "en": "Shipped console multiplayer",
+      "cs": "Rozjeli jsme multiplayer"
+    },
     "description": {
-      "en": "Engineered platform abstraction layers for console targets. Implemented low-level networking code for multiplayer and optimized GPU and CPU performance.",
-      "cs": "Návrh abstrakčních vrstev pro konzolové platformy. Implementace nízkoúrovňového síťového kódu pro multiplayer a optimalizace výkonu GPU a CPU."
+      "en": "Console and multiplayer engineering, close to the hardware.\n\n- **Platform abstraction.** Layers that let a single codebase serve each console target, without platform-specific code leaking into gameplay.\n- **Networking.** Low-level networking code for multiplayer.\n- **Performance.** GPU and CPU optimization.",
+      "cs": "Konzolový a multiplayerový vývoj blízko hardwaru.\n\n- **Abstrakce platforem.** Vrstvy, díky kterým jeden kód obslouží všechny konzole a kód specifický pro platformu neprosakuje do gameplaye.\n- **Síťování.** Nízkoúrovňový síťový kód pro multiplayer.\n- **Výkon.** Optimalizace GPU a CPU."
     }
   },
   {
@@ -189,10 +217,14 @@
         "url": "https://www.nintendo.com/us/store/products/darkest-dungeon-switch/"
       }
     ],
-    "image": "/images/projects/darkest-dungeon-1.jpg",
+    "image": "/images/projects/darkest-dungeon-1.webp",
+    "achievement": {
+      "en": "Modernized a classic",
+      "cs": "Zmodernizovali jsme klasiku"
+    },
     "description": {
-      "en": "Revitalized legacy C++ codebase to utilize modern C++ features and latest compilers (clang, gcc, msvc). Upgraded dependencies and created native x64 builds.",
-      "cs": "Modernizace legacy C++ kódu s využitím moderních vlastností jazyka a nejnovějších kompilátorů (clang, gcc, msvc). Aktualizace závislostí a vytvoření nativních x64 buildů."
+      "en": "A modernization of the game's legacy C++ codebase.\n\n- **Modern C++.** Updated the code to use modern language features.\n- **Compilers.** It now builds with the latest Clang, GCC, and MSVC. Getting one codebase through three compilers is careful, detail-heavy work.\n- **Builds and dependencies.** Upgraded dependencies and created native x64 builds, giving the game a current, maintainable foundation.",
+      "cs": "Modernizace legacy C++ kódu hry.\n\n- **Moderní C++.** Kód jsme upravili tak, aby využíval moderní vlastnosti jazyka.\n- **Kompilátory.** Hra se teď sestaví v nejnovějších verzích Clangu, GCC i MSVC. Dostat jeden kód přes tři kompilátory je trpělivá práce plná detailů.\n- **Buildy a závislosti.** Aktualizace závislostí a nativní x64 buildy, které hře daly aktuální a udržovatelný základ."
     }
   },
   {
@@ -205,10 +237,14 @@
         "url": "https://play.google.com/store/apps/details?id=com.geewa.survivalquest"
       }
     ],
-    "image": "/images/projects/soulbound-legions.jpg",
+    "image": "/images/projects/soulbound-legions.webp",
+    "achievement": {
+      "en": "Helped with gameplay & VFX",
+      "cs": "Přidali jsme gameplay a VFX"
+    },
     "description": {
-      "en": "Core gameplay programming within existing engineering team. VFX creation and implementation.",
-      "cs": "Programování core gameplaye v rámci existujícího týmu. Tvorba a implementace VFX."
+      "en": "Gameplay and visual effects work as part of the studio's existing engineering team.\n\n- **Core gameplay.** Programming game logic alongside the people who know the project best.\n- **VFX.** Creating visual effects and implementing them in the game, from first concept to the finished effect in-game.",
+      "cs": "Gameplay a vizuální efekty jako součást existujícího týmu studia.\n\n- **Core gameplay.** Programování herní logiky po boku lidí, kteří projekt znají nejlépe.\n- **VFX.** Tvorba vizuálních efektů a jejich implementace do hry, od prvního návrhu až po efekt běžící přímo ve hře."
     }
   },
   {
@@ -225,10 +261,14 @@
         "url": "https://store.steampowered.com/app/1931240/MOTHERGUNSHIP_FORGE/"
       }
     ],
-    "image": "/images/projects/mothergunship-forge.jpg",
+    "image": "/images/projects/mothergunship-forge-large.webp",
+    "achievement": {
+      "en": "Kept the engine in shape",
+      "cs": "Udržujeme engine v kondici"
+    },
     "description": {
-      "en": "Engine version migrations and platform-specific SDK middleware updates.",
-      "cs": "Migrace verzí enginu a aktualizace platformě specifických SDK a middlewaru."
+      "en": "Engine and platform upkeep for a shipped game.\n\n- **Engine migrations.** Moving to a newer engine version touches almost everything, so the work is methodical: migrate, rebuild, fix what the upgrade breaks.\n- **SDKs and middleware.** Platform-specific updates that keep the game running on current tooling for the platforms it ships on.",
+      "cs": "Údržba enginu a platforem u vydané hry.\n\n- **Migrace enginu.** Přechod na novější verzi enginu se dotkne téměř všeho, takže jde o metodickou práci: migrovat, sestavit, opravit, co upgrade rozbil.\n- **SDK a middleware.** Aktualizace specifické pro jednotlivé platformy, díky kterým hra běží na aktuálních nástrojích platforem, na kterých vychází."
     }
   },
   {
@@ -249,11 +289,15 @@
         "url": "https://pitpanic.game/"
       }
     ],
-    "image": "/images/projects/pit-panic.jpg",
+    "image": "/images/projects/pit-panic.webp",
     "isInternal": true,
+    "achievement": {
+      "en": "Shipped a game of our own",
+      "cs": "Vydali jsme vlastní hru"
+    },
     "description": {
-      "en": "Roguelike platformer: escape a sinking Aztec temple—digging, hook, handcrafted levels, daily boards. [Play the demo](https://pitpanic.game/l/demo). Wishlist on Steam; ships July 2026.",
-      "cs": "Roguelike platformerka: útěk z potápějícího se chrámu—kopání, háček, levely, denní žebříčky. [Hrát demo](https://pitpanic.game/l/demo). Wishlist na Steamu; plná hra v červenci 2026."
+      "en": "Our own game, designed and built in-house: a roguelike platformer about escaping a sinking Aztec temple.\n\n- **Play.** Dig, use your hook, and work through handcrafted levels.\n- **Compete.** Daily leaderboards to measure yourself against.\n- **Release.** Out now on Steam.",
+      "cs": "Naše vlastní hra, navržená a vyrobená u nás: roguelike plošinovka o útěku z potápějícího se aztéckého chrámu.\n\n- **Hraní.** Kopejte, používejte hák a projděte ručně navržené levely.\n- **Soutěžení.** Denní žebříčky, ve kterých se můžete poměřit s ostatními.\n- **Vydání.** Hra už vyšla na Steamu."
     }
   }
 ]

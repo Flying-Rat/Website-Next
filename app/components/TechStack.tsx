@@ -47,23 +47,16 @@ export function TechStack() {
   const { t } = useTranslation();
 
   return (
-    <div className="py-10 md:py-12">
-      <div className="container mx-auto px-6">
-        <div className="flex items-center justify-center gap-4 text-[11px] uppercase tracking-[0.35em] text-[var(--color-text-subtle)]">
-          <span className="h-px w-10 bg-gradient-to-r from-transparent via-[var(--color-text)]/20 to-transparent" />
-          <span>{t('techStack.title')}</span>
-          <span className="h-px w-10 bg-gradient-to-r from-transparent via-[var(--color-text)]/20 to-transparent" />
-        </div>
-        <div className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs md:text-sm text-[var(--color-text-muted)] max-w-4xl mx-auto">
-          {technologies.map((tech, index) => (
-            <span key={tech} className="flex items-center gap-4">
-              <span className="hover:text-[var(--color-text)] transition-colors">{tech}</span>
-              {index < technologies.length - 1 && (
-                <span className="text-[var(--color-text-subtle)]/50">·</span>
-              )}
-            </span>
+    <div className="border-y border-line">
+      <div className="container grid gap-4 py-8 md:grid-cols-12 md:gap-8 md:py-10">
+        <h2 className="eyebrow md:col-span-2 md:pt-0.5">{t('techStack.title')}</h2>
+        <ul className="flex flex-wrap gap-x-5 gap-y-2 font-mono text-meta text-muted md:col-span-10">
+          {technologies.map((tech) => (
+            <li key={tech} className="transition-colors hover:text-ink">
+              {tech}
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
     </div>
   );

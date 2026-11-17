@@ -1,16 +1,24 @@
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
+import { Geist_Mono, Mona_Sans } from 'next/font/google';
 
 import { ThemeProvider } from './components/ThemeProvider';
 
 import './globals.css';
 
-const inter = Inter({
+// Mona Sans ships a width axis; headings use the wide cut (see `.font-display`).
+const monaSans = Mona_Sans({
   subsets: ['latin', 'latin-ext'],
   display: 'swap',
-  variable: '--font-inter',
+  variable: '--font-mona',
+  axes: ['wdth'],
+});
+
+const geistMono = Geist_Mono({
+  subsets: ['latin', 'latin-ext'],
+  display: 'swap',
+  variable: '--font-geist-mono',
 });
 
 export const viewport: Viewport = {
@@ -59,8 +67,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={inter.variable} suppressHydrationWarning>
-      <body className="bg-[var(--color-bg)] text-[var(--color-text)] antialiased transition-colors">
+    <html
+      lang="en"
+      className={`${monaSans.variable} ${geistMono.variable}`}
+      suppressHydrationWarning
+    >
+      <body className="bg-page text-ink antialiased">
         <ThemeProvider>{children}</ThemeProvider>
         <Analytics />
         <SpeedInsights />

@@ -3,31 +3,58 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-import { useTheme } from '../hooks/useTheme';
-import { ShapeSceneRuntime } from './ShapeScene/ShapeSceneRuntime';
+import { VIEW_MODES } from './ShapeScene/shapeSceneConstants';
+import { type SceneStats, ShapeSceneRuntime } from './ShapeScene/ShapeSceneRuntime';
 import { readSceneTheme } from './ShapeScene/shapeSceneTheme';
 import { useEasterEgg } from './ShapeScene/useEasterEgg';
 
 const EASTER_EMAIL = 'marty+levelup@flying-rat.studio';
 const RESIZE_DEBOUNCE_MS = 100;
+/**
+ * The limiter exists to skip frames on fast displays (every other one at 120 Hz), not
+ * to hold an exact rate. Display frames do not land on an exact grid, so it only asks
+ * for most of a target frame to have passed; demanding all of it would reject frames
+ * that arrive a hair early and halve the rate on an ordinary 60 Hz screen.
+ */
+const FRAME_SPACING = 0.6;
+
+const numberFormat = new Intl.NumberFormat('en-US');
+
+/** Everything here is read back from the renderer each half second, not typed in. */
+function formatStats(stats: SceneStats): string {
+  const parts = [
+    `${stats.drawCalls} draw call${stats.drawCalls === 1 ? '' : 's'}`,
+    `${numberFormat.format(stats.instances)} instances`,
+    `${numberFormat.format(stats.triangles)} tris`,
+  ];
+  if (stats.cpuMs > 0) {
+    parts.push(`${stats.cpuMs.toFixed(2)} ms CPU`);
+  }
+  return parts.join(' \u00B7 ');
+}
 
 /**
- * Decorative Three.js background for the About section. The scene itself lives in
- * `ShapeSceneRuntime`; this component only handles lifecycle, input, and visibility.
+ * Three.js viewport for the About section: an instanced terrain visitors can inspect
+ * through several render views. The scene itself lives in `ShapeSceneRuntime`; this
+ * component handles lifecycle, input, visibility and the controls.
  * Load it lazily (see `About`): it pulls in three.js.
  */
 export const ShapeScene = memo(function ShapeScene({
   label,
   shouldAnimate,
   className,
+  hudTarget,
 }: {
   label: string;
   shouldAnimate: boolean;
   className?: string;
+  /** Where to mount the view-mode controls; they are skipped until it exists. */
+  hudTarget?: HTMLElement | null;
 }) {
+  const statsRef = useRef<HTMLParagraphElement | null>(null);
+  const [mode, setMode] = useState(0);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const runtimeRef = useRef<ShapeSceneRuntime | null>(null);
-  const { resolvedTheme } = useTheme();
   const { active: easterActive, inputKeys, boostRef } = useEasterEgg(shouldAnimate);
   const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
 
@@ -44,8 +71,13 @@ export const ShapeScene = memo(function ShapeScene({
 
     const runtime = new ShapeSceneRuntime(container, {
       isMobile: window.innerWidth < 768 || 'ontouchstart' in window,
-      hoverEnabled: window.matchMedia('(hover: hover)').matches,
       theme: readSceneTheme(),
+      onModeChange: setMode,
+      onStats: (stats) => {
+        if (statsRef.current) {
+          statsRef.current.textContent = formatStats(stats);
+        }
+      },
     });
     runtimeRef.current = runtime;
 
@@ -61,8 +93,26 @@ export const ShapeScene = memo(function ShapeScene({
     });
     resizeObserver.observe(container);
 
+    // Follow the page theme by watching the class on <html> itself. The theme
+    // provider flips that class in an effect that runs after this component's, so
+    // re-reading the colours whenever the theme *value* changes would pick up the
+    // outgoing theme every time and leave the scene one switch behind.
+    const root = document.documentElement;
+    let isLight = root.classList.contains('light');
+    const themeObserver = new MutationObserver(() => {
+      const nowLight = root.classList.contains('light');
+      if (nowLight !== isLight) {
+        isLight = nowLight;
+        // Colors are swapped in place; the WebGL context is not rebuilt.
+        runtime.setTheme(readSceneTheme());
+        runtime.render();
+      }
+    });
+    themeObserver.observe(root, { attributes: true, attributeFilter: ['class'] });
+
     return () => {
       resizeObserver.disconnect();
+      themeObserver.disconnect();
       if (resizeTimer) {
         clearTimeout(resizeTimer);
       }
@@ -70,16 +120,6 @@ export const ShapeScene = memo(function ShapeScene({
       runtimeRef.current = null;
     };
   }, []);
-
-  // Theme changes swap colors in place instead of rebuilding the WebGL context.
-  useEffect(() => {
-    const runtime = runtimeRef.current;
-    if (!runtime) {
-      return;
-    }
-    runtime.setTheme(readSceneTheme());
-    runtime.render();
-  }, [resolvedTheme]);
 
   // Render loop, paused when hidden or scrolled out of view.
   useEffect(() => {
@@ -95,7 +135,7 @@ export const ShapeScene = memo(function ShapeScene({
       return;
     }
 
-    const frameInterval = runtime.isMobile ? 1000 / 30 : 1000 / 60;
+    const minFrameMs = (1000 / (runtime.isMobile ? 30 : 60)) * FRAME_SPACING;
     let running = false;
     let visible = document.visibilityState === 'visible';
     let inView = true;
@@ -107,10 +147,10 @@ export const ShapeScene = memo(function ShapeScene({
         return;
       }
       const elapsed = time - lastFrameTime;
-      if (elapsed >= frameInterval) {
+      if (elapsed >= minFrameMs) {
         lastFrameTime = time;
         runtime.boost = boostRef.current;
-        runtime.update(time, elapsed);
+        runtime.update(elapsed);
       }
       animationFrame = requestAnimationFrame(animate);
     };
@@ -144,6 +184,20 @@ export const ShapeScene = memo(function ShapeScene({
     );
     intersection.observe(container);
 
+    updateRunning();
+
+    const stopLoop = () => {
+      running = false;
+      cancelAnimationFrame(animationFrame);
+      document.removeEventListener('visibilitychange', handleVisibility);
+      intersection.disconnect();
+    };
+
+    // The terrain only follows a real cursor: touch input would just make it twitch.
+    if (!window.matchMedia('(hover: hover)').matches) {
+      return stopLoop;
+    }
+
     // The container rect is cached and only re-read after scroll or resize,
     // so pointer events don't force layout.
     let rect: DOMRect | null = null;
@@ -162,38 +216,65 @@ export const ShapeScene = memo(function ShapeScene({
     };
     const handlePointerLeave = () => runtime.clearPointer();
 
-    window.addEventListener('pointermove', handlePointerMove);
-    window.addEventListener('pointerleave', handlePointerLeave);
+    // `pointerleave` does not bubble, so it has to be heard on the root element to
+    // know when the cursor has left the page.
+    const root = document.documentElement;
+    window.addEventListener('pointermove', handlePointerMove, { passive: true });
+    root.addEventListener('pointerleave', handlePointerLeave);
     window.addEventListener('scroll', invalidateRect, { passive: true });
     window.addEventListener('resize', invalidateRect, { passive: true });
 
-    updateRunning();
-
     return () => {
-      running = false;
-      cancelAnimationFrame(animationFrame);
-      document.removeEventListener('visibilitychange', handleVisibility);
-      intersection.disconnect();
+      stopLoop();
       window.removeEventListener('pointermove', handlePointerMove);
-      window.removeEventListener('pointerleave', handlePointerLeave);
+      root.removeEventListener('pointerleave', handlePointerLeave);
       window.removeEventListener('scroll', invalidateRect);
       window.removeEventListener('resize', invalidateRect);
     };
   }, [shouldAnimate, boostRef]);
 
+  const selectMode = (next: number) => {
+    const runtime = runtimeRef.current;
+    if (!runtime) {
+      return;
+    }
+    const still = !shouldAnimate || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    runtime.setMode(next, true, still);
+    if (still) {
+      runtime.render();
+    }
+  };
+
   return (
-    <div
-      ref={containerRef}
-      className={className ?? 'relative h-full w-full overflow-hidden'}
-      aria-label={label}
-      role="img"
-    >
+    <div className={className ?? 'relative h-full w-full overflow-hidden'}>
+      <div ref={containerRef} className="absolute inset-0" aria-label={label} role="img" />
+      {hudTarget
+        ? createPortal(
+            <div className="scene-hud">
+              <div className="scene-modes" role="group" aria-label="Render view">
+                {VIEW_MODES.map((name, index) => (
+                  <button
+                    key={name}
+                    type="button"
+                    className="scene-mode"
+                    aria-pressed={mode === index}
+                    onClick={() => selectMode(index)}
+                  >
+                    {name}
+                  </button>
+                ))}
+              </div>
+              <p ref={statsRef} className="scene-stats" aria-hidden="true" />
+            </div>,
+            hudTarget,
+          )
+        : null}
       {easterActive && portalTarget
         ? createPortal(<div className="crt-overlay" aria-hidden="true" />, portalTarget)
         : null}
       {easterActive && (
         <div className="absolute bottom-4 left-4 z-10 max-w-[280px] rounded-2xl border border-white/10 bg-black/70 px-4 py-3 text-[12px] leading-relaxed text-zinc-200 shadow-[0_0_18px_rgba(250,85,101,0.35)] backdrop-blur">
-          <p className="font-semibold uppercase tracking-[0.2em] text-white/80">Hey gamer</p>
+          <p className="font-semibold tracking-[0.2em] text-white/80 uppercase">Hey gamer</p>
           <p className="mt-1 text-zinc-300/90">
             Sounds like you know your way around. Say hi at{' '}
             <a className="text-white hover:text-white/90" href={`mailto:${EASTER_EMAIL}`}>
@@ -205,7 +286,7 @@ export const ShapeScene = memo(function ShapeScene({
       )}
       {inputKeys.length > 0 && (
         <div className="absolute top-3 right-3 z-10">
-          <div className="flex items-center gap-1 rounded-full border border-white/10 bg-black/60 px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-zinc-300 backdrop-blur">
+          <div className="flex items-center gap-1 rounded-full border border-white/10 bg-black/60 px-3 py-1.5 text-[10px] tracking-[0.2em] text-zinc-300 uppercase backdrop-blur">
             {inputKeys.map((entry) => (
               <span key={entry.id}>{entry.key.replace('arrow', '')}</span>
             ))}

@@ -1,23 +1,26 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
+import type { ReactNode } from 'react';
 
-import { ContactSection } from '../components/ContactSection';
+import { ContactSection, FOUNDER } from '../components/ContactSection';
 import {
-  CalendarIcon,
   CheckIcon,
   CopyIcon,
-  DocumentIcon,
+  CrossIcon,
   DownloadIcon,
   ExternalLinkIcon,
-  MailIcon,
-  MapPinIcon,
-  UsersIcon,
 } from '../components/icons';
 import { SecondaryPageShell } from '../components/SecondaryPageShell';
+import { projects } from '../data/projects';
 import { useClipboard } from '../hooks/useClipboard';
 import { useTranslation } from '../i18n';
+
+const PRESS_EMAIL = 'marty+press@flying-rat.studio';
+const LOGO_ARCHIVE = '/press-kit/flying-rat-logos.zip';
+const HQ_MAP_URL = 'https://maps.app.goo.gl/gDb9wdRiCzYyqPgD8';
+// Storefront-style entries that are not platforms a journalist would list.
+const NON_PLATFORMS = new Set(['Demo', 'Website']);
 
 const logos = [
   {
@@ -75,197 +78,223 @@ const brandColors = [
   { name: 'white', hex: '#FFFFFF' },
 ];
 
-function PressAboutSection() {
-  const { t } = useTranslation();
-  const { copied: copiedBoilerplate, copy: copyBoilerplate } = useClipboard<string>();
-
-  const handleCopy = async () => {
-    await copyBoilerplate('boilerplate', t('pressKit.about.boilerplate'));
-  };
-
+function PressSection({
+  id,
+  title,
+  description,
+  children,
+}: {
+  id: string;
+  title: string;
+  description?: string;
+  children: ReactNode;
+}) {
   return (
-    <section id="about" className="mb-16 scroll-mt-28">
-      <h2 className="text-2xl font-semibold mb-6">{t('pressKit.about.title')}</h2>
-      <div className="p-6 surface-card">
-        <p className="text-[var(--color-text-secondary)] mb-4">{t('pressKit.about.boilerplate')}</p>
-        <button
-          type="button"
-          onClick={handleCopy}
-          className="inline-flex items-center gap-2 px-4 py-2 text-sm bg-[var(--color-surface-light)] hover:bg-[var(--color-surface-lighter)] rounded-lg transition-colors cursor-pointer"
-        >
-          {copiedBoilerplate === 'boilerplate' ? (
-            <>
-              <CheckIcon className="size-4 text-green-500" />
-              {t('pressKit.about.copied')}
-            </>
-          ) : (
-            <>
-              <CopyIcon className="size-4" />
-              {t('pressKit.about.copyButton')}
-            </>
-          )}
-        </button>
+    <section
+      id={id}
+      className="grid scroll-mt-24 gap-6 border-t border-line py-12 md:py-16 lg:grid-cols-12 lg:gap-8"
+    >
+      <div className="lg:col-span-4">
+        <div className="lg:sticky lg:top-28">
+          <h2 className="font-display text-2xl font-semibold md:text-3xl">{title}</h2>
+          {description && <p className="mt-3 max-w-sm text-pretty text-muted">{description}</p>}
+        </div>
       </div>
+      <div className="min-w-0 lg:col-span-8">{children}</div>
     </section>
   );
 }
 
-function PressFactSheetSection({ email }: { email: string }) {
+function PressAboutSection() {
+  const { t } = useTranslation();
+  const { copied, copy } = useClipboard<string>();
+
+  return (
+    <PressSection id="about" title={t('pressKit.about.title')}>
+      <p className="text-lg leading-relaxed text-pretty text-ink md:text-xl md:leading-relaxed">
+        {t('pressKit.about.boilerplate')}
+      </p>
+      <button
+        type="button"
+        onClick={() => copy('boilerplate', t('pressKit.about.boilerplate'))}
+        className="btn btn-sm btn-secondary mt-6"
+      >
+        {copied === 'boilerplate' ? (
+          <>
+            <CheckIcon className="size-4 text-online-ink" />
+            {t('pressKit.about.copied')}
+          </>
+        ) : (
+          <>
+            <CopyIcon className="size-4" />
+            {t('pressKit.about.copyButton')}
+          </>
+        )}
+      </button>
+    </PressSection>
+  );
+}
+
+function FactRow({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="grid gap-1 border-b border-line py-3.5 sm:grid-cols-[11rem_1fr] sm:items-baseline sm:gap-6">
+      <dt className="eyebrow">{label}</dt>
+      <dd className="min-w-0 break-words text-ink">{children}</dd>
+    </div>
+  );
+}
+
+function PressFactSheetSection() {
   const { t } = useTranslation();
   return (
-    <section id="fact-sheet" className="mb-16 scroll-mt-28">
-      <h2 className="text-2xl font-semibold mb-6">{t('pressKit.factSheet.title')}</h2>
-      <div className="p-6 surface-card">
-        <dl className="grid gap-6 md:grid-cols-2">
-          <div className="flex gap-3">
-            <CalendarIcon className="size-4 mt-1 text-[var(--color-text-muted)]" />
-            <div>
-              <dt className="text-xs uppercase tracking-wide text-[var(--color-text-muted)]">
-                {t('pressKit.factSheet.foundedLabel')}
-              </dt>
-              <dd className="text-[var(--color-text-secondary)]">
-                {t('pressKit.factSheet.foundedValue')}
-              </dd>
-            </div>
-          </div>
-          <div className="flex gap-3">
-            <UsersIcon className="size-4 mt-1 text-[var(--color-text-muted)]" />
-            <div>
-              <dt className="text-xs uppercase tracking-wide text-[var(--color-text-muted)]">
-                {t('pressKit.factSheet.teamSizeLabel')}
-              </dt>
-              <dd className="text-[var(--color-text-secondary)]">
-                {t('pressKit.factSheet.teamSizeValue')}
-              </dd>
-            </div>
-          </div>
-          <div className="flex gap-3">
-            <MapPinIcon className="size-4 mt-1 text-[var(--color-text-muted)]" />
-            <div>
-              <dt className="text-xs uppercase tracking-wide text-[var(--color-text-muted)]">
-                {t('pressKit.factSheet.hqLabel')}
-              </dt>
-              <dd className="text-[var(--color-text-secondary)]">
-                <a
-                  className="inline-flex items-baseline gap-2 underline underline-offset-4"
-                  href="https://maps.app.goo.gl/gDb9wdRiCzYyqPgD8"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {t('pressKit.factSheet.hqValue')}
-                  <ExternalLinkIcon className="size-3.5 opacity-60 translate-y-[1px]" />
-                </a>
-              </dd>
-            </div>
-          </div>
-          <div className="flex gap-3">
-            <MailIcon className="size-4 mt-1 text-[var(--color-text-muted)]" />
-            <div>
-              <dt className="text-xs uppercase tracking-wide text-[var(--color-text-muted)]">
-                {t('pressKit.factSheet.contactLabel')}
-              </dt>
-              <dd className="text-[var(--color-text-secondary)]">
-                <a className="underline underline-offset-4" href={`mailto:${email}`}>
-                  {email}
-                </a>
-              </dd>
-            </div>
-          </div>
-          <div className="flex gap-3 md:col-span-2">
-            <DocumentIcon className="size-4 mt-1 text-[var(--color-text-muted)]" />
-            <div>
-              <dt className="text-xs uppercase tracking-wide text-[var(--color-text-muted)]">
-                {t('pressKit.factSheet.legalEntityLabel')}
-              </dt>
-              <dd className="text-[var(--color-text-secondary)] space-y-1">
-                <span className="block">{t('pressKit.factSheet.legalEntityName')}</span>
-                <span className="block">{t('pressKit.factSheet.legalEntityIds')}</span>
-                <span className="block">{t('pressKit.factSheet.legalEntityAddress')}</span>
-                <span className="block">{t('pressKit.factSheet.legalEntityRegistry')}</span>
-              </dd>
-            </div>
-          </div>
-        </dl>
-      </div>
-    </section>
+    <PressSection id="fact-sheet" title={t('pressKit.factSheet.title')}>
+      <dl className="border-t border-line">
+        <FactRow label={t('pressKit.factSheet.foundedLabel')}>
+          {t('pressKit.factSheet.foundedValue')}
+        </FactRow>
+        <FactRow label={t('pressKit.factSheet.teamSizeLabel')}>
+          {t('pressKit.factSheet.teamSizeValue')}
+        </FactRow>
+        <FactRow label={t('pressKit.factSheet.hqLabel')}>
+          <a
+            className="text-link inline-flex items-baseline gap-1.5"
+            href={HQ_MAP_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {t('pressKit.factSheet.hqValue')}
+            <ExternalLinkIcon className="size-3 shrink-0 text-subtle" />
+          </a>
+        </FactRow>
+        <FactRow label={t('pressKit.factSheet.contactLabel')}>
+          <a className="text-link -my-1.5 inline-block py-1.5" href={`mailto:${PRESS_EMAIL}`}>
+            {PRESS_EMAIL}
+          </a>
+        </FactRow>
+        <FactRow label={t('pressKit.factSheet.legalEntityLabel')}>
+          <span className="block">{t('pressKit.factSheet.legalEntityName')}</span>
+          <span className="mt-1 block text-md text-muted">
+            {t('pressKit.factSheet.legalEntityIds')}
+          </span>
+          <span className="block text-md text-muted">
+            {t('pressKit.factSheet.legalEntityAddress')}
+          </span>
+          <span className="block text-md text-muted">
+            {t('pressKit.factSheet.legalEntityRegistry')}
+          </span>
+        </FactRow>
+      </dl>
+    </PressSection>
+  );
+}
+
+function PressWorkSection() {
+  const { t } = useTranslation();
+  return (
+    <PressSection
+      id="work"
+      title={t('pressKit.work.title')}
+      description={t('pressKit.work.description')}
+    >
+      <ul className="border-t border-line">
+        {projects.map((project) => {
+          const platforms = project.platforms
+            .map((platform) => platform.name)
+            .filter((name) => !NON_PLATFORMS.has(name));
+          return (
+            <li
+              key={project.id}
+              className="grid gap-x-6 gap-y-1 border-b border-line py-3.5 sm:grid-cols-2 sm:items-baseline md:grid-cols-[1.2fr_1fr_1.1fr]"
+            >
+              <span className="font-medium text-ink">{project.title}</span>
+              <span className="text-muted">{project.studio}</span>
+              <span className="font-mono text-xs text-subtle sm:col-span-2 md:col-span-1 md:text-right">
+                {platforms.join(' · ')}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+    </PressSection>
+  );
+}
+
+function DownloadLink({ href, label }: { href: string; label: string }) {
+  return (
+    <a
+      href={href}
+      download
+      // A proper button on phones; a quiet text link (with a padded hit area) from sm up.
+      className="flex h-9 items-center gap-1.5 rounded-full border border-line px-3 text-muted transition-colors hover:text-ink sm:-my-2 sm:h-auto sm:gap-1 sm:rounded-none sm:border-0 sm:px-0 sm:py-2"
+    >
+      <DownloadIcon className="size-3.5" />
+      {label}
+    </a>
   );
 }
 
 function PressLogosSection() {
   const { t } = useTranslation();
   return (
-    <section id="logos" className="mb-16 scroll-mt-28">
-      <h2 className="text-2xl font-semibold mb-6">{t('pressKit.logos.title')}</h2>
-      <p className="text-[var(--color-text-secondary)] mb-8">{t('pressKit.logos.description')}</p>
-
-      {logos.map((logoGroup) => (
-        <div key={logoGroup.name} className="mb-12">
-          <h3 className="text-lg font-medium mb-4 capitalize">
-            {t(`pressKit.logos.${logoGroup.name}`)}
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {logoGroup.variants.map((variant) => (
-              <div
-                key={variant.png}
-                className="card-hover border border-[var(--color-border)] rounded-xl overflow-hidden hover:border-[var(--color-border-hover)]"
-              >
+    <PressSection
+      id="logos"
+      title={t('pressKit.logos.title')}
+      description={t('pressKit.logos.description')}
+    >
+      <div className="space-y-10">
+        {logos.map((logoGroup) => (
+          <div key={logoGroup.name}>
+            <h3 className="eyebrow mb-4">{t(`pressKit.logos.${logoGroup.name}`)}</h3>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+              {logoGroup.variants.map((variant) => (
                 <div
-                  className={`${variant.bgClass} p-8 flex items-center justify-center min-h-[160px]`}
+                  key={variant.png}
+                  className="flex overflow-hidden rounded-2xl border border-line sm:block"
                 >
-                  <Image
-                    src={`/press-kit/company/${variant.png}`}
-                    alt={`Flying Rat ${t(`pressKit.logos.${logoGroup.name}`)} - ${t(`pressKit.logoColors.${variant.color}`)}`}
-                    width={logoGroup.name === 'horizontal' ? 200 : 120}
-                    height={logoGroup.name === 'horizontal' ? 50 : 120}
-                    className="max-w-full h-auto"
-                  />
-                </div>
-                <div className="p-4 flex items-center justify-between bg-[var(--color-surface)]">
-                  <span className="text-sm text-[var(--color-text-secondary)]">
-                    {t(`pressKit.logoColors.${variant.color}`)}
-                  </span>
-                  <div className="flex items-center gap-3">
-                    <Link
-                      href={`/press-kit/company/${variant.svg}`}
-                      download
-                      className="flex items-center gap-1.5 text-sm text-accent hover:text-accent/80 transition-colors"
-                    >
-                      <DownloadIcon className="size-4" />
-                      {t('pressKit.formats.svg')}
-                    </Link>
-                    <Link
-                      href={`/press-kit/company/${variant.png}`}
-                      download
-                      className="flex items-center gap-1.5 text-sm text-accent hover:text-accent/80 transition-colors"
-                    >
-                      <DownloadIcon className="size-4" />
-                      {t('pressKit.formats.png')}
-                    </Link>
+                  <div
+                    className={`${variant.bgClass} flex aspect-[4/3] w-[42%] shrink-0 items-center justify-center p-4 sm:w-auto sm:p-6`}
+                  >
+                    <Image
+                      src={`/press-kit/company/${variant.png}`}
+                      alt={`Flying Rat Studio ${t(`pressKit.logos.${logoGroup.name}`)} - ${t(`pressKit.logoColors.${variant.color}`)}`}
+                      width={logoGroup.name === 'horizontal' ? 200 : 110}
+                      height={logoGroup.name === 'horizontal' ? 53 : 130}
+                      className="h-auto max-h-full max-w-full"
+                    />
+                  </div>
+                  <div className="flex min-w-0 flex-1 flex-col justify-center gap-2.5 border-l border-line bg-surface px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:border-t sm:border-l-0">
+                    <span className="text-sm text-ink">
+                      {t(`pressKit.logoColors.${variant.color}`)}
+                    </span>
+                    <div className="flex items-center gap-2 font-mono text-xs sm:gap-4">
+                      <DownloadLink
+                        href={`/press-kit/company/${variant.svg}`}
+                        label={t('pressKit.formats.svg')}
+                      />
+                      <DownloadLink
+                        href={`/press-kit/company/${variant.png}`}
+                        label={t('pressKit.formats.png')}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
-
-      <div className="mt-8 p-6 surface-card flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h3 className="font-medium mb-1">{t('pressKit.logos.downloadAll')}</h3>
-          <p className="text-sm text-[var(--color-text-muted)]">
-            {t('pressKit.logos.downloadAllDesc')}
-          </p>
-        </div>
-        <Link
-          href="/press-kit/flying-rat-logos.zip"
-          download
-          className="inline-flex items-center gap-2 px-6 py-3 bg-accent hover:bg-accent-dark text-white font-semibold rounded-xl transition-all hover:scale-105 active:scale-98"
-        >
-          <DownloadIcon className="size-5" />
-          {t('pressKit.formats.zip')}
-        </Link>
+        ))}
       </div>
-    </section>
+
+      <div className="mt-10 flex flex-col items-start justify-between gap-4 border-t border-line pt-6 sm:flex-row sm:items-center">
+        <div>
+          <h3 className="font-medium">{t('pressKit.logos.downloadAll')}</h3>
+          <p className="mt-1 text-sm text-muted">{t('pressKit.logos.downloadAllDesc')}</p>
+        </div>
+        <a href={LOGO_ARCHIVE} download className="btn btn-sm btn-secondary shrink-0">
+          <DownloadIcon className="size-4" />
+          {t('pressKit.formats.zip')}
+        </a>
+      </div>
+    </PressSection>
   );
 }
 
@@ -273,110 +302,150 @@ function PressColorsSection() {
   const { t } = useTranslation();
   const { copied: copiedColor, copy: copyColor } = useClipboard<string>();
 
-  const handleColorCopy = async (hex: string) => {
-    await copyColor(hex);
-  };
-
   return (
-    <section id="colors" className="mb-16 scroll-mt-28">
-      <h2 className="text-2xl font-semibold mb-6">{t('pressKit.colors.title')}</h2>
-      <p className="text-[var(--color-text-secondary)] mb-6">{t('pressKit.colors.description')}</p>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <PressSection
+      id="colors"
+      title={t('pressKit.colors.title')}
+      description={t('pressKit.colors.description')}
+    >
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {brandColors.map((color) => (
           <button
             key={color.hex}
             type="button"
-            onClick={() => handleColorCopy(color.hex)}
-            className="card-hover group p-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] hover:border-[var(--color-border-hover)] cursor-pointer"
+            onClick={() => copyColor(color.hex)}
+            className="group cursor-pointer text-left"
           >
-            <div
-              className="w-full aspect-square rounded-lg mb-3 border border-[var(--color-border)]"
+            <span
+              className="block aspect-[4/3] rounded-2xl border border-line-strong transition-transform duration-300 ease-smooth group-hover:-translate-y-0.5"
               style={{ backgroundColor: color.hex }}
             />
-            <p className="font-medium text-sm">{t(`pressKit.colors.${color.name}`)}</p>
-            <p className="text-xs text-[var(--color-text-muted)] font-mono">
+            <span className="mt-3 block text-sm font-medium">
+              {t(`pressKit.colors.${color.name}`)}
+            </span>
+            <span className="mt-0.5 block font-mono text-xs text-muted">
               {copiedColor === color.hex ? t('pressKit.colors.copied') : color.hex}
-            </p>
+            </span>
           </button>
         ))}
       </div>
-    </section>
+    </PressSection>
   );
 }
+
+function RuleList({
+  title,
+  tone,
+  children,
+}: {
+  title: string;
+  tone: 'do' | 'dont';
+  children: ReactNode;
+}) {
+  return (
+    <div>
+      <h3
+        className={`eyebrow flex items-center gap-2 ${tone === 'do' ? 'text-online-ink' : 'text-accent-ink'}`}
+      >
+        {tone === 'do' ? <CheckIcon className="size-3.5" /> : <CrossIcon className="size-3.5" />}
+        {title}
+      </h3>
+      <ul className="mt-3 border-t border-line">{children}</ul>
+    </div>
+  );
+}
+
+function RuleItem({ children }: { children: ReactNode }) {
+  return <li className="border-b border-line py-3 text-md text-secondary">{children}</li>;
+}
+
+const clearSpaceMarks = [
+  'left-1/2 top-0 h-6 -translate-x-1/2 md:h-8',
+  'bottom-0 left-1/2 h-6 -translate-x-1/2 md:h-8',
+  'left-0 top-1/2 w-6 -translate-y-1/2 md:w-8',
+  'right-0 top-1/2 w-6 -translate-y-1/2 md:w-8',
+];
 
 function PressGuidelinesSection() {
   const { t } = useTranslation();
   return (
-    <section id="guidelines" className="mb-16 scroll-mt-28">
-      <h2 className="text-2xl font-semibold mb-6">{t('pressKit.guidelines.title')}</h2>
-      <p className="text-[var(--color-text-secondary)] mb-6">
-        {t('pressKit.clearSpace.description')}
-      </p>
-      <div className="space-y-6">
-        <div className="p-6 surface-card">
-          <h3 className="font-medium mb-3 text-green-500">{t('pressKit.guidelines.do.title')}</h3>
-          <ul className="space-y-2 text-[var(--color-text-secondary)]">
-            {(['item1', 'item2', 'item3', 'item4'] as const).map((item) => (
-              <li key={item} className="flex items-center gap-2">
-                <span className="text-green-500 shrink-0">✓</span>
-                {t(`pressKit.guidelines.do.${item}`)}
-              </li>
+    <PressSection id="guidelines" title={t('pressKit.guidelines.title')}>
+      <figure>
+        <div className="flex items-center justify-center rounded-2xl border border-line bg-white p-8 md:p-12">
+          <div className="relative border border-dashed border-neutral-300 p-6 md:p-8">
+            <Image
+              src="/press-kit/company/RGB_PNG_fr_horizontal_black.png"
+              alt=""
+              width={240}
+              height={64}
+              className="h-auto w-44 md:w-60"
+            />
+            {clearSpaceMarks.map((position) => (
+              <span
+                key={position}
+                aria-hidden="true"
+                className={`absolute flex items-center justify-center font-mono text-[10px] text-neutral-400 ${position}`}
+              >
+                F
+              </span>
             ))}
-          </ul>
+          </div>
         </div>
-        <div className="p-6 surface-card">
-          <h3 className="font-medium mb-3 text-red-500">{t('pressKit.guidelines.dont.title')}</h3>
-          <ul className="space-y-2 text-[var(--color-text-secondary)]">
-            {(['item1', 'item2', 'item3', 'item4', 'item5', 'item6'] as const).map((item) => (
-              <li key={item} className="flex items-center gap-2">
-                <span className="text-red-500 shrink-0">✗</span>
-                {t(`pressKit.guidelines.dont.${item}`)}
-              </li>
-            ))}
-          </ul>
-        </div>
+        <figcaption className="mt-4 max-w-2xl text-pretty text-muted">
+          <span className="font-medium text-ink">{t('pressKit.clearSpace.title')}.</span>{' '}
+          {t('pressKit.clearSpace.description')}
+        </figcaption>
+      </figure>
+
+      <div className="mt-12 grid gap-10 sm:grid-cols-2">
+        <RuleList title={t('pressKit.guidelines.do.title')} tone="do">
+          {(['item1', 'item2', 'item3', 'item4'] as const).map((item) => (
+            <RuleItem key={item}>{t(`pressKit.guidelines.do.${item}`)}</RuleItem>
+          ))}
+        </RuleList>
+        <RuleList title={t('pressKit.guidelines.dont.title')} tone="dont">
+          {(['item1', 'item2', 'item3', 'item4', 'item5', 'item6'] as const).map((item) => (
+            <RuleItem key={item}>{t(`pressKit.guidelines.dont.${item}`)}</RuleItem>
+          ))}
+        </RuleList>
       </div>
-    </section>
+    </PressSection>
   );
 }
 
 function PressBrandNameSection() {
   const { t } = useTranslation();
   return (
-    <section id="brand-name" className="mb-16 scroll-mt-28">
-      <h2 className="text-2xl font-semibold mb-6">{t('pressKit.brandName.title')}</h2>
-      <p className="text-[var(--color-text-secondary)] mb-6">
-        {t('pressKit.brandName.description')}
+    <PressSection
+      id="brand-name"
+      title={t('pressKit.brandName.title')}
+      description={t('pressKit.brandName.description')}
+    >
+      <p className="eyebrow flex items-center gap-2 text-online-ink">
+        <CheckIcon className="size-3.5" />
+        {t('pressKit.brandName.correct')}
       </p>
-      <div className="space-y-6">
-        <div className="p-6 surface-card">
-          <h3 className="font-medium mb-3 text-green-500">{t('pressKit.brandName.correct')}</h3>
-          <ul className="space-y-2 text-[var(--color-text-secondary)]">
-            <li className="flex items-center gap-2">
-              <span className="text-green-500 shrink-0">✓</span>
-              <span className="font-semibold">{t('pressKit.brandName.examples.right1')}</span>
-            </li>
-          </ul>
-        </div>
-        <div className="p-6 surface-card">
-          <h3 className="font-medium mb-3 text-red-500">{t('pressKit.brandName.incorrect')}</h3>
-          <ul className="space-y-2 text-[var(--color-text-secondary)]">
-            {(['wrong1', 'wrong2', 'wrong3', 'wrong4'] as const).map((key) => (
-              <li key={key} className="flex items-center gap-2">
-                <span className="text-red-500 shrink-0">✗</span>
-                <s>{t(`pressKit.brandName.examples.${key}`)}</s>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    </section>
+      <p className="font-display mt-3 text-3xl font-semibold md:text-5xl">
+        {t('pressKit.brandName.examples.right1')}
+      </p>
+
+      <p className="eyebrow mt-10 flex items-center gap-2 text-accent-ink">
+        <CrossIcon className="size-3.5" />
+        {t('pressKit.brandName.incorrect')}
+      </p>
+      <ul className="mt-3 flex flex-wrap gap-x-8 gap-y-2 text-lg text-subtle md:text-xl">
+        {(['wrong1', 'wrong2', 'wrong3', 'wrong4'] as const).map((key) => (
+          <li key={key}>
+            <s>{t(`pressKit.brandName.examples.${key}`)}</s>
+          </li>
+        ))}
+      </ul>
+    </PressSection>
   );
 }
 
 export function PressKitClient() {
   const { t } = useTranslation();
-  const email = 'marty+press@flying-rat.studio';
   const pressNavItems = [
     { id: 'about', label: t('pressKit.nav.about') },
     { id: 'fact-sheet', label: t('pressKit.nav.facts') },
@@ -388,25 +457,40 @@ export function PressKitClient() {
 
   return (
     <SecondaryPageShell navItems={pressNavItems}>
-      <div className="container mx-auto px-6">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl md:text-5xl font-semibold mb-4">{t('pressKit.title')}</h1>
-          <p className="text-lg text-[var(--color-text-secondary)] mb-12">
-            {t('pressKit.subtitle')}
-          </p>
-          <PressAboutSection />
-          <PressFactSheetSection email={email} />
-          <PressLogosSection />
-          <PressColorsSection />
-          <PressGuidelinesSection />
-          <PressBrandNameSection />
+      <div className="container">
+        <div className="grid gap-8 pt-6 pb-12 md:pt-10 md:pb-16 lg:grid-cols-12 lg:items-end lg:gap-8">
+          <div className="lg:col-span-7">
+            <p className="eyebrow">Flying Rat Studio</p>
+            <h1 className="section-title cta-title mt-4">{t('pressKit.title')}</h1>
+            <p className="section-subtitle mt-5 max-w-xl">{t('pressKit.subtitle')}</p>
+          </div>
+          <div className="flex flex-col items-start gap-3 lg:col-span-5 lg:items-end">
+            <a href={LOGO_ARCHIVE} download className="btn btn-primary">
+              <DownloadIcon className="size-4" />
+              {t('pressKit.logos.downloadAll')}
+            </a>
+            <a
+              href={`mailto:${PRESS_EMAIL}`}
+              className="link-underline -my-2 [background-position:0_calc(100%-0.5rem)] py-2 font-mono text-meta text-muted hover:text-ink"
+            >
+              {PRESS_EMAIL}
+            </a>
+          </div>
         </div>
+
+        <PressAboutSection />
+        <PressFactSheetSection />
+        <PressWorkSection />
+        <PressLogosSection />
+        <PressColorsSection />
+        <PressGuidelinesSection />
+        <PressBrandNameSection />
       </div>
       <ContactSection
         titleKey="pressKit.contact.title"
         descriptionKey="pressKit.contact.description"
-        martyAltKey="pressKit.martyAlt"
-        email={email}
+        person={FOUNDER}
+        email={PRESS_EMAIL}
       />
     </SecondaryPageShell>
   );

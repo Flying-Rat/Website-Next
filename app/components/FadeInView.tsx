@@ -1,83 +1,51 @@
 'use client';
 
 import type { CSSProperties, ReactNode } from 'react';
-import { useEffect, useReducer, useRef } from 'react';
+import { useRef } from 'react';
 
 import { useAnimationsEnabled } from '../hooks/useAnimationsEnabled';
+import { useInView } from '../hooks/useInView';
 
-type Animation = 'up' | 'left' | 'right' | 'scale';
+type Animation = 'up' | 'left' | 'right';
 
-interface FadeInViewProps {
-  children: ReactNode;
-  animation?: Animation;
-  delay?: number;
-  margin?: string;
-  className?: string;
-  /** Animate transform only — skips opacity so backdrop-filter children work during the slide */
-  slideOnly?: boolean;
-}
-
-const transforms: Record<Animation, string> = {
-  up: 'translateY(30px)',
-  left: 'translateX(-40px)',
-  right: 'translateX(40px)',
-  scale: 'translateY(40px) scale(0.98)',
+const offsets: Record<Animation, string> = {
+  up: 'translateY(20px)',
+  left: 'translateX(-24px)',
+  right: 'translateX(24px)',
 };
 
+/**
+ * Eases its children in the first time they scroll into view. The motion itself
+ * is the `.reveal` class in globals.css; this only decides when to release it.
+ */
 export function FadeInView({
   children,
   animation = 'up',
   delay = 0,
   margin = '-100px',
   className = '',
-  slideOnly = false,
-}: FadeInViewProps) {
-  const ref = useRef<HTMLDivElement | null>(null);
+}: {
+  children: ReactNode;
+  animation?: Animation;
+  /** Seconds to wait after coming into view. */
+  delay?: number;
+  /** Root margin for the in-view test; negative values wait until it is well inside. */
+  margin?: string;
+  className?: string;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
   const shouldAnimate = useAnimationsEnabled();
-  const [isVisible, show] = useReducer(() => true, !shouldAnimate);
-  const hasAnimated = useRef(false);
-
-  useEffect(() => {
-    const element = ref.current;
-    let timeoutId: ReturnType<typeof setTimeout> | undefined;
-
-    if (!shouldAnimate || hasAnimated.current || !element) {
-      queueMicrotask(show);
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting && !hasAnimated.current) {
-          hasAnimated.current = true;
-          timeoutId = setTimeout(show, delay * 1000);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: margin },
-    );
-
-    observer.observe(element);
-    return () => {
-      if (timeoutId !== undefined) {
-        clearTimeout(timeoutId);
-      }
-      observer.disconnect();
-    };
-  }, [shouldAnimate, margin, delay]);
-
-  const style: CSSProperties = shouldAnimate
-    ? {
-        opacity: slideOnly ? 1 : isVisible ? 1 : 0,
-        transform: isVisible ? 'none' : transforms[animation],
-        transition: slideOnly
-          ? 'transform 0.7s cubic-bezier(0.16, 1, 0.3, 1)'
-          : 'opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1)',
-      }
-    : {};
+  const seen = useInView(ref, { once: true, rootMargin: margin });
 
   return (
-    <div ref={ref as React.Ref<HTMLDivElement>} className={className} style={style}>
+    <div
+      ref={ref}
+      className={`reveal ${className}`}
+      data-pending={shouldAnimate && !seen ? '' : undefined}
+      style={
+        { '--reveal-from': offsets[animation], '--reveal-delay': `${delay}s` } as CSSProperties
+      }
+    >
       {children}
     </div>
   );
