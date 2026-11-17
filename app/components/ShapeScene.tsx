@@ -247,10 +247,15 @@ export const ShapeScene = memo(function ShapeScene({
 
   return (
     <div className={className ?? 'relative h-full w-full overflow-hidden'}>
-      <div ref={containerRef} className="absolute inset-0" aria-label={label} role="img" />
+      <div
+        ref={containerRef}
+        className="scene-enter absolute inset-0"
+        aria-label={label}
+        role="img"
+      />
       {hudTarget
         ? createPortal(
-            <div className="scene-hud">
+            <div className="scene-hud scene-enter-late">
               <div className="scene-modes" role="group" aria-label="Render view">
                 {VIEW_MODES.map((name, index) => (
                   <button

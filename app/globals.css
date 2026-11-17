@@ -886,6 +886,41 @@ html.light .unlock-toast {
   pointer-events: none;
 }
 
+/* The scene's code loads on demand, so it arrives a moment after the page around
+   it. Ease it in (the terrain rises into place, its controls follow) instead of
+   letting it pop. Opacity and transform only, so the compositor does the work. */
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.no-motion) .scene-enter {
+    animation: scene-enter 1.6s var(--ease-smooth) 0.1s both;
+  }
+
+  html:not(.no-motion) .scene-enter-late {
+    animation: scene-fade 0.9s var(--ease-smooth) 0.9s both;
+  }
+}
+
+@keyframes scene-enter {
+  from {
+    opacity: 0;
+    transform: translateY(2rem) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes scene-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 /* Leading edge of a view-mode wipe; positioned every frame by the scene runtime. */
 .scene-wipe {
   position: absolute;
