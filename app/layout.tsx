@@ -7,16 +7,18 @@ import { ThemeProvider } from './components/ThemeProvider';
 
 import './globals.css';
 
+// `subsets` lists what is preloaded. The page opens in English, so only Latin is;
+// the extended-Latin files (Czech) are still declared and load when first needed.
 // Mona Sans ships a width axis; headings use the wide cut (see `.font-display`).
 const monaSans = Mona_Sans({
-  subsets: ['latin', 'latin-ext'],
+  subsets: ['latin'],
   display: 'swap',
   variable: '--font-mona',
   axes: ['wdth'],
 });
 
 const geistMono = Geist_Mono({
-  subsets: ['latin', 'latin-ext'],
+  subsets: ['latin'],
   display: 'swap',
   variable: '--font-geist-mono',
 });

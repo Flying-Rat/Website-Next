@@ -96,7 +96,10 @@ export function Hero() {
                 height={1166}
                 className="hero-photo-image"
                 preload
-                sizes="(max-width: 639px) 140vw, (max-width: 1536px) 100vw, 1536px"
+                // Phones show the photo wider than the screen, but hinting its true
+                // width makes 3x screens fetch the 1920px file; one screen-width is
+                // still over twice their pixel density and nearly half the bytes.
+                sizes="(max-width: 1536px) 100vw, 1536px"
               />
             </div>
             <UnlockToast

@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { useAnimationsEnabled } from '../hooks/useAnimationsEnabled';
 import { useInView } from '../hooks/useInView';
+import { usePageIdle } from '../hooks/usePageIdle';
 import { useTranslation } from '../i18n';
 import { FadeInView } from './FadeInView';
 
@@ -62,6 +63,9 @@ export function About() {
   const shouldAnimate = useAnimationsEnabled();
   const sectionRef = useRef<HTMLElement | null>(null);
   const sceneNear = useInView(sectionRef, { once: true, rootMargin: '600px 0px' });
+  // The scene sits just under the hero, so "near" is true almost at once; waiting
+  // for the page to settle keeps its download out of the hero's way.
+  const pageIdle = usePageIdle();
   // The scene's controls are mounted inside the page container so they line up
   // with the copy, while the canvas itself bleeds to the viewport edge.
   const [hudTarget, setHudTarget] = useState<HTMLDivElement | null>(null);
@@ -73,7 +77,7 @@ export function About() {
       className="section-pad relative flex overflow-hidden md:min-h-[680px] md:items-center"
     >
       <div className="about-scene absolute inset-x-0 top-0 h-[21rem] md:inset-y-0 md:left-[36%] md:h-auto">
-        {sceneNear && (
+        {sceneNear && pageIdle && (
           <ShapeScene
             label={t('about.focus.title')}
             shouldAnimate={shouldAnimate}
