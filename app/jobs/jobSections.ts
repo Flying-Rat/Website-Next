@@ -1,4 +1,3 @@
-/** The teams we hire into and their roles; `previously` holds roles that are closed. */
 export const jobSections = [
   {
     id: 'engineering',

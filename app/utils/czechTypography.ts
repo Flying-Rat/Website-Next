@@ -15,7 +15,6 @@ export function tieShortWords(text: string): string {
   return text.replaceAll(SHORT_WORD, `$1$2${NBSP}`).replaceAll(SHORT_WORD, `$1$2${NBSP}`);
 }
 
-/** The same for every string in a tree of copy, such as a locale file. */
 export function tieShortWordsDeep<T>(value: T): T {
   if (typeof value === 'string') {
     return tieShortWords(value) as T;

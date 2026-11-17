@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react';
 
-/** A page section with its title (and an optional note) pinned on the left and the content on the right. */
 export function SplitSection({
   id,
   title,

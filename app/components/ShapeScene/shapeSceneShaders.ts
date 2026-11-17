@@ -547,10 +547,8 @@ export const gridFragmentShader = /* glsl */ `
     float lines = max(gridLines(uSpacing) * 0.45, gridLines(uSpacing * 4.0));
     float rim = 1.0 - smoothstep(uRadius * 0.42, uRadius, fromCenter);
 
-    // The pulse that crosses the terrain carries on over the ground.
     float ring = pulseRing(fromCenter);
 
-    // A soft pool of ink around the island's foot plants it on the ground.
     float pool = (1.0 - smoothstep(uIsland * 0.7, uIsland * 1.45, fromCenter)) * uPool;
 
     float lineAlpha = lines * rim * rim * (uOpacity + ring * 0.26);
@@ -570,11 +568,6 @@ export const gridFragmentShader = /* glsl */ `
   }
 `;
 
-/**
- * Atmosphere: a sparse cloud of motes drifting up through the air above the
- * terrain. One draw call of points; each mote's path is a function of time and
- * its seed.
- */
 export const moteVertexShader = /* glsl */ `
   attribute float aSeed;
 

@@ -1,13 +1,9 @@
-/** Facts about the studio and the site that metadata, structured data and llms.txt share. */
-
-/** The address the live site resolves to; canonical links and the sitemap all use it. */
 export const SITE_URL = 'https://www.flying-rat.studio';
 export const SITE_NAME = 'Flying Rat Studio';
 export const SITE_TITLE = 'Flying Rat Studio | Game Development Studio';
 export const SITE_DESCRIPTION =
   'Prague-based game development studio crafting gameplay that feels amazing. We collaborate with top studios on titles like Beat Saber, Darkest Dungeon 2, and more.';
 
-/** The picture shown when a page is shared: 1200x630, the size every network expects. */
 export const SOCIAL_IMAGE = {
   url: '/og-image.jpg',
   width: 1200,
@@ -33,7 +29,6 @@ export const CONTACT_EMAILS = {
   press: 'marty+press@flying-rat.studio',
 };
 
-/** Every page a search engine should know about, in the order the sitemap lists them. */
 export const SITE_PAGES = [
   { path: '/', priority: 1 },
   { path: '/jobs', priority: 0.8 },

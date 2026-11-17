@@ -27,7 +27,6 @@ const getPragueTime = () => pragueClock.format(new Date());
 /** The server cannot know when the page will be read, so it prints no time. */
 const getServerTime = () => null;
 
-/** Wall-clock time at the studio, e.g. "14:32"; null on the server and until hydration. */
 function usePragueTime() {
   return useSyncExternalStore(subscribeToClock, getPragueTime, getServerTime);
 }

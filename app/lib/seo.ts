@@ -2,11 +2,6 @@ import type { Metadata } from 'next';
 
 import { SITE_NAME, SOCIAL_IMAGE } from './site';
 
-/**
- * The full set of tags for one page: title, description, canonical link and the
- * Open Graph and Twitter cards. Paths are relative; `metadataBase` in the root
- * layout turns them into absolute URLs.
- */
 export function pageMetadata({
   title,
   description,

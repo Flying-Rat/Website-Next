@@ -14,7 +14,6 @@ export interface Project {
   platforms: PlatformLink[];
   image: string;
   isInternal?: boolean;
-  /** One short line for the hero's achievement feed: what we did, said warmly. */
   achievement: Record<Language, string>;
   description: Record<Language, string>;
 }

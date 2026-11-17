@@ -33,12 +33,6 @@ function formatStats(stats: SceneStats): string {
   return parts.join(' \u00B7 ');
 }
 
-/**
- * Three.js viewport for the About section: an instanced terrain visitors can inspect
- * through several render views. The scene itself lives in `ShapeSceneRuntime`; this
- * component handles lifecycle, input, visibility and the controls.
- * Load it lazily (see `About`): it pulls in three.js.
- */
 export const ShapeScene = memo(function ShapeScene({
   label,
   shouldAnimate,
@@ -103,7 +97,6 @@ export const ShapeScene = memo(function ShapeScene({
       const nowLight = root.classList.contains('light');
       if (nowLight !== isLight) {
         isLight = nowLight;
-        // Colors are swapped in place; the WebGL context is not rebuilt.
         runtime.setTheme(readSceneTheme());
         runtime.render();
       }
@@ -121,7 +114,6 @@ export const ShapeScene = memo(function ShapeScene({
     };
   }, []);
 
-  // Render loop, paused when hidden or scrolled out of view.
   useEffect(() => {
     const container = containerRef.current;
     const runtime = runtimeRef.current;

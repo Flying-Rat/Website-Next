@@ -37,7 +37,6 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
-  // Tints the browser chrome to match the page background of each theme.
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#f6f6f3' },
     { media: '(prefers-color-scheme: dark)', color: '#0a0a0b' },
@@ -78,7 +77,6 @@ export const metadata: Metadata = {
   },
 };
 
-/** Who is behind the site, in the vocabulary search engines and assistants read. */
 const structuredData = {
   '@context': 'https://schema.org',
   '@graph': [

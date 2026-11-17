@@ -886,9 +886,8 @@ html.light .unlock-toast {
   pointer-events: none;
 }
 
-/* The scene's code loads on demand, so it arrives a moment after the page around
-   it. Ease it in (the terrain rises into place, its controls follow) instead of
-   letting it pop. Opacity and transform only, so the compositor does the work. */
+/* The scene's code loads on demand, so ease it in instead of letting it pop.
+   Opacity and transform only. */
 @media (prefers-reduced-motion: no-preference) {
   html:not(.no-motion) .scene-enter {
     animation: scene-enter 1.6s var(--ease-smooth) 0.1s both;
@@ -921,7 +920,6 @@ html.light .unlock-toast {
   }
 }
 
-/* Leading edge of a view-mode wipe; positioned every frame by the scene runtime. */
 .scene-wipe {
   position: absolute;
   top: 8%;
@@ -1425,7 +1423,6 @@ html.light .work {
   display: inline-flex;
   align-items: center;
   gap: 0.4375rem;
-  /* A comfortable tap target; trimmed where there is a pointer to aim with. */
   height: 2.625rem;
   padding: 0 1rem;
   border: 1px solid var(--color-border-hover);
@@ -1761,14 +1758,14 @@ a.work-platform:hover {
   }
 }
 
-/* One dash period of the link, travelling from the crew back to the team. */
+/* One dash period of `stroke-dasharray: 3 3`. */
 @keyframes seat-flow {
   to {
     stroke-dashoffset: 6;
   }
 }
 
-/* One dash period of the crew outline. */
+/* One dash period of `stroke-dasharray: 4 4`. */
 @keyframes seat-crew-crawl {
   to {
     stroke-dashoffset: -8;

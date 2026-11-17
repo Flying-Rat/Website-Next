@@ -205,7 +205,6 @@ export function JobsClient() {
                           ))}
                         </ul>
 
-                        {/* The address stays visible in case no mail app opens. */}
                         <a
                           href={getMailtoUrl(title)}
                           className="group mt-6 flex items-center justify-between gap-6 border-t border-line pt-5 sm:mt-8 sm:pt-6"

@@ -6,7 +6,6 @@ import { ArrowRightIcon } from './components/icons';
 import { SecondaryPageShell } from './components/SecondaryPageShell';
 import { useTranslation } from './i18n';
 
-/** The 404 page, in the site's own shell so the header, footer and language switch still work. */
 export function NotFoundClient() {
   const { t } = useTranslation();
 

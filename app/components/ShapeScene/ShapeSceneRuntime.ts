@@ -165,14 +165,7 @@ function easeInOutCubic(t: number): number {
   return t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
 }
 
-/**
- * Owns the Three.js scene for the About section: an instanced terrain that can be
- * inspected through several render views. Framework-agnostic: the React wrapper
- * drives it via `update`, `resize`, `setPointer`, `setMode`, `setTheme`, and `dispose`.
- *
- * Per frame the CPU only advances a few scalars and sets uniforms; all geometry is
- * uploaded once and animated in the shaders.
- */
+/** Per frame the CPU only advances a few scalars and sets uniforms; geometry is uploaded once. */
 export class ShapeSceneRuntime {
   readonly isMobile: boolean;
   /** Set by the owner each frame; drives the easter-egg "chaos" mode. */
@@ -543,7 +536,6 @@ export class ShapeSceneRuntime {
   }
 
   /**
-   * Switches the render view.
    * @param manual  a visitor asked for it: the automatic cycle backs off for a while
    * @param instant skip the wipe (used when motion is disabled)
    */
@@ -614,10 +606,6 @@ export class ShapeSceneRuntime {
     this.emitStats();
   }
 
-  /**
-   * Advances the simulation and renders one frame.
-   * @param elapsedMs time since the previous rendered frame
-   */
   update(elapsedMs: number): void {
     if (!this.ready) {
       return;
@@ -663,10 +651,6 @@ export class ShapeSceneRuntime {
     this.wipeLayer.remove();
   }
 
-  // ---------------------------------------------------------------------------
-  // Per-frame steps
-  // ---------------------------------------------------------------------------
-
   private stepWipe(dt: number): void {
     if (this.wipe < 1) {
       this.wipe = Math.min(1, this.wipe + dt / WIPE_SECONDS);
@@ -684,7 +668,6 @@ export class ShapeSceneRuntime {
   }
 
   private stepPointer(dt: number): void {
-    // The camera leans toward the cursor quickly and settles back slowly.
     const parallaxEase = 1 - Math.exp(-dt * (this.hasPointer ? 2.4 : PARALLAX_RELEASE));
     this.parallaxX += (this.pointerX - this.parallaxX) * parallaxEase;
     this.parallaxY += (this.pointerY - this.parallaxY) * parallaxEase;
@@ -711,7 +694,6 @@ export class ShapeSceneRuntime {
       : Math.max(0, this.engagement - dt / RELEASE_SECONDS);
     const hold = MathUtils.smootherstep(this.engagement, 0, 1);
 
-    // Without a cursor, a slow wanderer keeps one swell travelling.
     const wanderX = Math.cos(this.clock * 0.31) * ISLAND_RADIUS * 0.5;
     const wanderZ = Math.sin(this.clock * 0.43) * ISLAND_RADIUS * 0.45;
     const targetX = MathUtils.lerp(wanderX, this.heldX, hold);
@@ -724,7 +706,6 @@ export class ShapeSceneRuntime {
     swell.z += (MathUtils.lerp(0.55, 1, hold) - swell.z) * (1 - Math.exp(-dt * 3));
   }
 
-  /** Lowers the resolution when frames have been arriving late for a sustained stretch. */
   private trackPace(elapsedMs: number): void {
     if (this.qualitySettled) {
       return;
@@ -754,7 +735,6 @@ export class ShapeSceneRuntime {
     this.resize();
   }
 
-  /** Binds the instance order whose nearest-first direction best matches the camera. */
   private orderTerrain(azimuth: number): void {
     const sector = MathUtils.euclideanModulo(
       Math.round((azimuth / (Math.PI * 2)) * DRAW_ORDERS),
@@ -805,7 +785,6 @@ export class ShapeSceneRuntime {
     renderer.render(this.scene, this.camera);
   }
 
-  /** Advances each cloud along the wind; it shrinks to nothing where its path wraps. */
   private placeClouds(): void {
     const windX = Math.sin(CLOUD_WIND_ANGLE);
     const windZ = Math.cos(CLOUD_WIND_ANGLE);
