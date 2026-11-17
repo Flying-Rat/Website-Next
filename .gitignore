@@ -10,5 +10,4 @@ tsconfig.tsbuildinfo
 .claude/
 .agents/
 .preview-shots/
-AGENTS.md
 patches/
