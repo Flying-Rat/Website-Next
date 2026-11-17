@@ -118,6 +118,13 @@
     "statusAvailable": "Available",
     "martyAlt": "Marty from Flying Rat Studio"
   },
+  "notFound": {
+    "label": "Page not found",
+    "title": "This level does not exist.",
+    "body": "The page you were looking for has moved or was never here. The rest of the site is one click away.",
+    "home": "Back to home",
+    "work": "See our work"
+  },
   "footer": {
     "rights": "All rights reserved.",
     "cookies": "No cookies here. We ate them all. 🍪",

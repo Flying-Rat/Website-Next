@@ -1,3 +1,5 @@
+import { SOCIAL_PROFILES } from '../../lib/site';
+
 interface IconProps {
   className?: string;
 }
@@ -417,16 +419,12 @@ function BlogIcon({ className }: IconProps) {
 }
 
 export const socialLinks = [
-  { name: 'GitHub', Icon: GitHubIcon, url: 'https://github.com/Flying-Rat' },
-  { name: 'Tech Blog', Icon: BlogIcon, url: 'https://tech.flying-rat.studio/' },
-  { name: 'Discord', Icon: DiscordIcon, url: 'https://discord.gg/M66zD5FsMn' },
-  { name: 'Facebook', Icon: FacebookIcon, url: 'https://www.facebook.com/FlyingRatStudio' },
-  { name: 'X', Icon: XIcon, url: 'https://x.com/flyingratstudio' },
-  {
-    name: 'YouTube',
-    Icon: YouTubeIcon,
-    url: 'https://www.youtube.com/@flyingratstudio/featured',
-  },
-  { name: 'Twitch', Icon: TwitchIcon, url: 'https://www.twitch.tv/flyingratstudio' },
-  { name: 'Instagram', Icon: InstagramIcon, url: 'https://instagram.com/flyingrat.studio' },
+  { name: 'GitHub', Icon: GitHubIcon, url: SOCIAL_PROFILES.github },
+  { name: 'Tech Blog', Icon: BlogIcon, url: SOCIAL_PROFILES.blog },
+  { name: 'Discord', Icon: DiscordIcon, url: SOCIAL_PROFILES.discord },
+  { name: 'Facebook', Icon: FacebookIcon, url: SOCIAL_PROFILES.facebook },
+  { name: 'X', Icon: XIcon, url: SOCIAL_PROFILES.x },
+  { name: 'YouTube', Icon: YouTubeIcon, url: SOCIAL_PROFILES.youtube },
+  { name: 'Twitch', Icon: TwitchIcon, url: SOCIAL_PROFILES.twitch },
+  { name: 'Instagram', Icon: InstagramIcon, url: SOCIAL_PROFILES.instagram },
 ];

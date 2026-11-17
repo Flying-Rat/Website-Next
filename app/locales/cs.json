@@ -118,6 +118,13 @@
     "statusAvailable": "K dispozici",
     "martyAlt": "Marty z Flying Rat Studia"
   },
+  "notFound": {
+    "label": "Stránka nenalezena",
+    "title": "Tenhle level neexistuje.",
+    "body": "Stránka, kterou hledáte, se přesunula, nebo tu nikdy nebyla. Zbytek webu je jedno kliknutí daleko.",
+    "home": "Zpět na úvod",
+    "work": "Naše práce"
+  },
   "footer": {
     "rights": "Všechna práva vyhrazena.",
     "cookies": "Cookies tu nenajdete. Všechny jsme snědli. 🍪",

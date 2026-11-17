@@ -2,10 +2,10 @@ import type { Metadata } from 'next';
 
 import { HomeClient } from './HomeClient';
 
+// Title, description and cards come from the root layout; the home page only
+// adds its canonical link.
 export const metadata: Metadata = {
-  title: 'Flying Rat Studio | Game Development Studio',
-  description:
-    'Prague-based game development studio crafting gameplay that feels amazing. We collaborate with top studios on titles like Beat Saber, Darkest Dungeon 2, and more.',
+  alternates: { canonical: '/' },
 };
 
 export default function Home() {
