@@ -2217,19 +2217,22 @@ html.dark .ai-network {
   stroke-opacity: 0.35;
 }
 
-/* Hidden at rest, so nothing shows without motion. */
+/* A short dash that travels the whole synapse, from the AI node to the people
+   node, at an even pace. `--length` is the path's length in pixels, so the dash
+   starts just before the path and ends just past it: hidden at rest, so nothing
+   shows without motion. */
 .ai-signal {
+  --dash: 10px;
   stroke: var(--color-accent);
   stroke-width: 2;
   stroke-linecap: round;
-  stroke-dasharray: 7 110;
-  stroke-dashoffset: 7;
-  opacity: 0;
+  stroke-dasharray: var(--dash) calc(var(--length) + 2 * var(--dash));
+  stroke-dashoffset: var(--dash);
 }
 
 @media (prefers-reduced-motion: no-preference) {
   html:not(.no-motion) .ai-signal {
-    animation: ai-signal 6s ease-in-out infinite paused;
+    animation: ai-signal 6s infinite paused;
   }
 
   html:not(.no-motion) .ai-ledger[data-live='true'] .ai-signal {
@@ -2239,23 +2242,13 @@ html.dark .ai-network {
 
 @keyframes ai-signal {
   0% {
-    stroke-dashoffset: 7;
-    opacity: 0;
+    stroke-dashoffset: var(--dash);
+    animation-timing-function: cubic-bezier(0.45, 0.1, 0.55, 0.9);
   }
 
-  8% {
-    opacity: 1;
-  }
-
-  45% {
-    stroke-dashoffset: -100;
-    opacity: 1;
-  }
-
-  50%,
+  40%,
   100% {
-    stroke-dashoffset: -100;
-    opacity: 0;
+    stroke-dashoffset: calc(-1 * (var(--length) + var(--dash)));
   }
 }
 

@@ -82,8 +82,8 @@ A page is a thin server file that exports `metadata` and renders a `*Client.tsx`
 - Reuse before building: `SiteHeader` (via `Header` / `PageHeader`), `SecondaryPageShell`
   for every page except home, `SectionHeader`, `SplitSection`, `LabelledList`, `FadeInView`,
   `Logo`, and the icons in `components/icons`.
-- Do not hand-roll `IntersectionObserver`, scroll listeners or mount timers. Use
-  `useInView`, `useScrollFrame` and `usePageIdle`.
+- Do not hand-roll `IntersectionObserver`, `ResizeObserver`, scroll listeners or mount
+  timers. Use `useInView`, `useElementSize`, `useScrollFrame` and `usePageIdle`.
 - Add `'use client'` only to files that use hooks or event handlers.
 - Comments explain constraints the code cannot show (a browser bug, a hydration trap).
   Do not write comments that narrate what the code does.

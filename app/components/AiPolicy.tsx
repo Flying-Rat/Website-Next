@@ -3,6 +3,7 @@
 import type { CSSProperties } from 'react';
 import { useRef, useState } from 'react';
 
+import { useElementSize } from '../hooks/useElementSize';
 import { useInView } from '../hooks/useInView';
 import { useTranslation } from '../i18n';
 import { pad2 } from '../utils/pad2';
@@ -188,12 +189,72 @@ const SIGNALS = [
   { synapse: 10, delay: '-4.4s' },
 ];
 
-const ROW = 10;
+/** A synapse as an S-curve from an AI row's node to a people row's node, in pixels. */
+function synapseCurve([from, to]: [number, number], width: number, rowHeight: number) {
+  const y1 = (from + 0.5) * rowHeight;
+  const y2 = (to + 0.5) * rowHeight;
+  const points = [
+    [0, y1],
+    [width * 0.55, y1],
+    [width * 0.45, y2],
+    [width, y2],
+  ];
+  // Length by sampling: the signal's dash is sized and moved in real pixels.
+  let length = 0;
+  let [px, py] = points[0];
+  for (let step = 1; step <= 24; step++) {
+    const t = step / 24;
+    const u = 1 - t;
+    const weights = [u * u * u, 3 * u * u * t, 3 * u * t * t, t * t * t];
+    const x = weights.reduce((sum, w, i) => sum + w * points[i][0], 0);
+    const y = weights.reduce((sum, w, i) => sum + w * points[i][1], 0);
+    length += Math.hypot(x - px, y - py);
+    [px, py] = [x, y];
+  }
+  const d = `M0 ${n(y1)}C${n(width * 0.55)} ${n(y1)} ${n(width * 0.45)} ${n(y2)} ${n(width)} ${n(y2)}`;
+  return { d, length: Math.ceil(length) };
+}
 
-function synapsePath([from, to]: [number, number]): string {
-  const y1 = from * ROW + ROW / 2;
-  const y2 = to * ROW + ROW / 2;
-  return `M0 ${y1}C55 ${y1} 45 ${y2} 100 ${y2}`;
+/**
+ * The layer between the two lists, drawn at its real pixel size rather than
+ * stretched from a fixed viewBox: a stretched SVG measures dashes in its own
+ * units, so a signal on a steep curve would stall and vanish halfway.
+ */
+function Synapses({ rows }: { rows: number }) {
+  const ref = useRef<SVGSVGElement | null>(null);
+  const size = useElementSize(ref);
+  const ready = size && size.width > 0 && size.height > 0;
+  const rowHeight = ready ? size.height / rows : 0;
+
+  return (
+    <svg
+      ref={ref}
+      viewBox={ready ? `0 0 ${size.width} ${size.height}` : undefined}
+      className="ai-synapses hidden size-full sm:col-start-2 sm:row-start-2 sm:row-end-[span_var(--rows)] sm:block"
+      aria-hidden="true"
+    >
+      {ready &&
+        SYNAPSES.map((synapse) => (
+          <path
+            key={synapse.join('-')}
+            className="ai-synapse"
+            d={synapseCurve(synapse, size.width, rowHeight).d}
+          />
+        ))}
+      {ready &&
+        SIGNALS.map(({ synapse, delay }) => {
+          const { d, length } = synapseCurve(SYNAPSES[synapse], size.width, rowHeight);
+          return (
+            <path
+              key={synapse}
+              className="ai-signal"
+              d={d}
+              style={{ '--length': `${length}px`, animationDelay: delay } as CSSProperties}
+            />
+          );
+        })}
+    </svg>
+  );
 }
 
 /** Equal rows (subgrid), so every synapse ends on its task's node. */
@@ -252,25 +313,7 @@ function Ledger({
         ))}
       </ul>
 
-      <svg
-        viewBox={`0 0 100 ${rows * ROW}`}
-        preserveAspectRatio="none"
-        className="ai-synapses hidden size-full sm:col-start-2 sm:row-start-2 sm:row-end-[span_var(--rows)] sm:block"
-        aria-hidden="true"
-      >
-        {SYNAPSES.map((synapse) => (
-          <path key={synapse.join('-')} className="ai-synapse" d={synapsePath(synapse)} />
-        ))}
-        {SIGNALS.map(({ synapse, delay }) => (
-          <path
-            key={synapse}
-            className="ai-signal"
-            d={synapsePath(SYNAPSES[synapse])}
-            pathLength={100}
-            style={{ animationDelay: delay }}
-          />
-        ))}
-      </svg>
+      <Synapses rows={rows} />
 
       <h4 className="eyebrow flex items-center gap-2.5 pb-4 sm:col-start-3 sm:row-start-1 sm:pl-4">
         <span className="size-1.5 rounded-full bg-ink" />
