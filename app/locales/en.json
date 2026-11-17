@@ -111,6 +111,19 @@
         "name": "Game events",
         "body": "Jams, meetups, anything about games. Tell us what you need."
       }
+    },
+    "partners": {
+      "title": "Strategic Partners",
+      "plana": {
+        "tag": "Friends & partners",
+        "name": "Plan A Collective",
+        "body": "Friends first, and close collaborators on the projects we share. Plan A brings the art: characters, environments, animation and VFX, and we join forces whenever a game needs both studios."
+      },
+      "zet": {
+        "tag": "Sister company",
+        "name": "Zet Labs",
+        "body": "Our sister company, building AI agents for teams. Together we train custom models for our game development needs and run them on our own hardware, so the tools fit the way we make games."
+      }
     }
   },
   "contact": {

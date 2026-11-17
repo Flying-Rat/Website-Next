@@ -6,14 +6,13 @@ import { useRef, useState } from 'react';
 import { useElementSize } from '../hooks/useElementSize';
 import { useInView } from '../hooks/useInView';
 import { useTranslation } from '../i18n';
+import { PARTNER_URLS } from '../lib/site';
 import { pad2 } from '../utils/pad2';
 import { FadeInView } from './FadeInView';
 import { ExternalLinkIcon } from './icons';
 import { SectionHeader } from './SectionHeader';
 
 const principles = ['creative', 'code', 'care', 'local'] as const;
-
-const ZET_LABS_URL = 'https://www.zetlabs.ai/';
 
 const NETWORK_WIDTH = 1200;
 const NETWORK_HEIGHT = 640;
@@ -452,7 +451,7 @@ export function AiPolicy() {
                     <span>
                       {t('aiPolicy.principles.local.partner.before')}{' '}
                       <a
-                        href={ZET_LABS_URL}
+                        href={PARTNER_URLS.zetLabs}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="link-underline inline-flex items-baseline gap-1 font-medium text-ink hover:text-zet-ink"

@@ -1,6 +1,10 @@
 'use client';
 
+import Image from 'next/image';
+import type { ReactNode } from 'react';
+
 import { useTranslation } from '../i18n';
+import { PARTNER_URLS } from '../lib/site';
 import { FadeInView } from './FadeInView';
 import { ExternalLinkIcon, MailIcon } from './icons';
 
@@ -14,6 +18,37 @@ const items = [
   { key: 'events', href: `mailto:${EVENT_EMAIL}`, label: EVENT_EMAIL, dot: 'bg-accent' },
 ];
 
+/** Logos are white on transparent; `logoClass` sets a height that gives each a similar weight. */
+const partners = [
+  {
+    key: 'zet',
+    href: PARTNER_URLS.zetLabs,
+    label: 'zetlabs.ai',
+    logo: { src: '/images/partners/zet-labs.webp', width: 765, height: 138 },
+    logoClass: 'h-5 md:h-6',
+    dot: 'bg-zet',
+    hover: 'group-hover:text-zet-ink',
+  },
+  {
+    key: 'plana',
+    href: PARTNER_URLS.planA,
+    label: 'planacollective.com',
+    logo: { src: '/images/partners/plan-a.webp', width: 960, height: 385 },
+    logoClass: 'h-11 md:h-12',
+    dot: 'bg-plana',
+    hover: 'group-hover:text-plana',
+  },
+];
+
+function RuleHeading({ children }: { children: ReactNode }) {
+  return (
+    <div className="mb-8 flex items-center gap-5 md:mb-10">
+      <h2 className="font-display shrink-0 text-xl font-semibold md:text-2xl">{children}</h2>
+      <span className="h-px flex-1 bg-line" />
+    </div>
+  );
+}
+
 export function Community() {
   const { t } = useTranslation();
 
@@ -21,12 +56,7 @@ export function Community() {
     <section id="community" className="relative py-14 md:py-20">
       <div className="container">
         <FadeInView margin="-60px">
-          <div className="mb-8 flex items-center gap-5 md:mb-10">
-            <h2 className="font-display shrink-0 text-xl font-semibold md:text-2xl">
-              {t('community.title')}
-            </h2>
-            <span className="h-px flex-1 bg-line" />
-          </div>
+          <RuleHeading>{t('community.title')}</RuleHeading>
 
           <ul className="grid gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
             {items.map(({ key, href, label, dot }) => {
@@ -58,6 +88,45 @@ export function Community() {
                 </li>
               );
             })}
+          </ul>
+        </FadeInView>
+
+        <FadeInView margin="-60px" className="mt-14 md:mt-20">
+          <RuleHeading>{t('community.partners.title')}</RuleHeading>
+          {/* Two columns from lg, so each card's text lines up with a pair of cards above. */}
+          <ul className="grid gap-x-8 gap-y-12 lg:grid-cols-2">
+            {partners.map(({ key, href, label, logo, logoClass, dot, hover }) => (
+              <li key={key}>
+                <a href={href} target="_blank" rel="noopener noreferrer" className="group block">
+                  <span className="flex h-14 items-center">
+                    <Image
+                      src={logo.src}
+                      alt=""
+                      width={logo.width}
+                      height={logo.height}
+                      sizes="200px"
+                      className={`partner-logo w-auto opacity-90 transition-opacity duration-300 group-hover:opacity-100 ${logoClass}`}
+                    />
+                  </span>
+                  <span className="eyebrow mt-6 flex items-center gap-2">
+                    <span className={`size-1.5 rounded-full ${dot}`} />
+                    {t(`community.partners.${key}.tag`)}
+                  </span>
+                  <span
+                    className={`font-display mt-3 block text-xl font-semibold transition-colors duration-300 ${hover}`}
+                  >
+                    {t(`community.partners.${key}.name`)}
+                  </span>
+                  <span className="mt-1.5 block max-w-lg text-md leading-relaxed text-pretty text-muted">
+                    {t(`community.partners.${key}.body`)}
+                  </span>
+                  <span className="mt-3 flex items-center gap-1.5 font-mono text-xs text-subtle transition-colors duration-300 group-hover:text-ink">
+                    {label}
+                    <ExternalLinkIcon className="size-2.5" />
+                  </span>
+                </a>
+              </li>
+            ))}
           </ul>
         </FadeInView>
       </div>

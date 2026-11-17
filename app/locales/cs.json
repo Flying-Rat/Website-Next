@@ -111,6 +111,19 @@
         "name": "Herní akce",
         "body": "Jamy, meetupy, cokoli kolem her. Napište, co potřebujete."
       }
+    },
+    "partners": {
+      "title": "Strategičtí partneři",
+      "plana": {
+        "tag": "Přátelé a partneři",
+        "name": "Plan A Collective",
+        "body": "Především přátelé a blízcí spolupracovníci na společných projektech. Plan A přináší art: postavy, prostředí, animace i VFX, a síly spojujeme, kdykoli hra potřebuje obě studia."
+      },
+      "zet": {
+        "tag": "Sesterská společnost",
+        "name": "Zet Labs",
+        "body": "Naše sesterská společnost, která vyvíjí AI agenty pro týmy. Společně trénujeme vlastní modely na míru potřebám herního vývoje a provozujeme je na vlastním hardwaru, aby nástroje seděly tomu, jak hry děláme."
+      }
     }
   },
   "contact": {
