@@ -229,6 +229,28 @@ export function ArtIcon({ className }: IconProps) {
   );
 }
 
+export function DesignIcon({ className }: IconProps) {
+  return (
+    <StrokeIcon className={className} title="Game Design">
+      <rect x="3" y="3" width="18" height="18" rx="3.5" />
+      <circle cx="8" cy="8" r="0.6" />
+      <circle cx="16" cy="8" r="0.6" />
+      <circle cx="12" cy="12" r="0.6" />
+      <circle cx="8" cy="16" r="0.6" />
+      <circle cx="16" cy="16" r="0.6" />
+    </StrokeIcon>
+  );
+}
+
+export function FullGameIcon({ className }: IconProps) {
+  return (
+    <StrokeIcon className={className} title="Full Games">
+      <path d="M6 11h4M8 9v4M15 12h.01M18 10h.01" />
+      <path d="M17.32 5H6.68a4 4 0 0 0-3.98 3.59l-.02.15C2.6 9.42 2 14.46 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.41-1.41A2 2 0 0 1 9.83 16h4.34a2 2 0 0 1 1.42.59L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.55-.6-6.58-.69-7.26l-.01-.15A4 4 0 0 0 17.32 5Z" />
+    </StrokeIcon>
+  );
+}
+
 export function QaIcon({ className }: IconProps) {
   return (
     <StrokeIcon className={className} title="In-House QA">

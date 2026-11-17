@@ -41,7 +41,7 @@
   },
   "whatWeDo": {
     "title": "What We Do",
-    "subtitle": "Not just engineers. Engineering, art, QA, and release under one roof, built to ship ambitious games across platforms.",
+    "subtitle": "Not just engineers. Design, art, engineering, QA, and release under one roof, built to ship ambitious games across platforms.",
     "engineering": {
       "title": "Engineering",
       "body": "We work hands-on with Unreal, Unity, and Godot, and are comfortable with proprietary engines built in C/C++ and Rust. We focus on clean, stable systems and performance that holds up in production."
@@ -54,6 +54,10 @@
       "title": "Art",
       "body": "Our artists work shoulder to shoulder with engineering: 3D, technical art, and in-engine integration. Assets look right and run right on every platform."
     },
+    "design": {
+      "title": "Game Design",
+      "body": "Game and narrative design: mechanics, systems, balance, story, and dialogue. We design alongside your team, or shape a concept into something playable."
+    },
     "qa": {
       "title": "QA and Release",
       "body": "Our in-house QA team sits with engineering, tests changes fast, and runs platform compliance checks on every build. Then we take care of release: we set up titles on each platform and move builds through the full pipeline to production. Structured, repeatable, predictable."
@@ -65,6 +69,10 @@
     "ai": {
       "title": "AI",
       "body": "We develop and train in-house models that support teams at every stage of development, from prototyping to polish. The goal is to make real work faster, not to chase hype."
+    },
+    "fullGames": {
+      "title": "Full Games",
+      "body": "A whole game from first concept to release: design, art, engineering, QA, and launch from one team. We have done it for a client and for a game of our own."
     }
   },
   "projects": {
@@ -113,7 +121,7 @@
       "role": "Founder",
       "cta": "Email Martin"
     },
-    "other": "Events, community or anything else? Write Marty at",
+    "other": "Events, community or anything else? Write Marty.",
     "social": "Or find us on social.",
     "statusAvailable": "Available",
     "martyAlt": "Marty from Flying Rat Studio"
@@ -153,6 +161,7 @@
       "title": "Where the line is",
       "ai": {
         "label": "AI speeds up",
+        "offLabel": "Done by hand",
         "items": [
           "Production planning",
           "Pipelines and builds",
@@ -177,7 +186,7 @@
     "principles": {
       "creative": {
         "title": "Creativity first. Always.",
-        "body": "Games are creative work. Design, art, story, and feel come from people, and no model replaces that here. Not now, not later."
+        "body": "Games are creative work and an art form. Design, art, story, and feel come from people, and no model replaces that here. Not now, not later."
       },
       "code": {
         "title": "In code, engineers stay in charge.",
@@ -190,7 +199,7 @@
       },
       "local": {
         "title": "Our models. Our hardware.",
-        "body": "We build our own models and run them on our own inference infrastructure, offline. Your code and assets stay on machines we own.",
+        "body": "We train our own models and run them on our own inference hardware, fully offline. Nothing goes out to the cloud: your code and assets never leave machines we own.",
         "partner": {
           "before": "We work closely with",
           "name": "Zet Labs",
@@ -201,7 +210,7 @@
   },
   "howWeWork": {
     "title": "How We Work",
-    "subtitle": "Three ways to plug us in. One goal: it should feel like one team.",
+    "subtitle": "Four ways to work with us. One goal: it should feel like one team.",
     "legend": {
       "you": "Your team",
       "us": "Flying Rat Studio"
@@ -221,6 +230,11 @@
         "label": "Mixed",
         "title": "Both at once.",
         "body": "Engineers embedded in your day-to-day, plus a dedicated crew on the part you'd rather not think about."
+      },
+      "full": {
+        "label": "Full game",
+        "title": "The whole game.",
+        "body": "Bring us a brief. We take the game from concept to release: design, art, code, QA, and launch."
       }
     },
     "team": {

@@ -115,12 +115,12 @@ export function PrivacyPolicyClient() {
           <nav aria-label={copy.contentsLabel} className="mb-12 lg:col-span-4 lg:mb-0">
             <div className="lg:sticky lg:top-28">
               <p className="eyebrow">{copy.contentsLabel}</p>
-              <ol className="mt-4 space-y-2.5 text-sm">
+              <ol className="mt-3 text-sm">
                 {copy.sections.map((section, index) => (
                   <li key={section.id}>
                     <a
                       href={`#${section.id}`}
-                      className="group flex items-baseline gap-3 text-muted transition-colors hover:text-ink"
+                      className="group flex items-baseline gap-3 py-1.5 text-muted transition-colors hover:text-ink"
                     >
                       <span className="font-mono text-xs text-subtle transition-colors group-hover:text-accent-ink">
                         {pad2(index + 1)}

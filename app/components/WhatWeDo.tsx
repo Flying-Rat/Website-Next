@@ -3,16 +3,27 @@
 import { useTranslation } from '../i18n';
 import { pad2 } from '../utils/pad2';
 import { FadeInView } from './FadeInView';
-import { AiIcon, ArtIcon, BackendIcon, EngineeringIcon, PortingIcon, QaIcon } from './icons';
+import {
+  AiIcon,
+  ArtIcon,
+  BackendIcon,
+  DesignIcon,
+  EngineeringIcon,
+  FullGameIcon,
+  PortingIcon,
+  QaIcon,
+} from './icons';
 import { SectionHeader } from './SectionHeader';
 
 const whatWeDoItems = [
   { key: 'engineering', Icon: EngineeringIcon },
   { key: 'porting', Icon: PortingIcon },
   { key: 'art', Icon: ArtIcon },
+  { key: 'design', Icon: DesignIcon },
   { key: 'qa', Icon: QaIcon },
   { key: 'backend', Icon: BackendIcon },
   { key: 'ai', Icon: AiIcon },
+  { key: 'fullGames', Icon: FullGameIcon },
 ];
 
 export function WhatWeDo() {
@@ -25,14 +36,14 @@ export function WhatWeDo() {
 
         <FadeInView margin="-60px">
           {/* 1px gaps over a border-coloured backdrop draw the hairlines between cells. */}
-          <ul className="grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 xl:grid-cols-4">
             {whatWeDoItems.map(({ key, Icon }, index) => (
               <li
                 key={key}
                 // Phones: icon, title and index share one row (the wrapper below is
                 // `contents`, so its children join this grid). From sm up the icon and
                 // index sit on their own row above the title.
-                className="group grid grid-cols-[auto_1fr_auto] items-center gap-x-3 bg-page p-5 transition-colors duration-300 hover:bg-surface sm:flex sm:flex-col sm:items-stretch sm:p-6 md:p-8"
+                className="group grid grid-cols-[auto_1fr_auto] items-center gap-x-3 bg-page p-5 transition-colors duration-300 hover:bg-surface sm:flex sm:flex-col sm:items-stretch sm:p-6 md:p-8 xl:p-7"
               >
                 <div className="contents sm:mb-6 sm:flex sm:items-start sm:justify-between md:mb-8">
                   <Icon className="size-6 [stroke-width:1.75] text-ink transition-colors duration-300 group-hover:text-accent-ink sm:size-8 sm:[stroke-width:1.5] md:size-9" />

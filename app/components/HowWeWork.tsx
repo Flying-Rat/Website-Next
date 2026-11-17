@@ -17,6 +17,7 @@ const models: { key: string; team: Member[]; crew: number }[] = [
   { key: 'embedded', team: ['you', 'you', 'us', 'you', 'us', 'you', 'you', 'us'], crew: 0 },
   { key: 'scoped', team: ['you', 'you', 'you', 'you'], crew: 3 },
   { key: 'mixed', team: ['you', 'you', 'us', 'you', 'us'], crew: 2 },
+  { key: 'full', team: ['you'], crew: 6 },
 ];
 
 const DOT = 6;
@@ -156,28 +157,43 @@ export function HowWeWork() {
             </span>
           </div>
 
-          <ol className="grid border-t border-line md:grid-cols-3">
-            {models.map(({ key, team, crew }, index) => (
-              <li
-                key={key}
-                className="border-b border-line py-8 md:border-b-0 md:border-l md:px-8 md:py-10 md:first:border-l-0 md:first:pl-0 md:last:pr-0"
-              >
-                <p className="eyebrow mb-6 flex gap-3">
-                  <span className="text-accent-ink">{String.fromCodePoint(65 + index)}</span>
-                  {t(`howWeWork.models.${key}.label`)}
-                </p>
-                <ModelDiagram team={team} crew={crew} order={index} />
-                <h3 className="font-display mt-7 text-2xl font-semibold md:text-3xl">
-                  {t(`howWeWork.models.${key}.title`)}
-                </h3>
-                <p className="mt-3 max-w-sm text-md leading-relaxed text-pretty text-muted">
-                  {t(`howWeWork.models.${key}.body`)}
-                </p>
-              </li>
-            ))}
-          </ol>
+          {/* Every plan carries a left and a bottom rule; the list is pulled one
+              gutter wider than this frame, which clips the outer ones away. That
+              holds for one, two or four columns without per-column rules. */}
+          <div className="overflow-hidden border-t border-line">
+            <ol className="grid md:-mr-8 md:-ml-[calc(2rem+1px)] md:grid-cols-2 xl:grid-cols-4">
+              {models.map(({ key, team, crew }, index) => (
+                // Between phone and tablet width (a foldable's inner screen) there is room
+                // for the plan and its text side by side, but not for three columns.
+                <li
+                  key={key}
+                  className="plan group relative border-b border-line py-8 sm:max-md:grid sm:max-md:grid-cols-[17rem_1fr] sm:max-md:items-center sm:max-md:gap-x-8 md:border-l md:px-8 md:py-10"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-accent transition-transform duration-500 ease-smooth group-hover:scale-x-100"
+                  />
+                  <div>
+                    <p className="eyebrow mb-6 flex gap-3">
+                      <span className="text-accent-ink">{String.fromCodePoint(65 + index)}</span>
+                      {t(`howWeWork.models.${key}.label`)}
+                    </p>
+                    <ModelDiagram team={team} crew={crew} order={index} />
+                  </div>
+                  <div>
+                    <h3 className="font-display mt-7 text-2xl font-semibold sm:max-md:mt-0 md:text-3xl xl:text-2xl 2xl:text-3xl">
+                      {t(`howWeWork.models.${key}.title`)}
+                    </h3>
+                    <p className="mt-3 max-w-sm text-md leading-relaxed text-pretty text-muted">
+                      {t(`howWeWork.models.${key}.body`)}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
 
-          <div className="grid border-line md:grid-cols-3 md:border-y">
+          <div className="grid border-line md:grid-cols-3 md:border-b">
             <div className="flex items-center border-b border-line py-10 md:col-span-2 md:border-b-0 md:py-14 md:pr-12">
               <p className="font-display max-w-[52rem] text-[1.75rem] leading-[1.14] font-semibold text-pretty text-subtle sm:text-4xl lg:text-[2.75rem]">
                 <strong className="font-semibold text-ink">{t('howWeWork.team.title')}</strong>{' '}

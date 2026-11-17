@@ -19,7 +19,7 @@ export function Contact() {
           href="https://x.com/search?q=%23flyingWithRats"
           target="_blank"
           rel="noopener noreferrer"
-          className="link-underline -mb-2 self-start [background-position:0_calc(100%-0.5rem)] py-2 font-mono text-sm text-muted hover:text-accent-ink"
+          className="link-underline -my-2 [background-position:0_calc(100%-0.5rem)] py-2 font-mono text-sm text-muted hover:text-accent-ink"
         >
           #flyingWithRats
         </a>

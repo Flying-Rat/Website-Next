@@ -90,7 +90,8 @@ export function SiteHeader({
               <NavLink
                 key={link.href}
                 link={link}
-                className="flex items-center gap-1 text-sm whitespace-nowrap text-muted transition-colors hover:text-ink"
+                // Padding the box, not the text: the links keep their place and gain a finger-sized target.
+                className="-my-3 flex items-center gap-1 py-3 text-sm whitespace-nowrap text-muted transition-colors hover:text-ink"
                 iconClassName="size-2.5 opacity-60"
               />
             ))}

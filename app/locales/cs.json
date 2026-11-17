@@ -41,7 +41,7 @@
   },
   "whatWeDo": {
     "title": "Co děláme",
-    "subtitle": "Nejen programátoři. Engineering, art, QA i release pod jednou střechou, abychom ambiciózní hry dostali na všechny platformy.",
+    "subtitle": "Nejen programátoři. Design, art, engineering, QA i release pod jednou střechou, abychom ambiciózní hry dostali na všechny platformy.",
     "engineering": {
       "title": "Engineering",
       "body": "Pracujeme v enginech Unreal, Unity a Godot a stejně dobře se orientujeme v proprietárních enginech postavených na C/C++ a Rustu. Zaměřujeme se na čisté, stabilní systémy a výkon, který obstojí v produkci."
@@ -54,6 +54,10 @@
       "title": "Art",
       "body": "Naši grafici pracují bok po boku s programátory: 3D, technický art a integrace přímo v enginu. Assety tak dobře vypadají a stejně dobře běží na každé platformě."
     },
+    "design": {
+      "title": "Game design",
+      "body": "Herní i narativní design: mechaniky, systémy, balanc, příběh a dialogy. Navrhujeme po boku vašeho týmu, nebo z konceptu uděláme něco hratelného."
+    },
     "qa": {
       "title": "QA a release",
       "body": "Vlastní QA tým sedí přímo u programátorů, rychle testuje změny a u každého buildu kontroluje požadavky jednotlivých platforem. Postaráme se i o release: založíme tituly na platformách a provedeme buildy celým procesem až do produkce. Strukturovaně, opakovatelně, předvídatelně."
@@ -65,6 +69,10 @@
     "ai": {
       "title": "AI",
       "body": "Vyvíjíme a trénujeme vlastní modely, které pomáhají týmům v každé fázi vývoje, od prototypu po finální ladění. Cílem je skutečně zrychlit práci, ne honit hype."
+    },
+    "fullGames": {
+      "title": "Hry na klíč",
+      "body": "Celá hra od prvního konceptu až po vydání: design, art, engineering, QA i release od jednoho týmu. Zvládli jsme to pro klienta i u vlastní hry."
     }
   },
   "projects": {
@@ -113,7 +121,7 @@
       "role": "Zakladatel",
       "cta": "Napište Martinovi"
     },
-    "other": "Akce, komunita nebo cokoli dalšího? Napište Martymu na",
+    "other": "Akce, komunita nebo cokoli dalšího? Napište Martymu.",
     "social": "Nebo nás najdete na sítích.",
     "statusAvailable": "K dispozici",
     "martyAlt": "Marty z Flying Rat Studia"
@@ -153,6 +161,7 @@
       "title": "Kde vede hranice",
       "ai": {
         "label": "AI zrychluje",
+        "offLabel": "Děláme ručně",
         "items": [
           "Plánování produkce",
           "Pipeline a buildy",
@@ -177,7 +186,7 @@
     "principles": {
       "creative": {
         "title": "Kreativita především. Vždy.",
-        "body": "Hry jsou tvůrčí práce. Design, art, příběh i pocit ze hry vznikají v hlavách lidí a žádný model je u nás nenahradí. Ani teď, ani později."
+        "body": "Hry jsou tvůrčí práce i umění. Design, art, příběh i pocit ze hry vznikají v hlavách lidí a žádný model je u nás nenahradí. Ani teď, ani později."
       },
       "code": {
         "title": "V kódu mají hlavní slovo inženýři.",
@@ -190,7 +199,7 @@
       },
       "local": {
         "title": "Naše modely. Náš hardware.",
-        "body": "Vyvíjíme vlastní modely a provozujeme je offline na vlastní inferenční infrastruktuře. Váš kód i assety zůstávají na našich vlastních strojích.",
+        "body": "Vlastní modely trénujeme sami a provozujeme je na vlastním inferenčním hardwaru, zcela offline. Nic neodchází do cloudu: váš kód ani assety nikdy neopustí naše stroje.",
         "partner": {
           "before": "Úzce spolupracujeme se",
           "name": "Zet Labs",
@@ -201,7 +210,7 @@
   },
   "howWeWork": {
     "title": "Jak pracujeme",
-    "subtitle": "Tři způsoby, jak nás zapojit. Jeden cíl: fungovat jako jeden tým.",
+    "subtitle": "Čtyři způsoby spolupráce. Jeden cíl: fungovat jako jeden tým.",
     "legend": {
       "you": "Váš tým",
       "us": "Flying Rat Studio"
@@ -221,6 +230,11 @@
         "label": "Kombinace",
         "title": "Obojí najednou.",
         "body": "Programátoři zapojení do vašeho každodenního provozu a k tomu samostatná parta na část, kterou byste nejraději neřešili."
+      },
+      "full": {
+        "label": "Hra na klíč",
+        "title": "Celá hra.",
+        "body": "Přineste zadání. Hru dovedeme od konceptu až po vydání: design, art, kód, QA i release."
       }
     },
     "team": {

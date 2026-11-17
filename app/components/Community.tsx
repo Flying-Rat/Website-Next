@@ -6,11 +6,12 @@ import { ExternalLinkIcon, MailIcon } from './icons';
 
 const EVENT_EMAIL = 'marty+events@flying-rat.studio';
 
+/** Each dot wears its organisation's own colour; our own events keep coral. */
 const items = [
-  { key: 'gda', href: 'https://gda.cz/', label: 'gda.cz' },
-  { key: 'bnf', href: 'https://bnf.events/', label: 'bnf.events' },
-  { key: 'dekoder', href: 'https://dekoder.fm/', label: 'dekoder.fm' },
-  { key: 'events', href: `mailto:${EVENT_EMAIL}`, label: EVENT_EMAIL },
+  { key: 'gda', href: 'https://gda.cz/', label: 'gda.cz', dot: 'bg-gda' },
+  { key: 'bnf', href: 'https://bnf.events/', label: 'bnf.events', dot: 'bg-bonfire' },
+  { key: 'dekoder', href: 'https://dekoder.fm/', label: 'dekoder.fm', dot: 'bg-dekoder' },
+  { key: 'events', href: `mailto:${EVENT_EMAIL}`, label: EVENT_EMAIL, dot: 'bg-accent' },
 ];
 
 export function Community() {
@@ -28,7 +29,7 @@ export function Community() {
           </div>
 
           <ul className="grid gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
-            {items.map(({ key, href, label }) => {
+            {items.map(({ key, href, label, dot }) => {
               const isMail = href.startsWith('mailto:');
               const Icon = isMail ? MailIcon : ExternalLinkIcon;
               return (
@@ -40,7 +41,7 @@ export function Community() {
                     className="group block"
                   >
                     <span className="eyebrow flex items-center gap-2">
-                      <span className="size-1.5 rounded-full bg-accent" />
+                      <span className={`size-1.5 rounded-full ${dot}`} />
                       {t(`community.items.${key}.tag`)}
                     </span>
                     <span className="font-display mt-3 block text-xl font-semibold transition-colors duration-300 group-hover:text-accent-ink">

@@ -88,7 +88,7 @@ export function ContactSection({
           </div>
         ) : (
           <div className="min-w-0">
-            <p className="truncate font-mono text-xs text-ink min-[380px]:text-meta sm:text-sm">
+            <p className="truncate font-mono text-xs text-ink min-[380px]:text-meta sm:max-lg:text-xs lg:text-sm">
               {email}
             </p>
             <p className="mt-1 flex items-center gap-2 text-sm text-muted">
@@ -101,7 +101,9 @@ export function ContactSection({
       {/* A personal address is too long to sit beside the photo on a small phone,
           so it gets the card's full width. */}
       {person && (
-        <p className="mt-4 truncate font-mono text-xs text-secondary min-[380px]:text-meta">
+        <p // In the two-column range the card is as narrow as on a small phone.
+          className="mt-4 truncate font-mono text-xs text-secondary min-[380px]:text-meta sm:max-lg:text-xs"
+        >
           {email}
         </p>
       )}
@@ -109,31 +111,45 @@ export function ContactSection({
         {t(ctaKey)}
         <ArrowRightIcon className="btn-arrow size-4" />
       </a>
+      {secondary && (
+        <a
+          href={`mailto:${secondary.email}`}
+          className="group -mx-5 mt-5 -mb-5 flex items-center gap-3 rounded-b-[calc(1rem-1px)] border-t border-line px-5 py-4 transition-colors duration-300 hover:bg-surface-light sm:-mx-6 sm:-mb-6 sm:px-6"
+        >
+          <Image
+            src="/images/marty.webp"
+            alt=""
+            width={40}
+            height={40}
+            className="size-10 shrink-0 rounded-full object-cover"
+          />
+          <span className="min-w-0 flex-1">
+            <span className="block text-sm leading-snug text-pretty text-muted">
+              {t(secondary.leadKey)}
+            </span>
+            <span className="mt-1 block truncate font-mono text-xs text-ink min-[380px]:text-meta">
+              {secondary.email}
+            </span>
+          </span>
+          <ArrowRightIcon className="size-4 shrink-0 text-subtle transition-[color,transform] duration-300 ease-smooth group-hover:translate-x-0.5 group-hover:text-ink" />
+        </a>
+      )}
     </div>
   );
 
   const socialBlock = (
     <div className="mt-6 flex flex-col gap-3">
-      <p className="text-sm text-muted">{t(socialKey)}</p>
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4">
+        <p className="text-sm text-muted">{t(socialKey)}</p>
+        {afterSocial}
+      </div>
       <SocialLinks />
-      {afterSocial}
     </div>
   );
 
   const aside = (
     <>
       {contactCard}
-      {secondary && (
-        <p className="mt-4 px-1 text-sm leading-relaxed text-muted">
-          {t(secondary.leadKey)}{' '}
-          <a
-            href={`mailto:${secondary.email}`}
-            className="-my-2 inline-block py-2 font-mono text-meta text-ink underline decoration-line-strong underline-offset-4 transition-colors hover:decoration-ink"
-          >
-            {secondary.email}
-          </a>
-        </p>
-      )}
       {socialBlock}
     </>
   );
@@ -141,7 +157,7 @@ export function ContactSection({
   return (
     <section id={id} className="section-pad relative border-t border-line">
       <div className="container">
-        <div className="grid gap-10 lg:grid-cols-12 lg:gap-8">
+        <div className="grid gap-10 sm:max-lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] sm:max-lg:gap-8 lg:grid-cols-12 lg:gap-8">
           {/* min-w-0: grid items refuse to shrink below their content by default, which
               let the card's one-line address push the whole page wider than a small phone. */}
           <div className="min-w-0 lg:col-span-7">

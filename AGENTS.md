@@ -64,14 +64,14 @@ A page is a thin server file that exports `metadata` and renders a `*Client.tsx`
 
 - Use Tailwind utilities. Colours come from semantic utilities only: `text-ink`,
   `text-secondary`, `text-muted`, `text-subtle`, `bg-page`, `bg-surface`, `bg-surface-light`,
-  `border-line`, `border-line-strong`. Never write `text-[var(--color-...)]` or a hex value
-  in a component.
+  `border-line`, `border-line-strong`. Never give a colour as an arbitrary value (square
+  brackets) or a hex code in a component.
 - Coral is the single accent. `bg-accent` / `text-accent` are for fills and large display
   type; small coral text uses `text-accent-ink`, which stays readable in the light theme.
 - Reuse the component classes in `globals.css` before writing new ones: `btn`,
   `btn-primary`, `btn-secondary`, `btn-sm`, `surface-card`, `eyebrow`, `section-title`,
   `section-subtitle`, `section-pad`, `text-link`, `font-display`, `container`.
-- Extra type sizes: `text-md` (15px) and `text-meta` (13px). Avoid `text-[13px]`-style values.
+- Extra type sizes: `text-md` (15px) and `text-meta` (13px). Avoid arbitrary pixel sizes.
 - Themes are `html.light` and `html.dark`; tokens are defined once per theme at the top of
   `globals.css`. Check every visual change in both.
 - Write `backdrop-filter` unprefixed only; the pipeline adds the prefix.
