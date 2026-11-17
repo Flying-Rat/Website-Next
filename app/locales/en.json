@@ -137,9 +137,9 @@
       "on": "On",
       "off": "Off",
       "onTitle": "We use it where it matters.",
-      "onBody": "Production and process: planning, pipelines, documentation, handoffs. That keeps information current, easy to find, and inside the team.",
+      "onBody": "In code, AI assists and an engineer reviews every line. In production it takes on planning, pipelines, documentation and handoffs, so information stays current, easy to find, and inside the team.",
       "offTitle": "No AI. No problem.",
-      "offBody": "Not the right fit for your game? We switch it off and build it the way we always have: by hand. Same team, same standards.",
+      "offBody": "Not the right fit for your game? We switch it off, coding assistants included, and build it the way we always have: by hand. Same team, same standards.",
       "note": "Your call, project by project."
     },
     "ledger": {
@@ -149,6 +149,7 @@
         "items": [
           "Production planning",
           "Pipelines and builds",
+          "Coding assistance",
           "Documentation and knowledge",
           "Process and handoffs",
           "Repetitive groundwork"
@@ -161,6 +162,7 @@
           "Art and art direction",
           "Story and writing",
           "Feel and polish",
+          "Architecture and code review",
           "Every final call"
         ]
       }
@@ -169,6 +171,10 @@
       "creative": {
         "title": "Creativity first. Always.",
         "body": "Games are creative work. Design, art, story, and feel come from people, and no model replaces that here. Not now, not later."
+      },
+      "code": {
+        "title": "In code, engineers stay in charge.",
+        "body": "AI helps us write and check code faster. Every change is still read, tested and owned by an engineer, and held to the same standard as code written by hand. On your project it follows your rules: your tools, your policy, or none at all."
       },
       "care": {
         "title": "Deliberate, not default.",

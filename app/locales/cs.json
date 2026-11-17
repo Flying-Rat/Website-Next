@@ -137,9 +137,9 @@
       "on": "Zapnuto",
       "off": "Vypnuto",
       "onTitle": "Používáme ji tam, kde dává smysl.",
-      "onBody": "Produkce a procesy: plánování, pipeline, dokumentace, předávání práce. Informace díky tomu zůstávají aktuální, dohledatelné a uvnitř týmu.",
+      "onBody": "V kódu AI pomáhá a každý řádek zkontroluje inženýr. V produkci si bere plánování, pipeline, dokumentaci a předávání práce, takže informace zůstávají aktuální, dohledatelné a uvnitř týmu.",
       "offTitle": "Bez AI. Bez problému.",
-      "offBody": "Nehodí se k vaší hře? Vypneme ji a hru postavíme tak jako vždycky: ručně. Stejný tým, stejné standardy.",
+      "offBody": "Nehodí se k vaší hře? Vypneme ji, včetně asistentů pro psaní kódu, a hru postavíme tak jako vždycky: ručně. Stejný tým, stejné standardy.",
       "note": "Rozhodujete vy, u každého projektu zvlášť."
     },
     "ledger": {
@@ -149,6 +149,7 @@
         "items": [
           "Plánování produkce",
           "Pipeline a buildy",
+          "Psaní kódu",
           "Dokumentaci a znalosti",
           "Procesy a předávání práce",
           "Rutinní práci"
@@ -161,6 +162,7 @@
           "Art a art direction",
           "Příběh a texty",
           "Pocit ze hry a doladění",
+          "Architekturu a code review",
           "Každé finální rozhodnutí"
         ]
       }
@@ -169,6 +171,10 @@
       "creative": {
         "title": "Kreativita především. Vždy.",
         "body": "Hry jsou tvůrčí práce. Design, art, příběh i pocit ze hry vznikají v hlavách lidí a žádný model je u nás nenahradí. Ani teď, ani později."
+      },
+      "code": {
+        "title": "V kódu mají hlavní slovo inženýři.",
+        "body": "AI nám pomáhá psát a kontrolovat kód rychleji. Každou změnu ale dál čte, testuje a ručí za ni inženýr a platí pro ni stejná měřítka jako pro kód psaný ručně. Na vašem projektu se řídí vašimi pravidly: vaše nástroje, vaše zásady, nebo vůbec žádná AI."
       },
       "care": {
         "title": "Promyšleně, ne ze zvyku.",

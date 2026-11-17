@@ -9,7 +9,7 @@ import { FadeInView } from './FadeInView';
 import { ExternalLinkIcon } from './icons';
 import { SectionHeader } from './SectionHeader';
 
-const principles = ['creative', 'care', 'local'] as const;
+const principles = ['creative', 'code', 'care', 'local'] as const;
 
 const ZET_LABS_URL = 'https://www.zetlabs.ai/';
 
