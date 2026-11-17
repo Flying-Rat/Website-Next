@@ -12,6 +12,7 @@ import {
   ExternalLinkIcon,
 } from '../components/icons';
 import { SecondaryPageShell } from '../components/SecondaryPageShell';
+import { SplitSection } from '../components/SplitSection';
 import { projects } from '../data/projects';
 import { useClipboard } from '../hooks/useClipboard';
 import { useTranslation } from '../i18n';
@@ -78,39 +79,12 @@ const brandColors = [
   { name: 'white', hex: '#FFFFFF' },
 ];
 
-function PressSection({
-  id,
-  title,
-  description,
-  children,
-}: {
-  id: string;
-  title: string;
-  description?: string;
-  children: ReactNode;
-}) {
-  return (
-    <section
-      id={id}
-      className="grid scroll-mt-24 gap-6 border-t border-line py-12 md:py-16 lg:grid-cols-12 lg:gap-8"
-    >
-      <div className="lg:col-span-4">
-        <div className="lg:sticky lg:top-28">
-          <h2 className="font-display text-2xl font-semibold md:text-3xl">{title}</h2>
-          {description && <p className="mt-3 max-w-sm text-pretty text-muted">{description}</p>}
-        </div>
-      </div>
-      <div className="min-w-0 lg:col-span-8">{children}</div>
-    </section>
-  );
-}
-
 function PressAboutSection() {
   const { t } = useTranslation();
   const { copied, copy } = useClipboard<string>();
 
   return (
-    <PressSection id="about" title={t('pressKit.about.title')}>
+    <SplitSection id="about" title={t('pressKit.about.title')}>
       <p className="text-lg leading-relaxed text-pretty text-ink md:text-xl md:leading-relaxed">
         {t('pressKit.about.boilerplate')}
       </p>
@@ -131,7 +105,7 @@ function PressAboutSection() {
           </>
         )}
       </button>
-    </PressSection>
+    </SplitSection>
   );
 }
 
@@ -147,7 +121,7 @@ function FactRow({ label, children }: { label: string; children: ReactNode }) {
 function PressFactSheetSection() {
   const { t } = useTranslation();
   return (
-    <PressSection id="fact-sheet" title={t('pressKit.factSheet.title')}>
+    <SplitSection id="fact-sheet" title={t('pressKit.factSheet.title')}>
       <dl className="border-t border-line">
         <FactRow label={t('pressKit.factSheet.foundedLabel')}>
           {t('pressKit.factSheet.foundedValue')}
@@ -184,14 +158,14 @@ function PressFactSheetSection() {
           </span>
         </FactRow>
       </dl>
-    </PressSection>
+    </SplitSection>
   );
 }
 
 function PressWorkSection() {
   const { t } = useTranslation();
   return (
-    <PressSection
+    <SplitSection
       id="work"
       title={t('pressKit.work.title')}
       description={t('pressKit.work.description')}
@@ -215,7 +189,7 @@ function PressWorkSection() {
           );
         })}
       </ul>
-    </PressSection>
+    </SplitSection>
   );
 }
 
@@ -236,7 +210,7 @@ function DownloadLink({ href, label }: { href: string; label: string }) {
 function PressLogosSection() {
   const { t } = useTranslation();
   return (
-    <PressSection
+    <SplitSection
       id="logos"
       title={t('pressKit.logos.title')}
       description={t('pressKit.logos.description')}
@@ -294,7 +268,7 @@ function PressLogosSection() {
           {t('pressKit.formats.zip')}
         </a>
       </div>
-    </PressSection>
+    </SplitSection>
   );
 }
 
@@ -303,7 +277,7 @@ function PressColorsSection() {
   const { copied: copiedColor, copy: copyColor } = useClipboard<string>();
 
   return (
-    <PressSection
+    <SplitSection
       id="colors"
       title={t('pressKit.colors.title')}
       description={t('pressKit.colors.description')}
@@ -329,7 +303,7 @@ function PressColorsSection() {
           </button>
         ))}
       </div>
-    </PressSection>
+    </SplitSection>
   );
 }
 
@@ -369,7 +343,7 @@ const clearSpaceMarks = [
 function PressGuidelinesSection() {
   const { t } = useTranslation();
   return (
-    <PressSection id="guidelines" title={t('pressKit.guidelines.title')}>
+    <SplitSection id="guidelines" title={t('pressKit.guidelines.title')}>
       <figure>
         <div className="flex items-center justify-center rounded-2xl border border-line bg-white p-8 md:p-12">
           <div className="relative border border-dashed border-neutral-300 p-6 md:p-8">
@@ -409,14 +383,14 @@ function PressGuidelinesSection() {
           ))}
         </RuleList>
       </div>
-    </PressSection>
+    </SplitSection>
   );
 }
 
 function PressBrandNameSection() {
   const { t } = useTranslation();
   return (
-    <PressSection
+    <SplitSection
       id="brand-name"
       title={t('pressKit.brandName.title')}
       description={t('pressKit.brandName.description')}
@@ -440,7 +414,7 @@ function PressBrandNameSection() {
           </li>
         ))}
       </ul>
-    </PressSection>
+    </SplitSection>
   );
 }
 

@@ -33,6 +33,9 @@ export function Footer() {
             <Link href="/press" className="py-3 transition-colors hover:text-ink">
               {t('footer.press')}
             </Link>
+            <Link href="/credits" className="py-3 transition-colors hover:text-ink">
+              {t('footer.credits')}
+            </Link>
           </nav>
         </div>
 

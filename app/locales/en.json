@@ -123,7 +123,8 @@
     "cookies": "No cookies here. We ate them all. 🍪",
     "jobs": "Jobs",
     "press": "Press Kit",
-    "navLabel": "Footer"
+    "navLabel": "Footer",
+    "credits": "Credits"
   },
   "techStack": {
     "title": "Fluent in"
@@ -526,5 +527,34 @@
       "guidelines": "Usage",
       "brand": "Name"
     }
+  },
+  "credits": {
+    "eyebrow": "Credits",
+    "title": "Built on the work of others.",
+    "subtitle": "This site stands on open-source software and typefaces made by people we have never met. This page is our thank-you to them.",
+    "groups": {
+      "foundation": "Foundation",
+      "design": "Type and design",
+      "experience": "Scene and language",
+      "delivery": "Delivery and tooling"
+    },
+    "community": "{{name}} and contributors",
+    "service": "Service",
+    "items": {
+      "next": "The framework the whole site is built on: routing, rendering and images.",
+      "react": "Every section of every page is a React component.",
+      "typescript": "Types that catch our mistakes before you do.",
+      "tailwind": "All layout, spacing and colour comes from its utility classes.",
+      "monaSans": "The typeface you are reading, and its wide cut in the headings.",
+      "geistMono": "The monospace behind every label, number and address.",
+      "three": "Draws the 3D scene on the home page.",
+      "i18next": "Serves the site in English and Czech.",
+      "vercel": "Hosts the site and measures how fast it loads.",
+      "bun": "Installs our packages and runs our scripts.",
+      "oxc": "Lints and formats the code."
+    },
+    "thanks": "Thank you to everyone who writes, maintains and gives away the tools we build with.",
+    "licences": "Each project belongs to its authors and is used under the licence shown beside it. The smaller packages we depend on are credited in their own files, as their licences ask.",
+    "trademarks": "Game titles, logos and key art shown on this site belong to their respective owners."
   }
 }

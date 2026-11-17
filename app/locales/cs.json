@@ -123,7 +123,8 @@
     "cookies": "Cookies tu nenajdete. Všechny jsme snědli. 🍪",
     "jobs": "Kariéra",
     "press": "Pro média",
-    "navLabel": "Patička"
+    "navLabel": "Patička",
+    "credits": "Poděkování"
   },
   "techStack": {
     "title": "Ovládáme"
@@ -526,5 +527,34 @@
       "guidelines": "Pravidla",
       "brand": "Název"
     }
+  },
+  "credits": {
+    "eyebrow": "Poděkování",
+    "title": "Stojíme na práci druhých.",
+    "subtitle": "Tento web stojí na open-source softwaru a písmech od lidí, které jsme nikdy nepotkali. Tahle stránka je naše poděkování.",
+    "groups": {
+      "foundation": "Základ",
+      "design": "Písmo a design",
+      "experience": "Scéna a jazyk",
+      "delivery": "Provoz a nástroje"
+    },
+    "community": "{{name}} a přispěvatelé",
+    "service": "Služba",
+    "items": {
+      "next": "Framework, na kterém stojí celý web: routování, vykreslování i obrázky.",
+      "react": "Každá sekce každé stránky je React komponenta.",
+      "typescript": "Typy, které zachytí naše chyby dřív než vy.",
+      "tailwind": "Veškeré rozložení, mezery a barvy pocházejí z jeho utilit.",
+      "monaSans": "Písmo, které právě čtete, a jeho široký řez v nadpisech.",
+      "geistMono": "Neproporcionální písmo všech štítků, čísel a adres.",
+      "three": "Vykresluje 3D scénu na hlavní stránce.",
+      "i18next": "Díky němu je web v češtině i angličtině.",
+      "vercel": "Hostuje web a měří, jak rychle se načítá.",
+      "bun": "Instaluje balíčky a spouští naše skripty.",
+      "oxc": "Kontroluje a formátuje kód."
+    },
+    "thanks": "Děkujeme všem, kdo píší, udržují a zdarma sdílejí nástroje, se kterými tvoříme.",
+    "licences": "Každý projekt patří svým autorům a používáme ho pod licencí uvedenou vedle něj. Menší balíčky, na kterých web závisí, jsou uvedeny ve svých vlastních souborech, jak jejich licence vyžadují.",
+    "trademarks": "Názvy her, loga a key art zobrazené na tomto webu patří jejich vlastníkům."
   }
 }
