@@ -26,15 +26,15 @@ function waveY(x: number, k: number) {
 
 function wavePath(k: number) {
   let d = '';
-  for (let x = -6; x <= 106; x += 4) {
-    d += `${x === -6 ? 'M' : 'L'}${x} ${waveY(x, k).toFixed(2)}`;
+  for (let x = -10; x <= 110; x += 4) {
+    d += `${x === -10 ? 'M' : 'L'}${x} ${waveY(x, k).toFixed(2)}`;
   }
   return d;
 }
 
 const CREST_PATH = wavePath(0);
 /** The coral body: everything below the crest. */
-const BODY = `${CREST_PATH}L106 110L-6 110Z`;
+const BODY = `${CREST_PATH}L110 110L-10 110Z`;
 /** Ink echoes above the crest, fading as they rise. */
 const ECHOES = [1, 2, 3, 4].map((step) => ({
   d: wavePath(-step),

@@ -1844,7 +1844,7 @@ a.work-platform:hover {
    handful of paths, and paused whenever the avatar is off screen. */
 @media (prefers-reduced-motion: no-preference) {
   html:not(.no-motion) .silk-band {
-    animation: silk-ripple 7s ease-in-out infinite alternate paused;
+    animation: silk-ripple 6s ease-in-out infinite alternate paused;
     animation-delay: calc(var(--band, 0) * -0.9s);
   }
 
@@ -1859,7 +1859,7 @@ a.work-platform:hover {
   }
 
   to {
-    transform: translate(-2.5px, -1.8px);
+    transform: translate(-6px, -3.5px);
   }
 }
 
