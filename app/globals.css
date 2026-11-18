@@ -1837,6 +1837,32 @@ a.work-platform:hover {
   }
 }
 
+/* ----------------------------------------------------------------- marty */
+
+/* Each band of the silk drifts on its own slow loop, offset by its distance from
+   the crest, so a ripple seems to run through the fabric. Transform only, a
+   handful of paths, and paused whenever the avatar is off screen. */
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.no-motion) .silk-band {
+    animation: silk-ripple 7s ease-in-out infinite alternate paused;
+    animation-delay: calc(var(--band, 0) * -0.9s);
+  }
+
+  html:not(.no-motion) .silk[data-live='true'] .silk-band {
+    animation-play-state: running;
+  }
+}
+
+@keyframes silk-ripple {
+  from {
+    transform: translate(0, 0);
+  }
+
+  to {
+    transform: translate(-2.5px, -1.8px);
+  }
+}
+
 /* ------------------------------------------------------------------ jobs */
 
 .timeline-marker-current::after {

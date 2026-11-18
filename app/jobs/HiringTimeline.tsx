@@ -1,10 +1,10 @@
 'use client';
 
-import Image from 'next/image';
 import { useRef, useState } from 'react';
 
 import { FadeInView } from '../components/FadeInView';
 import { ArrowRightIcon, CheckIcon } from '../components/icons';
+import { MartyAvatar } from '../components/MartyAvatar';
 import { useAnimationsEnabled } from '../hooks/useAnimationsEnabled';
 import { useScrollFrame } from '../hooks/useScrollFrame';
 import { pad2 } from '../utils/pad2';
@@ -108,13 +108,7 @@ export function HiringTimeline({
               }`}
             >
               {isFirst ? (
-                <Image
-                  src="/images/marty.webp"
-                  alt={martyAlt}
-                  width={40}
-                  height={40}
-                  className="size-full rounded-full object-cover"
-                />
+                <MartyAvatar label={martyAlt} className="size-full" />
               ) : isLast ? (
                 <CheckIcon className="size-4" />
               ) : (

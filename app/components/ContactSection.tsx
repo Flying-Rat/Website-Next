@@ -6,6 +6,7 @@ import type { ReactNode } from 'react';
 import { useTranslation } from '../i18n';
 import { FadeInView } from './FadeInView';
 import { ArrowRightIcon } from './icons';
+import { MartyAvatar } from './MartyAvatar';
 import { SocialLinks } from './SocialLinks';
 
 export type ContactPerson = {
@@ -68,13 +69,17 @@ export function ContactSection({
       {/* Below 380px the avatar and address step down a size, so the longest
           address (press) still fits on one line instead of being cut off. */}
       <div className="flex items-center gap-3 min-[380px]:gap-4">
-        <Image
-          src={person ? person.photo : '/images/marty.webp'}
-          alt={person ? person.name : t(martyAltKey)}
-          width={56}
-          height={56}
-          className="size-12 shrink-0 rounded-full object-cover min-[380px]:size-14"
-        />
+        {person ? (
+          <Image
+            src={person.photo}
+            alt={person.name}
+            width={56}
+            height={56}
+            className="size-12 shrink-0 rounded-full object-cover min-[380px]:size-14"
+          />
+        ) : (
+          <MartyAvatar label={t(martyAltKey)} className="size-12 min-[380px]:size-14" />
+        )}
         {person ? (
           <div className="min-w-0">
             <p className="flex flex-wrap items-baseline gap-x-2 leading-tight">
@@ -116,13 +121,7 @@ export function ContactSection({
           href={`mailto:${secondary.email}`}
           className="group -mx-5 mt-5 -mb-5 flex items-center gap-3 rounded-b-[calc(1rem-1px)] border-t border-line px-5 py-4 transition-colors duration-300 hover:bg-surface-light sm:-mx-6 sm:-mb-6 sm:px-6"
         >
-          <Image
-            src="/images/marty.webp"
-            alt=""
-            width={40}
-            height={40}
-            className="size-10 shrink-0 rounded-full object-cover"
-          />
+          <MartyAvatar className="size-10" />
           <span className="min-w-0 flex-1">
             <span className="block text-sm leading-snug text-pretty text-muted">
               {t(secondary.leadKey)}
