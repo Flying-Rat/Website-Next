@@ -188,7 +188,6 @@ const SIGNALS = [
   { synapse: 10, delay: '-4.4s' },
 ];
 
-/** A synapse as an S-curve from an AI row's node to a people row's node, in pixels. */
 function synapseCurve([from, to]: [number, number], width: number, rowHeight: number) {
   const y1 = (from + 0.5) * rowHeight;
   const y2 = (to + 0.5) * rowHeight;

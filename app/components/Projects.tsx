@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useReducer, useRef } from 'react';
+import { useReducer, useRef, useState } from 'react';
 
 import { type Project, projects } from '../data/projects';
 import { useAnimationsEnabled } from '../hooks/useAnimationsEnabled';
@@ -17,6 +17,8 @@ import { SectionHeader } from './SectionHeader';
 const PRIVACY_POLICY_HREF = '/games/privacy-policy';
 /** From this width up, the detail sits beside the list; below it, it opens under the tapped row. */
 const SIDE_BY_SIDE = '(min-width: 1024px)';
+/** Covers the `.work-inline` height transition in globals.css, with a frame or two to spare. */
+const ACCORDION_SETTLE_MS = 600;
 
 interface ReelState {
   active: number;
@@ -74,16 +76,22 @@ export const Projects = () => {
       return;
     }
 
-    // Accordion. Rows above may collapse; hold the tapped row still under the finger.
+    // Accordion. A row above may be collapsing; hold the tapped row still under the
+    // finger for as long as it shrinks, not just for the first frame.
     const row = event.currentTarget;
-    const before = row.getBoundingClientRect().top;
+    const anchor = row.getBoundingClientRect().top;
+    const start = performance.now();
     dispatch(index === reel.active ? { type: 'toggle' } : { type: 'select', index });
-    requestAnimationFrame(() => {
-      const shift = row.getBoundingClientRect().top - before;
-      if (Math.abs(shift) > 1) {
+    const hold = (now: number) => {
+      const shift = row.getBoundingClientRect().top - anchor;
+      if (Math.abs(shift) > 0.5) {
         window.scrollBy({ top: shift, behavior: 'instant' });
       }
-    });
+      if (now - start < ACCORDION_SETTLE_MS) {
+        requestAnimationFrame(hold);
+      }
+    };
+    requestAnimationFrame(hold);
   };
 
   return (
@@ -127,6 +135,7 @@ export const Projects = () => {
                     className="work-row-button"
                     aria-current={isActive ? 'true' : undefined}
                     aria-expanded={isOpen}
+                    aria-controls={`work-panel-${project.id}`}
                     onClick={(event) => handleRowClick(event, index)}
                     onKeyDown={handleRowKeyDown}
                   >
@@ -164,8 +173,14 @@ export const Projects = () => {
                     />
                   )}
 
-                  {isOpen && (
-                    <div className="work-inline lg:hidden">
+                  {/* Every panel stays mounted so it can open and close smoothly, and its
+                      art, once loaded, is ready the next time the row is tapped. */}
+                  <div
+                    id={`work-panel-${project.id}`}
+                    className="work-inline lg:hidden"
+                    inert={!isOpen}
+                  >
+                    <div className="work-inline-body">
                       <ProjectDetail
                         project={project}
                         previous={null}
@@ -174,7 +189,7 @@ export const Projects = () => {
                         t={t}
                       />
                     </div>
-                  )}
+                  </div>
                 </li>
               );
             })}
@@ -225,16 +240,30 @@ export const Projects = () => {
   );
 };
 
+/** Each layer stays transparent until its image has decoded, so art fades in rather than popping. */
 function ScreenFrame({ project, entering }: { project: Project; entering: boolean }) {
+  const [fillReady, setFillReady] = useState(false);
+  const [artReady, setArtReady] = useState(false);
+
   return (
     <div className={`work-frame ${entering ? 'work-frame-in' : ''}`}>
-      <Image src={project.image} alt="" fill sizes="96px" className="work-fill" />
+      <Image
+        src={project.image}
+        alt=""
+        fill
+        sizes="96px"
+        className="work-fill"
+        data-ready={fillReady || undefined}
+        onLoad={() => setFillReady(true)}
+      />
       <Image
         src={project.image}
         alt={entering ? project.title : ''}
         fill
         sizes="(min-width: 1024px) 40vw, 100vw"
         className="work-art"
+        data-ready={artReady || undefined}
+        onLoad={() => setArtReady(true)}
       />
     </div>
   );

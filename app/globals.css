@@ -442,9 +442,67 @@ html.light .partner-logo {
   }
 }
 
+/* Translated rather than scaled, so the rounded tip keeps its shape at any progress. */
+.scroll-progress {
+  --progress: 0;
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 100;
+  height: 3px;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--color-text) 5%, transparent);
+  opacity: clamp(0, var(--progress) * 30, 1);
+}
+
 .scroll-progress-bar {
-  transform-origin: left;
+  position: relative;
+  height: 100%;
+  border-radius: 0 999px 999px 0;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--color-accent) 10%, transparent),
+    color-mix(in srgb, var(--color-accent) 55%, transparent) 70%,
+    color-mix(in srgb, var(--color-accent) 85%, transparent)
+  );
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.35),
+    0 1px 8px color-mix(in srgb, var(--color-accent) 25%, transparent);
+  transform: translateX(calc((var(--progress) - 1) * 100%));
   will-change: transform;
+}
+
+.scroll-progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -0.5rem;
+  width: 4rem;
+  height: 0.625rem;
+  border-radius: 999px;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--color-accent) 45%, transparent),
+    transparent
+  );
+  filter: blur(3px);
+  transform: translateY(-50%);
+}
+
+html.light .scroll-progress {
+  background: color-mix(in srgb, var(--color-text) 6%, transparent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Eases toward the scroll position instead of tracking every pixel. */
+  html:not(.no-motion) .scroll-progress-bar {
+    transition: transform 0.6s var(--ease-smooth);
+  }
+
+  html:not(.no-motion) .scroll-progress {
+    transition: opacity 0.6s var(--ease-smooth);
+  }
 }
 
 /* ------------------------------------------------------------------ hero */
@@ -764,7 +822,6 @@ html.light .unlock-toast {
   min-width: 0;
 }
 
-/* Without motion the label simply stays put. */
 .unlock-line {
   opacity: 0;
 }
@@ -1087,7 +1144,6 @@ html.light .unlock-toast {
   }
 }
 
-/* Nothing to show until the renderer has reported once. */
 .scene-stats:empty {
   visibility: hidden;
 }
@@ -1308,8 +1364,7 @@ html.light .work {
   transform: none;
 }
 
-/* The reel's clock: when this bar fills, the next title takes the screen.
-   Stacked layouts show the detail inline, so nothing advances on its own there. */
+/* Stacked layouts show the detail inline, so this bar stays hidden and nothing advances on its own. */
 .work-progress {
   position: absolute;
   left: 0;
@@ -1335,7 +1390,62 @@ html.light .work {
 }
 
 .work-inline {
+  grid-template-rows: 0fr;
+}
+
+@media (width < 1024px) {
+  .work-inline {
+    display: grid;
+  }
+}
+
+.work-row[data-open='true'] .work-inline {
+  grid-template-rows: 1fr;
+}
+
+/* `clip` on the block axis only, so the screen's glow can still spill sideways. */
+.work-inline-body {
+  min-height: 0;
+  overflow-x: visible;
+  overflow-y: clip;
+  opacity: 0;
+}
+
+.work-row[data-open='true'] .work-inline-body {
+  opacity: 1;
+}
+
+.work-inline .work-detail {
   padding: 0.25rem 0 1.75rem;
+}
+
+/* The panel clips at its top edge, so the glow fades out before reaching it
+   instead of being cut off in a hard line. */
+.work-inline .work-glow {
+  top: 0;
+  aspect-ratio: 616 / 460;
+  mask-image: linear-gradient(to bottom, transparent, #000 25%, #000 60%, transparent);
+}
+
+/* Tablets and unfolded phones: full-width art would fill the screen, so the art
+   and the copy sit side by side inside the open row. */
+@media (min-width: 768px) {
+  .work-inline .work-detail {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 2rem;
+    align-items: start;
+  }
+
+  .work-inline .work-copy {
+    margin-top: 0;
+  }
+
+  .work-inline .work-glow {
+    right: auto;
+    left: -1.5rem;
+    width: calc(50% + 2rem);
+  }
 }
 
 .work-detail {
@@ -1385,6 +1495,11 @@ html.light .work {
 
 .work-art {
   object-fit: contain;
+}
+
+.work-fill:not([data-ready]),
+.work-art:not([data-ready]) {
+  opacity: 0;
 }
 
 .work-copy {
@@ -1569,6 +1684,27 @@ a.work-platform:hover {
 
   html:not(.no-motion) .work-frame-in .work-art {
     animation: work-art-drift 16s ease-in-out 1s infinite alternate;
+  }
+
+  html:not(.no-motion) .work-row:not([data-open='true']) .work-art {
+    animation-play-state: paused;
+  }
+
+  html:not(.no-motion) .work-fill,
+  html:not(.no-motion) .work-art {
+    transition: opacity 0.5s var(--ease-smooth);
+  }
+
+  html:not(.no-motion) .work-inline {
+    transition: grid-template-rows 0.45s var(--ease-smooth);
+  }
+
+  html:not(.no-motion) .work-inline-body {
+    transition: opacity 0.2s var(--ease-smooth);
+  }
+
+  html:not(.no-motion) .work-row[data-open='true'] .work-inline-body {
+    transition: opacity 0.4s var(--ease-smooth) 0.1s;
   }
 
   html:not(.no-motion) .work-copy > * {
@@ -2108,12 +2244,9 @@ html.dark .ai-tint {
   opacity: 0;
 }
 
-/* Neuron-style backdrop, anchored to the section's top-right corner.
-   The drawing (`-art`) is static and sits behind a mask that fades it out, so
-   it is rasterised once and never repainted. The live nodes are separate
-   elements outside that mask: they animate opacity only, which runs on the
-   compositor, and carry their share of the fade as a fixed opacity (see
-   `fadeAt` in AiPolicy.tsx, which must match the mask below). */
+/* The drawing (`-art`) is static behind a mask, so it is rasterised once.
+   Live nodes sit outside that mask and animate opacity only; their fade is a
+   fixed opacity (`fadeAt` in AiPolicy.tsx must match the mask below). */
 .ai-network {
   --network-line: 0.13;
   --network-node: 0.26;
@@ -2227,10 +2360,8 @@ html.dark .ai-network {
   stroke-opacity: 0.35;
 }
 
-/* A short dash that travels the whole synapse, from the AI node to the people
-   node, at an even pace. `--length` is the path's length in pixels, so the dash
-   starts just before the path and ends just past it: hidden at rest, so nothing
-   shows without motion. */
+/* `--length` is the path length in pixels, so the dash starts just before the
+   path and ends just past it: hidden at rest, so nothing shows without motion. */
 .ai-signal {
   --dash: 10px;
   stroke: var(--color-accent);

@@ -1,16 +1,17 @@
 import { BufferAttribute, InstancedBufferGeometry } from 'three';
 
+import { BRIDGE, COLUMN_BASE, COLUMN_RELIEF, RAVINE } from './shapeSceneConstants';
+
 /**
  * Builders for everything the scene uploads to the GPU. All of it is created once;
  * nothing here runs per frame.
  */
 
 /**
- * A unit column: eight corners shared by five faces, and no normals (the fragment
- * shader derives them). The underside is never seen, so it is not drawn at all.
- * That is 8 vertices and 10 triangles per instance against a stock box's 24 and 12.
+ * Eight corners shared by all faces; the shader derives the normals. The last
+ * six optional indices close the underside while loose blocks can overturn.
  */
-export function createColumnGeometry(): InstancedBufferGeometry {
+export function createColumnGeometry(closed = false): InstancedBufferGeometry {
   // Corner i sits at (bit 0 ? +x : -x, bit 1 ? +y : -y, bit 2 ? +z : -z).
   const corners = new Float32Array(8 * 3);
   for (let i = 0; i < 8; i++) {
@@ -28,12 +29,13 @@ export function createColumnGeometry(): InstancedBufferGeometry {
     0, 4, 6, 0, 6, 2, // -x
     4, 5, 7, 4, 7, 6, // +z
     0, 2, 3, 0, 3, 1, // -z
+    ...(closed ? [0, 1, 5, 0, 5, 4] : []), // underside of airborne debris
   ]);
   return geometry;
 }
 
 /**
- * Centres (x, z pairs) of the grid cells that fall inside a disc: one per column.
+ * Centres of the island columns. The open ravine needs no terrain instances.
  * @param columns cells across the disc's diameter
  */
 export function createIslandCells(columns: number, radius: number): Float32Array {
@@ -43,7 +45,9 @@ export function createIslandCells(columns: number, radius: number): Float32Array
     for (let column = 0; column < columns; column++) {
       const x = (column + 0.5) * cellSize - radius;
       const z = (row + 0.5) * cellSize - radius;
-      if (Math.hypot(x, z) <= radius) {
+      const dz = z - BRIDGE.z;
+      const channel = x - BRIDGE.x - RAVINE.slope * dz - RAVINE.bend * Math.abs(dz);
+      if (x * x + z * z <= radius * radius && Math.abs(channel) >= RAVINE.halfWidth) {
         cells.push(x, z);
       }
     }
@@ -96,12 +100,9 @@ export function createMotes(
 }
 
 /**
- * Props are boxes that are not terrain: trees standing on columns, and the blocks
- * that make up clouds. They share one instanced draw call, so both kinds use the
- * same two per-instance records:
- *
- *   anchor: x, z, cloud index  - a tree's grid cell, or a block's offset from its
- *                                cloud's centre; the index is -1 for trees
+ * Trees, cloud blocks and bridge parts share a single batch of instanced boxes.
+ *   anchor: x, z, kind  - nonnegative selects a cloud, -1 anchors a tree to a
+ *                         terrain cell, and values below -1 encode fixed box depth.
  *   box:    width, height, base, tint  - `base` lifts the box above its anchor
  */
 export interface PropInstances {
@@ -128,6 +129,9 @@ function addTrees(
   for (let i = 0; i < cells.length; i += 2) {
     const x = cells[i];
     const z = cells[i + 1];
+    if (Math.abs(x - BRIDGE.x) < BRIDGE.halfSpan + 0.7 && Math.abs(z - BRIDGE.z) < 0.8) {
+      continue;
+    }
     // A slow pattern over the ground thickens some areas into groves and clears others.
     const grove = Math.sin(x * 0.9 + 1.3) * Math.sin(z * 1.1 + 4) + Math.sin(x * 0.5 - z * 0.7);
     if (Math.random() >= density * Math.max(0, 1 + grove * 1.4)) {
@@ -161,6 +165,50 @@ function addCloud(anchors: number[], boxes: number[], index: number, blocks: num
   }
 }
 
+/** Fixed boxes encode their depth below -1 in the unused cloud-index slot. */
+function addBridge(anchors: number[], boxes: number[]): void {
+  const deck = COLUMN_BASE + BRIDGE.bankRelief * COLUMN_RELIEF;
+  const span = BRIDGE.halfSpan * 2;
+  function box(
+    x: number,
+    z: number,
+    width: number,
+    height: number,
+    depth: number,
+    base: number,
+    tint: number,
+  ) {
+    anchors.push(BRIDGE.x + x, BRIDGE.z + z, -1 - depth);
+    boxes.push(width, height, deck + base, tint);
+  }
+
+  const planks = 11;
+  const pitch = span / planks;
+  for (const side of [-1, 1]) {
+    for (let i = 0; i < planks; i++) {
+      const x = (i + 0.5) * pitch - BRIDGE.halfSpan;
+      box(x, side * 0.34, pitch, 0.16, 0.15, -0.16, PROP_TINT.trunk);
+      box(x, side * 0.4, pitch, 0.09, 0.1, 0.48, PROP_TINT.accentCrown);
+    }
+    for (const x of [-1.38, -0.46, 0.46, 1.38]) {
+      box(x, side * 0.4, 0.11, 0.42, 0.11, 0.07, PROP_TINT.trunk);
+    }
+  }
+  for (let i = 0; i < planks; i++) {
+    for (const z of [-0.31, 0, 0.31]) {
+      box(
+        (i + 0.5) * pitch - BRIDGE.halfSpan,
+        z,
+        pitch - 0.018,
+        0.12,
+        0.31,
+        -0.015,
+        PROP_TINT.crown,
+      );
+    }
+  }
+}
+
 export function createProps(
   cells: Float32Array,
   cellSize: number,
@@ -170,6 +218,7 @@ export function createProps(
 ): PropInstances {
   const anchors: number[] = [];
   const boxes: number[] = [];
+  addBridge(anchors, boxes);
   addTrees(anchors, boxes, cells, cellSize, treeDensity);
   for (let cloud = 0; cloud < cloudCount; cloud++) {
     addCloud(anchors, boxes, cloud, blocksPerCloud);

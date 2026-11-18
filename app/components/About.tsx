@@ -8,6 +8,7 @@ import { useInView } from '../hooks/useInView';
 import { usePageIdle } from '../hooks/usePageIdle';
 import { useTranslation } from '../i18n';
 import { FadeInView } from './FadeInView';
+import { DO_EXPLOSION } from './ShapeScene/shapeSceneConstants';
 
 // three.js is the largest chunk on the site; keep it off the critical path and
 // only fetch it once this section is close to the viewport.
@@ -79,7 +80,7 @@ export function About() {
       <div className="about-scene absolute inset-x-0 top-0 h-[21rem] md:inset-y-0 md:left-[36%] md:h-auto">
         {sceneNear && pageIdle && (
           <ShapeScene
-            label={t('about.focus.title')}
+            label={t(DO_EXPLOSION ? 'about.focus.explosion' : 'about.focus.title')}
             shouldAnimate={shouldAnimate}
             className="relative h-full w-full overflow-hidden"
             hudTarget={hudTarget}

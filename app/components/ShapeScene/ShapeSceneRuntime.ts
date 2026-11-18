@@ -5,12 +5,14 @@ import {
   CircleGeometry,
   Color,
   InstancedBufferAttribute,
+  type DataTexture,
   MathUtils,
   Mesh,
   NearestFilter,
   PerspectiveCamera,
   Plane,
   Points,
+  type Ray,
   Raycaster,
   Scene,
   ShaderMaterial,
@@ -22,7 +24,17 @@ import {
   WebGLRenderTarget,
 } from 'three';
 
-import { CLOUD_COUNT, VIEW_MODES } from './shapeSceneConstants';
+import { BlastPhysics } from './BlastPhysics';
+import {
+  BRIDGE,
+  CLOUD_COUNT,
+  COLUMN_BASE,
+  COLUMN_RELIEF,
+  DO_EXPLOSION,
+  SHOCK,
+  TERRAIN_WAVE,
+  VIEW_MODES,
+} from './shapeSceneConstants';
 import {
   createColumnGeometry,
   createIslandCells,
@@ -84,6 +96,12 @@ const GRID_SEGMENTS = 48;
  */
 const DRAW_ORDERS = 8;
 
+const LEFT_BANK_X = BRIDGE.x - BRIDGE.halfSpan;
+const RIGHT_BANK_X = BRIDGE.x + BRIDGE.halfSpan;
+const bankPhase = (x: number) => Math.hypot(x, BRIDGE.z) * TERRAIN_WAVE.frequency;
+const LEFT_BANK_PHASE = bankPhase(LEFT_BANK_X);
+const RIGHT_BANK_PHASE = bankPhase(RIGHT_BANK_X);
+
 const CAMERA_FOV = 32;
 const CAMERA_ELEVATION = 0.5;
 const CAMERA_AZIMUTH = 0.7;
@@ -100,7 +118,7 @@ const MANUAL_HOLD_SECONDS = 20;
 /** Share of the island's cells that can grow a tree when their ground suits one. */
 const TREE_DENSITY = 0.11;
 const CLOUD_BLOCKS = 11;
-/** Clouds cross the island along the wind, then re-enter on the upwind side. */
+/** Radians. Clouds wrap back in on the upwind side. */
 const CLOUD_WIND_ANGLE = 2.2;
 const CLOUD_PATH_HALF_LENGTH = ISLAND_RADIUS * 1.35;
 const CLOUD_CROSSING_SECONDS = 120;
@@ -117,13 +135,14 @@ interface Cloud {
   size: number;
 }
 
-/** Atmosphere motes: few enough to read as air, not as a particle effect. */
 const MOTES_DESKTOP = 140;
 const MOTES_MOBILE = 60;
 /** How high the motes rise before they fade and start over, in world units. */
 const MOTE_CEILING = 5.5;
 
-/** A faint ring leaves the island's centre this often and fades as it crosses the ground. */
+const TAP_SPEED = 3.8;
+const TAP_REACH = ISLAND_RADIUS * 2 + 1;
+/** Seconds between rings. */
 const PULSE_PERIOD = 12;
 /** Share of the period the ring spends travelling; it rests for the remainder. */
 const PULSE_TRAVEL = 0.62;
@@ -161,6 +180,15 @@ const MIN_QUALITY = 0.5;
 /** Terrain time used for the single frame drawn when motion is disabled. */
 const STATIC_TIME = 8;
 
+// A support rises as the crest reaches it, then settles behind the visible ring.
+function tapLift(distanceBehindCrest: number): number {
+  return (
+    SHOCK.relief *
+    MathUtils.smoothstep(distanceBehindCrest, 0, SHOCK.peak) *
+    (1 - MathUtils.smoothstep(distanceBehindCrest, SHOCK.peak, SHOCK.tail))
+  );
+}
+
 function easeInOutCubic(t: number): number {
   return t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
 }
@@ -188,15 +216,24 @@ export class ShapeSceneRuntime {
   private readonly columnTarget: WebGLRenderTarget;
   private readonly columnGeometry = new BufferGeometry();
   private readonly columnMaterial: ShaderMaterial;
-  private readonly terrainGeometry = createColumnGeometry();
+  private readonly terrainGeometry = createColumnGeometry(DO_EXPLOSION);
   private readonly terrainMaterial: ShaderMaterial;
   private readonly gridGeometry = new CircleGeometry(ISLAND_RADIUS * GRID_REACH, GRID_SEGMENTS);
   private readonly gridMaterial: ShaderMaterial;
   private readonly moteGeometry = new BufferGeometry();
   private readonly moteMaterial: ShaderMaterial;
   /** Trees and clouds: the same unit box as the terrain, one instanced draw call. */
-  private readonly propGeometry = createColumnGeometry();
+  private readonly propGeometry = createColumnGeometry(DO_EXPLOSION);
   private readonly propMaterial: ShaderMaterial;
+  private readonly blastUniforms = {
+    uBlastMap: { value: null as DataTexture | null },
+    uHasBlast: { value: 0 },
+    uBlastTime: { value: 0 },
+    uBlastPose: { value: null as DataTexture | null },
+  };
+  private stillRestoreTimer?: ReturnType<typeof setTimeout>;
+  private blastPhysics?: BlastPhysics;
+  private heightRead?: Promise<Uint8Array<ArrayBuffer>>;
   private readonly clouds: Cloud[];
   /** Terrain columns, and columns plus props: the figure the stats readout reports. */
   private readonly instanceCount: number;
@@ -207,12 +244,13 @@ export class ShapeSceneRuntime {
   private cellOrder = -1;
 
   private readonly terrainUniforms = {
+    ...this.blastUniforms,
     uTime: { value: STATIC_TIME },
     uCell: { value: 0 },
     uRadius: { value: ISLAND_RADIUS },
     uPointer: { value: new Vector3() },
     uBoost: { value: 0 },
-    uPulse: { value: new Vector2() },
+    uPulse: { value: new Vector4() },
     uLow: { value: new Color() },
     uHigh: { value: new Color() },
     uAccent: { value: new Color() },
@@ -231,7 +269,12 @@ export class ShapeSceneRuntime {
   private readonly cloudUniform = {
     value: Array.from({ length: CLOUD_COUNT }, () => new Vector4()),
   };
+  private readonly bridgeLift = { value: new Vector2() };
   private readonly columnUniforms = {
+    ...this.blastUniforms,
+    uPulse: this.terrainUniforms.uPulse,
+    uShockStrength: { value: 0 },
+    uBridgeLift: this.bridgeLift,
     uSun: { value: new Vector3() },
     uClouds: this.cloudUniform,
     // Shared with the terrain: the same clock, swell and chaos drive both passes.
@@ -255,6 +298,11 @@ export class ShapeSceneRuntime {
     uLow: this.terrainUniforms.uLow,
   };
   private readonly propUniforms = {
+    uCell: this.terrainUniforms.uCell,
+    ...this.blastUniforms,
+    uShockStrength: this.columnUniforms.uShockStrength,
+    uPulse: this.terrainUniforms.uPulse,
+    uBridgeLift: this.bridgeLift,
     uClouds: this.cloudUniform,
     // Everything else is the terrain's: same data pass, light, colours and view modes.
     uColumns: this.terrainUniforms.uColumns,
@@ -337,6 +385,12 @@ export class ShapeSceneRuntime {
   private readonly pointerNDC = new Vector2();
   private readonly groundPlane = new Plane(new Vector3(0, 1, 0), -CAMERA_TARGET_Y);
   private readonly groundHit = new Vector3();
+
+  private readonly islandFloor = new Plane(new Vector3(0, 1, 0), 0);
+  private readonly tapPlane = new Plane();
+  private readonly bankDistances = new Vector2();
+  private tapTime = -Infinity;
+  private nextKeyboardBank = LEFT_BANK_X;
 
   private cpuMs = 0;
   private statsDueAt = 0;
@@ -535,6 +589,140 @@ export class ShapeSceneRuntime {
     this.hasPointer = false;
   }
 
+  activate(animate: boolean, clientX?: number, clientY?: number): void {
+    if (!this.ready) {
+      return;
+    }
+    let x = this.nextKeyboardBank;
+    let z: number = BRIDGE.z;
+    if (clientX !== undefined && clientY !== undefined) {
+      const rect = this.container.getBoundingClientRect();
+      this.pointerNDC.set(
+        ((clientX - rect.left) / rect.width) * 2 - 1,
+        1 - ((clientY - rect.top) / rect.height) * 2,
+      );
+      this.raycaster.setFromCamera(this.pointerNDC, this.camera);
+      if (DO_EXPLOSION && this.blastPhysics?.hasRebuildingCells) {
+        // The hover loop reuses this ray while the height read is pending.
+        void this.explode(x, z, animate, this.raycaster.ray.clone());
+        return;
+      }
+      const loose = DO_EXPLOSION && this.blastPhysics?.pick(this.raycaster.ray, this.groundHit);
+      if (!loose) {
+        // Pick against the visible deck pitch, including the lift from the preceding tap.
+        const lift = this.bridgeLift.value;
+        const slope = (COLUMN_RELIEF * (lift.y - lift.x)) / (2 * BRIDGE.halfSpan);
+        this.tapPlane.normal.set(-slope, 1, 0);
+        this.tapPlane.constant =
+          slope * LEFT_BANK_X - COLUMN_BASE - COLUMN_RELIEF * (BRIDGE.bankRelief + lift.x);
+        const hit = this.raycaster.ray.intersectPlane(this.tapPlane, this.groundHit);
+        if (!hit) {
+          return;
+        }
+        const nearDeck =
+          Math.abs(hit.z - BRIDGE.z) <= 0.9 && Math.abs(hit.x - BRIDGE.x) <= BRIDGE.halfSpan + 0.7;
+        if (!nearDeck && !this.raycaster.ray.intersectPlane(this.groundPlane, this.groundHit)) {
+          return;
+        }
+      }
+      x = this.groundHit.x;
+      z = this.groundHit.z;
+      if (!loose && x * x + z * z > ISLAND_RADIUS ** 2) {
+        return;
+      }
+    }
+    this.nextKeyboardBank = x < BRIDGE.x ? RIGHT_BANK_X : LEFT_BANK_X;
+    if (DO_EXPLOSION) {
+      void this.explode(x, z, animate);
+    } else {
+      this.shockwave(x, z, animate);
+    }
+    if (!animate) {
+      this.render();
+    }
+  }
+
+  private async explode(x: number, z: number, animate: boolean, ray?: Ray): Promise<void> {
+    const across = this.columnTarget.width;
+    // A single asynchronous snapshot serves clicks arriving in the same GPU frame.
+    this.heightRead ??= this.readBlastHeights(across);
+    const heights = await this.heightRead;
+    if (this.disposed) {
+      return;
+    }
+    const physics = (this.blastPhysics ??= new BlastPhysics(
+      across,
+      ISLAND_RADIUS,
+      this.terrainUniforms.uCell.value,
+      this.propGeometry.getAttribute('aAnchor').array,
+      this.propGeometry.getAttribute('aBox').array,
+    ));
+    const bridgeLift = (worldX: number) => {
+      const t = MathUtils.clamp((worldX - LEFT_BANK_X) / (2 * BRIDGE.halfSpan), 0, 1);
+      return COLUMN_RELIEF * MathUtils.lerp(this.bridgeLift.value.x, this.bridgeLift.value.y, t);
+    };
+    if (ray) {
+      const hit = physics.pickDuringRebuild(ray, this.groundHit, heights, this.cells, bridgeLift);
+      // A tap on the exposed crater floor can still kick nearby falling debris.
+      if (
+        !hit &&
+        (!ray.intersectPlane(this.islandFloor, this.groundHit) ||
+          Math.hypot(this.groundHit.x, this.groundHit.z) > ISLAND_RADIUS)
+      ) {
+        return;
+      }
+      this.nextKeyboardBank = this.groundHit.x < BRIDGE.x ? RIGHT_BANK_X : LEFT_BANK_X;
+    }
+    const moving = animate && !document.documentElement.classList.contains('no-motion');
+    physics.detonate(
+      ray ? this.groundHit.x : x,
+      ray ? this.groundHit.z : z,
+      moving,
+      heights,
+      bridgeLift,
+    );
+    this.blastUniforms.uBlastMap.value = physics.material;
+    this.blastUniforms.uBlastPose.value = physics.pose;
+    this.blastUniforms.uHasBlast.value = 1;
+    if (!moving) {
+      this.restoreAfterStillFrame();
+    }
+    this.nextAutoSwitchAt = Math.max(this.nextAutoSwitchAt, this.clock + 3);
+    this.render();
+  }
+
+  private async readBlastHeights(across: number): Promise<Uint8Array<ArrayBuffer>> {
+    const pixels = new Uint8Array(across * across * 4);
+    try {
+      await this.renderer.readRenderTargetPixelsAsync(
+        this.columnTarget,
+        0,
+        0,
+        across,
+        across,
+        pixels,
+      );
+    } catch {
+      if (!this.disposed) {
+        this.renderer.readRenderTargetPixels(this.columnTarget, 0, 0, across, across, pixels);
+      }
+    } finally {
+      this.heightRead = undefined;
+    }
+    return pixels;
+  }
+
+  private shockwave(x: number, z: number, animate: boolean): void {
+    this.tapTime = this.clock;
+    this.columnUniforms.uShockStrength.value = animate ? 1 : 0;
+    this.terrainUniforms.uPulse.value.set(x, z, 0, 1);
+    this.bankDistances.set(
+      Math.hypot(x - LEFT_BANK_X, z - BRIDGE.z),
+      Math.hypot(x - RIGHT_BANK_X, z - BRIDGE.z),
+    );
+    this.nextAutoSwitchAt = Math.max(this.nextAutoSwitchAt, this.clock + TAP_REACH / TAP_SPEED);
+  }
+
   /**
    * @param manual  a visitor asked for it: the automatic cycle backs off for a while
    * @param instant skip the wipe (used when motion is disabled)
@@ -597,6 +785,26 @@ export class ShapeSceneRuntime {
     );
   }
 
+  still(): void {
+    this.blastPhysics?.clearLooseBlocks();
+    if (this.blastPhysics?.hasDamage) {
+      this.restoreAfterStillFrame();
+    }
+    this.render();
+  }
+
+  private restoreAfterStillFrame(): void {
+    // Reduced motion has no running frame loop. Show the crater, then restore
+    // it in one render so another keyboard or pointer activation can reuse it.
+    clearTimeout(this.stillRestoreTimer);
+    this.stillRestoreTimer = setTimeout(() => {
+      this.stillRestoreTimer = undefined;
+      this.blastPhysics?.restore();
+      this.blastUniforms.uHasBlast.value = 0;
+      this.render();
+    }, 1500);
+  }
+
   /** Draws the current state without advancing it. */
   render(): void {
     if (!this.ready) {
@@ -619,6 +827,26 @@ export class ShapeSceneRuntime {
 
     this.stepWipe(dt);
     this.stepPointer(dt);
+    if (this.stillRestoreTimer !== undefined) {
+      clearTimeout(this.stillRestoreTimer);
+      this.stillRestoreTimer = undefined;
+    }
+    if (this.blastPhysics?.hasDamage) {
+      this.blastPhysics.update(dt);
+      this.blastUniforms.uHasBlast.value = this.blastPhysics.hasDamage ? 1 : 0;
+      this.blastUniforms.uBlastTime.value = this.blastPhysics.clock;
+    }
+    this.bridgeLift.value.set(
+      this.bankLift(LEFT_BANK_X, LEFT_BANK_PHASE),
+      this.bankLift(RIGHT_BANK_X, RIGHT_BANK_PHASE),
+    );
+    const radius = (this.clock - this.tapTime) * TAP_SPEED;
+    if (radius < TAP_REACH) {
+      const fade = 1 - MathUtils.smoothstep(radius, TAP_REACH * 0.65, TAP_REACH);
+      this.columnUniforms.uShockStrength.value = fade;
+      this.bridgeLift.value.x += fade * tapLift(radius - this.bankDistances.x);
+      this.bridgeLift.value.y += fade * tapLift(radius - this.bankDistances.y);
+    }
     this.draw();
     this.trackPace(elapsedMs);
 
@@ -632,12 +860,14 @@ export class ShapeSceneRuntime {
 
   dispose(): void {
     this.disposed = true;
+    clearTimeout(this.stillRestoreTimer);
     this.terrainGeometry.dispose();
     this.terrainMaterial.dispose();
     this.gridGeometry.dispose();
     this.gridMaterial.dispose();
     this.moteGeometry.dispose();
     this.moteMaterial.dispose();
+    this.blastPhysics?.dispose();
     this.propGeometry.dispose();
     this.propMaterial.dispose();
     this.columnGeometry.dispose();
@@ -706,6 +936,16 @@ export class ShapeSceneRuntime {
     swell.z += (MathUtils.lerp(0.55, 1, hold) - swell.z) * (1 - Math.exp(-dt * 3));
   }
 
+  // Sample the existing radial wave and pointer swell just twice per animated frame.
+  private bankLift(x: number, phase: number): number {
+    const swell = this.terrainUniforms.uPointer.value;
+    const distanceSq = (x - swell.x) ** 2 + (BRIDGE.z - swell.y) ** 2;
+    return (
+      0.085 * Math.sin(phase - this.terrainTime * TERRAIN_WAVE.speed) +
+      0.2 * swell.z * Math.exp(-distanceSq / TERRAIN_WAVE.swellFalloff)
+    );
+  }
+
   private trackPace(elapsedMs: number): void {
     if (this.qualitySettled) {
       return;
@@ -758,12 +998,18 @@ export class ShapeSceneRuntime {
     uniforms.uBoost.value = this.boostAmount;
     uniforms.uModes.value.set(this.mode, this.previousMode);
 
-    // Passive detail. With motion disabled the clock never advances, which parks
-    // the ring at zero strength and the light at its starting angle.
-    const travel = Math.min((this.clock % PULSE_PERIOD) / PULSE_PERIOD / PULSE_TRAVEL, 1);
-    const strength =
-      this.clock > 0 ? MathUtils.smoothstep(travel, 0, 0.1) * (1 - travel) ** 1.5 : 0;
-    uniforms.uPulse.value.set(travel * PULSE_REACH, strength);
+    const pulse = uniforms.uPulse.value;
+    const radius = (this.clock - this.tapTime) * TAP_SPEED;
+    if (radius < TAP_REACH) {
+      pulse.z = radius;
+      pulse.w = 1 - MathUtils.smoothstep(radius, TAP_REACH * 0.65, TAP_REACH);
+    } else {
+      const travel = Math.min((this.clock % PULSE_PERIOD) / PULSE_PERIOD / PULSE_TRAVEL, 1);
+      const strength =
+        this.clock > 0 ? MathUtils.smoothstep(travel, 0, 0.1) * (1 - travel) ** 1.5 : 0;
+      this.columnUniforms.uShockStrength.value = 0;
+      pulse.set(0, 0, travel * PULSE_REACH, strength * 0.17);
+    }
 
     // The same light twice: as a unit vector for shading, and as a ground direction
     // plus climb rate for the shadow rays.
@@ -773,6 +1019,11 @@ export class ShapeSceneRuntime {
     uniforms.uLight.value.set(lightX * LIGHT_FLAT, LIGHT_RISE, lightZ * LIGHT_FLAT);
     this.columnUniforms.uSun.value.set(lightX, lightZ, LIGHT_RISE / LIGHT_FLAT);
 
+    if (DO_EXPLOSION) {
+      const count = this.blastPhysics?.hasLooseBlocks ? 36 : 30;
+      this.terrainGeometry.setDrawRange(0, count);
+      this.propGeometry.setDrawRange(0, count);
+    }
     this.placeClouds();
     this.placeWipe();
     this.placeCamera();
@@ -793,12 +1044,17 @@ export class ShapeSceneRuntime {
       const along = MathUtils.lerp(-CLOUD_PATH_HALF_LENGTH, CLOUD_PATH_HALF_LENGTH, progress);
       const presence =
         MathUtils.smoothstep(progress, 0, 0.1) * (1 - MathUtils.smoothstep(progress, 0.9, 1));
-      this.cloudUniform.value[i].set(
-        windX * along + windZ * cloud.lane,
-        cloud.altitude,
-        windZ * along - windX * cloud.lane,
-        cloud.size * presence,
-      );
+      const x = windX * along + windZ * cloud.lane;
+      const z = windZ * along - windX * cloud.lane;
+      const strength = this.columnUniforms.uShockStrength.value;
+      let altitude = cloud.altitude;
+      if (strength > 0) {
+        const pulse = this.terrainUniforms.uPulse.value;
+        // The front reaches the cloud after the ground below it.
+        const distance = Math.hypot(x - pulse.x, z - pulse.y, altitude);
+        altitude += strength * tapLift(pulse.z - distance);
+      }
+      this.cloudUniform.value[i].set(x, altitude, z, cloud.size * presence);
     }
   }
 

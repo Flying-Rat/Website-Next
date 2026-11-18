@@ -10,7 +10,6 @@ import { ExternalLinkIcon, MailIcon } from './icons';
 
 const EVENT_EMAIL = 'marty+events@flying-rat.studio';
 
-/** Each dot wears its organisation's own colour; our own events keep coral. */
 const items = [
   { key: 'gda', href: 'https://gda.cz/', label: 'gda.cz', dot: 'bg-gda' },
   { key: 'bnf', href: 'https://bnf.events/', label: 'bnf.events', dot: 'bg-bonfire' },
@@ -18,7 +17,6 @@ const items = [
   { key: 'events', href: `mailto:${EVENT_EMAIL}`, label: EVENT_EMAIL, dot: 'bg-accent' },
 ];
 
-/** Logos are white on transparent; `logoClass` sets a height that gives each a similar weight. */
 const partners = [
   {
     key: 'zet',
@@ -93,8 +91,7 @@ export function Community() {
 
         <FadeInView margin="-60px" className="mt-14 md:mt-20">
           <RuleHeading>{t('community.partners.title')}</RuleHeading>
-          {/* Two columns from lg, so each card's text lines up with a pair of cards above. */}
-          <ul className="grid gap-x-8 gap-y-12 lg:grid-cols-2">
+          <ul className="grid gap-x-8 gap-y-12 sm:grid-cols-2">
             {partners.map(({ key, href, label, logo, logoClass, dot, hover }) => (
               <li key={key}>
                 <a href={href} target="_blank" rel="noopener noreferrer" className="group block">

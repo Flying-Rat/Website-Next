@@ -29,7 +29,6 @@ export const CONTACT_EMAILS = {
   press: 'marty+press@flying-rat.studio',
 };
 
-/** Partner studios the site links to from more than one place. */
 export const PARTNER_URLS = {
   planA: 'https://planacollective.com/',
   zetLabs: 'https://www.zetlabs.ai/',

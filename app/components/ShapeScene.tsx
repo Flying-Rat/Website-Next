@@ -123,7 +123,7 @@ export const ShapeScene = memo(function ShapeScene({
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (!shouldAnimate || prefersReducedMotion) {
-      runtime.render();
+      runtime.still();
       return;
     }
 
@@ -239,11 +239,19 @@ export const ShapeScene = memo(function ShapeScene({
 
   return (
     <div className={className ?? 'relative h-full w-full overflow-hidden'}>
-      <div
-        ref={containerRef}
-        className="scene-enter absolute inset-0"
+      <div ref={containerRef} className="scene-enter absolute inset-0" aria-hidden="true" />
+      <button
+        type="button"
         aria-label={label}
-        role="img"
+        title={label}
+        className="absolute inset-0 h-full w-full cursor-pointer touch-manipulation focus-visible:-outline-offset-4"
+        onClick={(event) => {
+          if (event.detail === 0) {
+            runtimeRef.current?.activate(shouldAnimate);
+          } else {
+            runtimeRef.current?.activate(shouldAnimate, event.clientX, event.clientY);
+          }
+        }}
       />
       {hudTarget
         ? createPortal(

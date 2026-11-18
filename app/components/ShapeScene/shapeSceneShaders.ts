@@ -1,28 +1,38 @@
 /**
  * Shaders for the About scene. Five draw calls: a tiny data pass that works out
  * every column once, then the terrain, the props standing on and floating over it
- * (trees and clouds), the ground grid and the atmosphere motes.
+ * (bridge, trees and clouds), the ground grid and the atmosphere motes.
  * Everything that moves is a function of time evaluated on the GPU, so no buffer
  * is ever re-uploaded after start-up.
  */
 
-import { CLOUD_COUNT } from './shapeSceneConstants';
+import {
+  BRIDGE,
+  CLOUD_COUNT,
+  COLUMN_BASE,
+  COLUMN_RELIEF,
+  DO_EXPLOSION,
+  RAVINE,
+  REBUILD_SECONDS,
+  SHOCK,
+  TERRAIN_WAVE,
+} from './shapeSceneConstants';
 
 /** The pulse ring is drawn by both the terrain and the grid; they must agree on its shape. */
 const pulseRing = /* glsl */ `
-  // x: radius of the travelling ring, y: its strength.
-  uniform vec2 uPulse;
+  // xy: origin on the ground, z: radius, w: strength.
+  uniform vec4 uPulse;
 
-  float pulseRing(float fromCenter) {
-    float offset = (fromCenter - uPulse.x) / 0.3;
-    return uPulse.y * exp(-offset * offset);
+  float pulseRing(vec2 point) {
+    float offset = (distance(point, uPulse.xy) - uPulse.z) / 0.3;
+    return uPulse.w * exp(-offset * offset);
   }
 `;
 
 /** How relief (a unitless 0..~1.4 figure) becomes a column height in world units. */
 const columnScale = /* glsl */ `
-  const float BASE_HEIGHT = 0.1;
-  const float RELIEF = 3.6;
+  const float BASE_HEIGHT = ${COLUMN_BASE};
+  const float RELIEF = ${COLUMN_RELIEF};
 `;
 
 /** The swell that follows the cursor, or wanders when there is none. */
@@ -32,7 +42,7 @@ const swell = /* glsl */ `
 
   float pointerLift(vec2 p) {
     vec2 toPointer = p - uPointer.xy;
-    return uPointer.z * exp(-dot(toPointer, toPointer) / 1.5);
+    return uPointer.z * exp(-dot(toPointer, toPointer) / ${TERRAIN_WAVE.swellFalloff});
   }
 `;
 
@@ -55,6 +65,103 @@ const reliefPacking = /* glsl */ `
     return (bytes.x * 256.0 + bytes.y) / 65535.0 * RELIEF_RANGE;
   }
 `;
+
+/** Level approaches blend back into the animated terrain beyond the span. */
+const bridgeApproach = /* glsl */ `
+  float naturalGround(vec2 p) {
+    vec2 edge = abs(p - vec2(${BRIDGE.x}, ${BRIDGE.z})) - vec2(${BRIDGE.halfSpan + 0.22}, 0.59);
+    return smoothstep(0.0, 0.75, max(edge.x, edge.y));
+  }
+`;
+
+/** One plane supports both banks and every plank, post and rail. */
+const bridgeWave = /* glsl */ `
+  uniform vec2 uBridgeLift;
+  float bridgeLift(float x) {
+    float span = clamp((x - ${BRIDGE.x} + ${BRIDGE.halfSpan}) / ${(2 * BRIDGE.halfSpan).toFixed(2)}, 0.0, 1.0);
+    return mix(uBridgeLift.x, uBridgeLift.y, span);
+  }
+`;
+
+// The landing already includes the deck's lift in reliefAt().
+const terrainShock = /* glsl */ `
+  uniform float uShockStrength;
+
+  float shockLift(vec2 cell) {
+    if (uShockStrength == 0.0) return 0.0;
+    float behind = uPulse.z - distance(cell, uPulse.xy);
+    float crest = smoothstep(0.0, ${SHOCK.peak}, behind) * (1.0 - smoothstep(${SHOCK.peak}, ${SHOCK.tail}, behind));
+    return ${SHOCK.relief} * uShockStrength * crest * naturalGround(cell);
+  }
+`;
+
+const blastLookup = DO_EXPLOSION
+  ? /* glsl */ `
+  uniform sampler2D uBlastMap;
+  uniform float uHasBlast;
+  uniform float uBlastTime;
+
+  ivec2 terrainTexel(vec2 cell) {
+    ivec2 grid = textureSize(uBlastMap, 0).xx;
+    ivec2 texel = ivec2((cell / (2.0 * uRadius) + 0.5) * vec2(grid));
+    return clamp(texel, ivec2(0), grid - 1);
+  }
+  vec4 blastRecord(vec2 cell) {
+    return texelFetch(uBlastMap, terrainTexel(cell), 0);
+  }
+  float groundFraction(vec4 block) {
+    if (block.w == 0.0) return 1.0;
+    if (block.w == -1.0) return smoothstep(0.0, ${REBUILD_SECONDS}, uBlastTime - block.x);
+    return 0.0;
+  }
+
+`
+  : '';
+
+const blastTransform = DO_EXPLOSION
+  ? /* glsl */ `
+  ${blastLookup}
+  uniform sampler2D uBlastPose;
+  bool ejectBlock(vec2 anchor, float pivotY, float columnWidth, bool tree, inout vec3 world) {
+    if (uHasBlast == 0.0) return true;
+    ivec2 cell;
+    if (columnWidth > 0.0) {
+      cell = terrainTexel(anchor);
+    } else {
+      // The rows after the square terrain grid hold one pose per bridge fragment.
+      int width = textureSize(uBlastMap, 0).x;
+      cell = ivec2(gl_InstanceID % width, width + gl_InstanceID / width);
+    }
+    vec4 block = texelFetch(uBlastMap, cell, 0);
+    if (block.w == 0.0) return true;
+    if (block.w == -1.0) {
+      float growth = groundFraction(block);
+      world.y *= growth;
+      return growth > 0.0;
+    }
+    vec4 pose = texelFetch(uBlastPose, cell, 0);
+    vec3 local = world - vec3(anchor.x, pivotY, anchor.y);
+    if (columnWidth > 0.0) {
+      if (tree) local.y += columnWidth * 0.5 - pivotY;
+      else local.y *= columnWidth / (2.0 * pivotY);
+    } else {
+      local.y *= block.y;
+    }
+    if (block.w < -1.0) {
+      vec4 floorData = columnData(pose.xz);
+      if (any(notEqual(floorData, vec4(0.0)))) {
+        pose.y += groundFraction(blastRecord(pose.xz)) * (BASE_HEIGHT + RELIEF * unpackRelief(floorData.rg));
+      }
+    }
+    vec3 axis = vec3(block.x, 0.0, block.z);
+    float c = cos(pose.w), s = sin(pose.w);
+    local *= smoothstep(0.0, 0.55, abs(block.w) - 10.0 - uBlastTime);
+    vBlockLight = uLight * c - cross(axis, uLight) * s + axis * dot(axis, uLight) * (1.0 - c);
+    world = pose.xyz + local * c + cross(axis, local) * s + axis * dot(axis, local) * (1.0 - c);
+    return true;
+  }
+`
+  : '';
 
 /** Where the clouds are this frame; the data pass shades under them, the props pass draws them. */
 const clouds = /* glsl */ `
@@ -82,10 +189,13 @@ const columnLookup = /* glsl */ `
     return texelFetch(uColumns, texel, 0);
   }
 
+  ${bridgeApproach}
+
   // Easter-egg chaos: every column pulses on a phase of its own, hashed from its cell.
   float chaosRelief(vec2 cell, float relief) {
+    if (uBoost == 0.0) return relief;
     float phase = fract(sin(dot(cell, vec2(12.9898, 78.233))) * 43758.5453);
-    return relief * (1.0 + uBoost * (0.6 + 0.5 * sin(uTime * 7.0 + phase * 6.2831)));
+    return relief * (1.0 + uBoost * naturalGround(cell) * (0.6 + 0.5 * sin(uTime * 7.0 + phase * 6.2831)));
   }
 `;
 
@@ -144,7 +254,7 @@ const viewModes = /* glsl */ `
       return mix(uFog, ink.rgb, coverage * (1.0 - fog * 0.8) * ink.a);
     }
     if (mode < 2.5) {
-      // The classic normal view: remap [-1, 1] to RGB (in display space).
+      // Remap [-1, 1] to RGB (in display space).
       return mix(pow(normal * 0.5 + 0.5, vec3(2.2)), uFog, fog * 0.55);
     }
     float near = 1.0 - smoothstep(uDepthRange.x, uDepthRange.y, vViewDepth);
@@ -225,18 +335,46 @@ const heightField = /* glsl */ `
     return sum;
   }
 
+  ${bridgeApproach}
+
+  ${bridgeWave}
+
+  ${blastLookup}
+
+  float channelDistance(vec2 p) {
+    float dz = p.y - ${BRIDGE.z};
+    return abs(p.x - ${BRIDGE.x} - ${RAVINE.slope} * dz - ${RAVINE.bend} * abs(dz));
+  }
+
   // The terrain's relief at any point on the ground, not only at column centres:
   // shadow rays and crevice samples land between columns.
   float reliefAt(vec2 p) {
+    if (channelDistance(p) < ${RAVINE.halfWidth}) return 0.0;
+    float blend = naturalGround(p);
+    float bank = ${BRIDGE.bankRelief} + bridgeLift(p.x);
+    if (blend == 0.0) return bank;
     float fromCenter = length(p);
     // The island tapers to a low shelf at its rim.
     float rim = 1.0 - smoothstep(0.5, 1.0, fromCenter / uRadius);
 
     vec2 drift = vec2(uTime * 0.07, -uTime * 0.045);
     float ridges = pow(clamp(0.5 + fbm(p * 0.3 + drift) * 1.7, 0.0, 1.0), 1.6);
-    float ripple = 0.5 + 0.5 * sin(fromCenter * 1.5 - uTime * 0.9);
+    float ripple = 0.5 + 0.5 * sin(fromCenter * ${TERRAIN_WAVE.frequency} - uTime * ${TERRAIN_WAVE.speed});
 
-    return rim * (ridges * 0.9 + ripple * 0.07) + pointerLift(p) * 0.42;
+    float natural = rim * (ridges * 0.9 + ripple * 0.07) + pointerLift(p) * 0.42;
+    return mix(bank, natural, blend);
+  }
+
+  float occludingRelief(vec2 p) {
+    ${
+      DO_EXPLOSION
+        ? `if (uHasBlast > 0.0) {
+      float growth = groundFraction(blastRecord(p));
+      if (growth < 1.0) return growth > 0.0 ? growth * reliefAt(p) : 0.0;
+    }`
+        : ''
+    }
+    return reliefAt(p);
   }
 
   // How much of the light reaches a column top: 1 in the open, 0 in full shadow.
@@ -248,7 +386,7 @@ const heightField = /* glsl */ `
     float reach = SHADOW_FIRST_STEP;
     for (int i = 0; i < SHADOW_STEPS; i++) {
       float ray = top + uSun.z * reach;
-      float ground = BASE_HEIGHT + reliefAt(cell + uSun.xy * reach) * stretch;
+      float ground = BASE_HEIGHT + occludingRelief(cell + uSun.xy * reach) * stretch;
       // Clearance over distance is the angle by which the ray misses the terrain:
       // a near miss gives a penumbra, a hit gives full shadow.
       lit = min(lit, (ray - ground) * SHADOW_SHARPNESS / reach);
@@ -274,8 +412,8 @@ const heightField = /* glsl */ `
   float openness(vec2 cell, float relief) {
     vec2 reach = vec2(CREVICE_REACH, 0.0);
     float surroundings = 0.25 * (
-      reliefAt(cell + reach.xy) + reliefAt(cell - reach.xy) +
-      reliefAt(cell + reach.yx) + reliefAt(cell - reach.yx)
+      occludingRelief(cell + reach.xy) + occludingRelief(cell - reach.xy) +
+      occludingRelief(cell + reach.yx) + occludingRelief(cell - reach.yx)
     );
     return 1.0 - smoothstep(0.0, CREVICE_DEPTH, surroundings - relief);
   }
@@ -299,16 +437,23 @@ export const columnDataFragmentShader = /* glsl */ `
   uniform float uColumnsAcross;
   ${heightField}
   ${reliefPacking}
+  uniform vec4 uPulse;
+  ${terrainShock}
 
   void main() {
     // Texel (column, row) holds the grid cell of the same index; this is its centre.
     vec2 cell = (floor(gl_FragCoord.xy) + 0.5) / uColumnsAcross * (2.0 * uRadius) - uRadius;
+    // No geometry ever samples the removed cells or the corners outside the island.
+    if (dot(cell, cell) > uRadius * uRadius || channelDistance(cell) < ${RAVINE.halfWidth}) {
+      gl_FragColor = vec4(0.0);
+      return;
+    }
     float relief = reliefAt(cell);
     // The chaos mode stretches every column by its own amount; shadows use the average.
     float stretch = RELIEF * (1.0 + uBoost * 0.6);
 
     gl_FragColor = vec4(
-      packRelief(relief),
+      packRelief(relief + shockLift(cell)),
       sunlight(cell, relief, stretch),
       openness(cell, relief)
     );
@@ -325,6 +470,9 @@ export const terrainVertexShader = /* glsl */ `
 
   uniform float uCell;
   ${columnLookup}
+  flat varying vec3 vBlockLight;
+  uniform vec3 uLight;
+  ${blastTransform}
   ${swell}
   ${pulseRing}
 
@@ -333,29 +481,35 @@ export const terrainVertexShader = /* glsl */ `
   flat varying float vRelief;
   flat varying float vAccent;
   flat varying float vColumnHeight;
+  flat varying float vRing;
   flat varying float vSunlit;
   flat varying float vOpen;
 
   void main() {
+    vBlockLight = vec3(0.0);
     vec4 column = columnData(aCell);
-    float fromCenter = length(aCell);
     float lift = pointerLift(aCell);
     float relief = chaosRelief(aCell, unpackRelief(column.rg));
     float height = BASE_HEIGHT + relief * RELIEF;
 
-    vec4 viewPosition = viewMatrix * vec4(
-      aCell.x + position.x * uCell,
-      (position.y + 0.5) * height,
-      aCell.y + position.z * uCell,
-      1.0
-    );
+    vec3 world = vec3(aCell.x + position.x * uCell, (position.y + 0.5) * height, aCell.y + position.z * uCell);
+    ${
+      DO_EXPLOSION
+        ? `if (!ejectBlock(aCell, height * 0.5, uCell, false, world)) {
+      gl_Position = vec4(2.0, 2.0, 2.0, 1.0);
+      return;
+    }`
+        : ''
+    }
+    vec4 viewPosition = viewMatrix * vec4(world, 1.0);
     gl_Position = projectionMatrix * viewPosition;
 
     vLocal = position;
     vViewDepth = -viewPosition.z;
     vRelief = clamp(relief, 0.0, 1.0);
+    vRing = pulseRing(aCell);
     vAccent = clamp(
-      max(smoothstep(0.46, 0.74, relief), lift * 0.9) + uBoost * 0.6 + pulseRing(fromCenter) * 0.17,
+      max(smoothstep(0.46, 0.74, relief), lift * 0.9) + uBoost * 0.6 + vRing,
       0.0,
       1.0
     );
@@ -370,6 +524,7 @@ export const terrainVertexShader = /* glsl */ `
  * while a wipe crosses it without a second pass.
  */
 export const terrainFragmentShader = /* glsl */ `
+  flat varying vec3 vBlockLight;
   uniform vec3 uLow;
   uniform vec3 uHigh;
   uniform vec3 uAccent;
@@ -381,6 +536,7 @@ export const terrainFragmentShader = /* glsl */ `
   flat varying float vRelief;
   flat varying float vAccent;
   flat varying float vColumnHeight;
+  flat varying float vRing;
   flat varying float vSunlit;
   flat varying float vOpen;
 
@@ -396,11 +552,13 @@ export const terrainFragmentShader = /* glsl */ `
     float light = mix(side, 1.0, isTop) * mix(SHADE, 1.0, vSunlit) * mix(CREVICE, 1.0, vOpen);
 
     vec3 albedo = mix(uLow, uHigh, smoothstep(0.02, 0.75, vRelief));
-    // Elevation contours, as on a survey map: columns whose height lands near a
-    // multiple of the step get their tops inked, so the bands flow as the terrain does.
+    // Tops whose height lands near a multiple of the step get inked.
     float contour = smoothstep(0.38, 0.5, abs(fract(vColumnHeight * uContourFrequency) - 0.5));
     albedo = mix(albedo, uLine, contour * isTop * 0.2);
     albedo = mix(albedo, uAccent, vAccent);
+    if (dot(vBlockLight, vBlockLight) > 0.5) {
+      return albedo * (0.48 + 0.52 * max(dot(normal, vBlockLight), 0.0));
+    }
     return albedo * light;
   }
 
@@ -410,43 +568,62 @@ export const terrainFragmentShader = /* glsl */ `
     vec3 lit = mode < 0.5 ? shadeLit(normal) : vec3(0.0);
     vec4 ink = vec4(mix(uLine, uAccent, vAccent), mix(0.5, 0.95, vAccent));
 
-    gl_FragColor = vec4(viewColor(mode, normal, lit, ink), 1.0);
+    vec3 color = viewColor(mode, normal, lit, ink);
+    gl_FragColor = vec4(mode >= 1.5 ? mix(color, uAccent, vRing) : color, 1.0);
     #include <colorspace_fragment>
   }
 `;
 
 /**
- * Props: trees and clouds, one instanced draw call of the same unit box as the
+ * Props: bridge, trees and clouds, one instanced draw call of the same unit box as the
  * terrain. A tree stands on its cell's column and grows or shrinks with how suitable
- * that cell is right now; a cloud block rides its cloud. Both go through the same
+ * that cell is right now; a cloud block rides its cloud. Fixed bridge boxes sit directly in world space. All share the same
  * view modes as the terrain, so every render view shows them.
  */
 export const propVertexShader = /* glsl */ `
-  // xy: the tree's cell, or the block's offset from its cloud; z: cloud index, -1 for trees.
+  uniform float uCell;
+  // xy: world anchor or cloud-local offset. z: cloud index, -1 for trees, -1-depth for bridge boxes.
   attribute vec3 aAnchor;
   // x: width, y: height, z: lift above the anchor, w: tint.
   attribute vec4 aBox;
 
   ${columnLookup}
+  flat varying vec3 vBlockLight;
+  uniform vec3 uLight;
+  ${blastTransform}
+  ${bridgeWave}
+  ${pulseRing}
+  ${terrainShock}
   ${clouds}
 
   varying vec3 vLocal;
   varying float vViewDepth;
   flat varying float vTint;
+  flat varying float vPlankPulse;
   flat varying float vSunlit;
 
   void main() {
+    vBlockLight = vec3(0.0);
     vec3 foot;
     float grow;
     float sunlit = 1.0;
 
-    if (aAnchor.z < 0.0) {
+    vPlankPulse = 0.0;
+    float depth = aBox.x;
+    if (aAnchor.z < -1.0) {
+      foot = vec3(aAnchor.x, RELIEF * bridgeLift(aAnchor.x + position.x * aBox.x), aAnchor.y);
+      grow = 1.0;
+      depth = -1.0 - aAnchor.z;
+      if (aBox.w == 1.0) vPlankPulse = pulseRing(aAnchor.xy);
+    } else if (aAnchor.z < 0.0) {
       vec4 column = columnData(aAnchor.xy);
       float relief = unpackRelief(column.rg);
       // Trees keep to the middle slopes, out of the pits and off the peaks and shore.
+      // A passing wave carries the canopy without changing its growing conditions.
+      float soil = relief - shockLift(aAnchor.xy);
       grow =
-        smoothstep(0.07, 0.15, relief) *
-        (1.0 - smoothstep(0.34, 0.45, relief)) *
+        smoothstep(0.07, 0.15, soil) *
+        (1.0 - smoothstep(0.34, 0.45, soil)) *
         smoothstep(0.3, 0.75, column.a);
       foot = vec3(aAnchor.x, BASE_HEIGHT + chaosRelief(aAnchor.xy, relief) * RELIEF, aAnchor.y);
       sunlit = column.b;
@@ -456,11 +633,18 @@ export const propVertexShader = /* glsl */ `
       foot = cloud.xyz + vec3(aAnchor.x, 0.0, aAnchor.y) * grow;
     }
 
-    vec3 size = vec3(aBox.x, aBox.y, aBox.x) * grow;
-    vec4 viewPosition = viewMatrix * vec4(
-      foot + vec3(position.x * size.x, aBox.z * grow + (position.y + 0.5) * size.y, position.z * size.z),
-      1.0
-    );
+    vec3 size = vec3(aBox.x, aBox.y, depth) * grow;
+    vec3 world = foot + vec3(position.x * size.x, aBox.z * grow + (position.y + 0.5) * size.y, position.z * size.z);
+    ${
+      DO_EXPLOSION
+        ? `float pivotY = aAnchor.z < -1.0 ? foot.y + aBox.z + size.y * 0.5 : foot.y * 0.5;
+    if (aAnchor.z < 0.0 && !ejectBlock(aAnchor.xy, pivotY, aAnchor.z == -1.0 ? uCell : 0.0, true, world)) {
+      gl_Position = vec4(2.0, 2.0, 2.0, 1.0);
+      return;
+    }`
+        : ''
+    }
+    vec4 viewPosition = viewMatrix * vec4(world, 1.0);
     gl_Position = projectionMatrix * viewPosition;
 
     vLocal = position;
@@ -471,12 +655,14 @@ export const propVertexShader = /* glsl */ `
 `;
 
 export const propFragmentShader = /* glsl */ `
+  flat varying vec3 vBlockLight;
   uniform vec3 uHigh;
   uniform vec3 uAccent;
   ${viewModes}
   ${lighting}
 
   flat varying float vTint;
+  flat varying float vPlankPulse;
   flat varying float vSunlit;
 
   // Tints, in the order the geometry numbers them: trunk, crown, accent crown, cloud.
@@ -495,11 +681,12 @@ export const propFragmentShader = /* glsl */ `
     float diffuse = max(dot(normal, uLight), 0.0);
     float light = mix(0.5 + 0.45 * diffuse, 1.0, step(0.5, normal.y)) * mix(SHADE, 1.0, vSunlit);
 
+    if (dot(vBlockLight, vBlockLight) > 0.5) light = 0.48 + 0.52 * max(dot(normal, vBlockLight), 0.0);
     // Clouds are the page's lightest colour, which would vanish as wireframe on a
     // light page, so their outlines are drawn in the same ink as the terrain's.
     vec3 ink = vTint > 2.5 ? uLine : tint;
 
-    gl_FragColor = vec4(viewColor(mode, normal, tint * light, vec4(ink, 0.8)), 1.0);
+    gl_FragColor = vec4(mix(viewColor(mode, normal, tint * light, vec4(ink, 0.8)), uAccent, vPlankPulse), 1.0);
     #include <colorspace_fragment>
   }
 `;
@@ -547,7 +734,7 @@ export const gridFragmentShader = /* glsl */ `
     float lines = max(gridLines(uSpacing) * 0.45, gridLines(uSpacing * 4.0));
     float rim = 1.0 - smoothstep(uRadius * 0.42, uRadius, fromCenter);
 
-    float ring = pulseRing(fromCenter);
+    float ring = pulseRing(vGround);
 
     float pool = (1.0 - smoothstep(uIsland * 0.7, uIsland * 1.45, fromCenter)) * uPool;
 
@@ -559,7 +746,7 @@ export const gridFragmentShader = /* glsl */ `
     // columns stand slightly apart, and when the camera lines up with the grid the
     // gaps between them form a slit straight through the island; this closes it.
     float underIsland = 1.0 - smoothstep(uIsland - 0.2, uIsland - 0.05, fromCenter);
-    color = mix(color, uLow * 0.55, underIsland);
+    color = mix(color, mix(uLow * 0.55, uAccent, ring * 0.65), underIsland);
     alpha = mix(alpha, 1.0, underIsland);
     if (alpha < 0.004) discard;
 
