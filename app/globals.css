@@ -45,6 +45,8 @@
   --color-gda: var(--color-brand-gda);
   --color-dekoder: var(--color-brand-dekoder);
   --color-plana: var(--color-brand-plana);
+  --color-scribe: var(--color-brand-scribe);
+  --color-hikari: var(--color-brand-hikari);
 }
 
 @utility container {
@@ -74,6 +76,9 @@ html.dark {
   --color-brand-gda: #2ea5d6;
   --color-brand-dekoder: #e6ff00;
   --color-brand-plana: #ccff00;
+  /* Scribe's citron and Hikari's diamond pink, as their own sites use them. */
+  --color-brand-scribe: #d6ef80;
+  --color-brand-hikari: #ff75b6;
   --color-border: rgba(255, 255, 255, 0.09);
   --color-border-hover: rgba(255, 255, 255, 0.2);
   --color-on-accent: #0a0a0b;
@@ -98,6 +103,9 @@ html.light {
   --color-brand-dekoder: #1e3aff;
   /* Plan A's lime vanishes on a light page; their deep green does not. */
   --color-brand-plana: #26302d;
+  /* Each brand's own light-theme shade: pale citron would vanish on this page. */
+  --color-brand-scribe: #52651d;
+  --color-brand-hikari: #b52565;
   --color-border: rgba(0, 0, 0, 0.1);
   --color-border-hover: rgba(0, 0, 0, 0.24);
   --color-on-accent: #0a0a0b;

@@ -133,6 +133,13 @@ function ModelDiagram({ team, crew, order }: { team: Member[]; crew: number; ord
   );
 }
 
+/** Systems we built (AI with Zet Labs) get their own brand colour; names are the same in every language. */
+const BRAND_DOTS: Record<string, string> = {
+  Scribe: 'bg-scribe',
+  Hikari: 'bg-hikari',
+  AI: 'bg-zet',
+};
+
 export function HowWeWork() {
   const { t } = useTranslation();
   const specs = t('howWeWork.tools.specs', { returnObjects: true }) as {
@@ -208,15 +215,14 @@ export function HowWeWork() {
               </p>
 
               <dl className="mt-6 border-t border-line">
-                {specs.map((spec, index) => (
+                {specs.map((spec) => (
                   <div
                     key={spec.name}
                     className="flex items-baseline justify-between gap-6 border-b border-line py-3"
                   >
                     <dt className="flex items-center gap-2 font-mono text-meta text-ink">
-                      {/* The first entry is our own system, so it carries the accent. */}
                       <span
-                        className={`size-1.5 rounded-full ${index === 0 ? 'bg-accent' : 'bg-line-strong'}`}
+                        className={`size-1.5 rounded-full ${BRAND_DOTS[spec.name] ?? 'bg-line-strong'}`}
                       />
                       {spec.name}
                     </dt>
