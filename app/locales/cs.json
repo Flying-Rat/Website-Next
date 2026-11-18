@@ -21,6 +21,7 @@
     "trustedBy": "Důvěřují nám",
     "unlocked": "Achievement odemčen",
     "photoAlt": "Tým Flying Rat Studio",
+    "statusReply": "Všechno pípá, jak má.",
     "cta": {
       "projects": "Naše práce",
       "contact": "Ozvěte se"
@@ -86,6 +87,7 @@
     "privacy": {
       "label": "Zásady a data",
       "title": "Jak v našich hrách pracujeme s telemetrií, analytikou a daty hráčů.",
+      "statusReply": "Všechno pípá, jak má.",
       "cta": "Zásady ochrany soukromí"
     }
   },
@@ -130,9 +132,11 @@
   "contact": {
     "title": "Máte v hlavě projekt?",
     "subtitle": "Rádi si o něm popovídáme. Napište nám a uvidíme, co společně vymyslíme.",
+    "statusReply": "Všechno pípá, jak má.",
     "cta": "Napište Martymu",
     "person": {
       "role": "Zakladatel",
+      "statusReply": "Všechno pípá, jak má.",
       "cta": "Napište Martinovi"
     },
     "other": "Akce, komunita nebo cokoli dalšího? Napište Martymu.",
@@ -597,5 +601,14 @@
     "thanks": "Děkujeme všem, kdo píší, udržují a zdarma sdílejí nástroje, se kterými tvoříme.",
     "licences": "Každý projekt patří svým autorům a používáme ho pod licencí uvedenou vedle něj. Menší balíčky, na kterých web závisí, jsou uvedeny ve svých vlastních souborech, jak jejich licence vyžadují.",
     "trademarks": "Názvy her, loga a key art zobrazené na tomto webu patří jejich vlastníkům."
+  },
+  "console": {
+    "greeting": "tě vítá, zvídavá duše.",
+    "intro": "Konzole otevřená. No jasně.\nTaky je to první místo, kam se v každém buildu díváme.",
+    "status": "výška letu ...... cestovní\ncrunch .......... 404 nenalezeno\nfotbálek ........ obsazený\ndeskovky ........ po práci\nvolná místa ..... jo, fakt",
+    "statusReply": "Všechno pípá, jak má.",
+    "cta": "Jestli čteš console logy pro zábavu, měli bychom si promluvit:",
+    "hire": "Nemáš čas na small talk? Napiš hire() a dej Enter.",
+    "hireReply": "Dobrá volba. Jdeme na stránku s pozicemi…"
   }
 }

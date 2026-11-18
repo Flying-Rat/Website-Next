@@ -21,6 +21,7 @@
     "trustedBy": "Trusted by teams at",
     "unlocked": "Achievement unlocked",
     "photoAlt": "The Flying Rat Studio team",
+    "statusReply": "All systems squeak.",
     "cta": {
       "projects": "See Our Work",
       "contact": "Let's Talk"
@@ -86,6 +87,7 @@
     "privacy": {
       "label": "Policy & Data",
       "title": "Telemetry, analytics, and player data practices for our games.",
+      "statusReply": "All systems squeak.",
       "cta": "Privacy Policy"
     }
   },
@@ -130,9 +132,11 @@
   "contact": {
     "title": "Got a Project in Mind?",
     "subtitle": "We'd love to hear about it. Drop us a line and let's see what we can build together.",
+    "statusReply": "All systems squeak.",
     "cta": "Email Marty",
     "person": {
       "role": "Founder",
+      "statusReply": "All systems squeak.",
       "cta": "Email Martin"
     },
     "other": "Events, community or anything else? Write Marty.",
@@ -597,5 +601,14 @@
     "thanks": "Thank you to everyone who writes, maintains and gives away the tools we build with.",
     "licences": "Each project belongs to its authors and is used under the licence shown beside it. The smaller packages we depend on are credited in their own files, as their licences ask.",
     "trademarks": "Game titles, logos and key art shown on this site belong to their respective owners."
+  },
+  "console": {
+    "greeting": "welcomes you, curious mind.",
+    "intro": "You opened the console. Of course you did.\nIt's the first place we look in every build, too.",
+    "status": "altitude ........ cruising\ncrunch .......... 404 not found\nfoosball table .. occupied\nboard games ..... after hours\nopen seats ...... yes, really",
+    "statusReply": "All systems squeak.",
+    "cta": "If you read console logs for fun, we should talk:",
+    "hire": "No time for small talk? Type hire() and press Enter.",
+    "hireReply": "Good choice. Taking you to the jobs page…"
   }
 }

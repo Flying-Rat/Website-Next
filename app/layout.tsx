@@ -3,6 +3,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import type { Metadata, Viewport } from 'next';
 import { Geist_Mono, Mona_Sans } from 'next/font/google';
 
+import { ConsoleGreeting } from './components/ConsoleGreeting';
 import { ThemeProvider } from './components/ThemeProvider';
 import { pageMetadata } from './lib/seo';
 import {
@@ -121,6 +122,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <body className="bg-page text-ink antialiased">
         <ThemeProvider>{children}</ThemeProvider>
+        <ConsoleGreeting />
         <script
           type="application/ld+json"
           // oxlint-disable-next-line react/no-danger -- JSON-LD has to be raw script text; `<` is escaped so the payload cannot close the tag
