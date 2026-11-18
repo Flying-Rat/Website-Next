@@ -21,7 +21,6 @@
     "trustedBy": "Trusted by teams at",
     "unlocked": "Achievement unlocked",
     "photoAlt": "The Flying Rat Studio team",
-    "statusReply": "All systems squeak.",
     "cta": {
       "projects": "See Our Work",
       "contact": "Let's Talk"
@@ -87,7 +86,6 @@
     "privacy": {
       "label": "Policy & Data",
       "title": "Telemetry, analytics, and player data practices for our games.",
-      "statusReply": "All systems squeak.",
       "cta": "Privacy Policy"
     }
   },
@@ -132,11 +130,9 @@
   "contact": {
     "title": "Got a Project in Mind?",
     "subtitle": "We'd love to hear about it. Drop us a line and let's see what we can build together.",
-    "statusReply": "All systems squeak.",
     "cta": "Email Marty",
     "person": {
       "role": "Founder",
-      "statusReply": "All systems squeak.",
       "cta": "Email Martin"
     },
     "other": "Events, community or anything else? Write Marty.",

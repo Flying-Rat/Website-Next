@@ -21,7 +21,6 @@
     "trustedBy": "Důvěřují nám",
     "unlocked": "Achievement odemčen",
     "photoAlt": "Tým Flying Rat Studio",
-    "statusReply": "Všechno pípá, jak má.",
     "cta": {
       "projects": "Naše práce",
       "contact": "Ozvěte se"
@@ -87,7 +86,6 @@
     "privacy": {
       "label": "Zásady a data",
       "title": "Jak v našich hrách pracujeme s telemetrií, analytikou a daty hráčů.",
-      "statusReply": "Všechno pípá, jak má.",
       "cta": "Zásady ochrany soukromí"
     }
   },
@@ -132,11 +130,9 @@
   "contact": {
     "title": "Máte v hlavě projekt?",
     "subtitle": "Rádi si o něm popovídáme. Napište nám a uvidíme, co společně vymyslíme.",
-    "statusReply": "Všechno pípá, jak má.",
     "cta": "Napište Martymu",
     "person": {
       "role": "Zakladatel",
-      "statusReply": "Všechno pípá, jak má.",
       "cta": "Napište Martinovi"
     },
     "other": "Akce, komunita nebo cokoli dalšího? Napište Martymu.",
