@@ -1,6 +1,18 @@
-import { BoxGeometry, Color, Group, Mesh, ShaderMaterial, Vector3, Vector4 } from 'three';
+import {
+  BoxGeometry,
+  Color,
+  Data3DTexture,
+  Group,
+  Mesh,
+  NearestFilter,
+  RedFormat,
+  ShaderMaterial,
+  Vector2,
+  Vector3,
+  Vector4,
+} from 'three';
 
-import { HEIGHT } from './rockfallWorld';
+import { HEIGHT, SIZE } from './rockfallWorld';
 
 export type RockfallTones = { ink: string; paper: string; accent: string };
 
@@ -11,8 +23,19 @@ const VERTEX = /* glsl */ `
   varying float vHeight;
   varying float vLow;
   varying vec3 vMiddle;
+  #ifdef OCCLUDE
+    attribute vec4 aCell;
+    varying vec3 vLocal;
+    varying vec3 vFace;
+    varying vec4 vCell;
+  #endif
 
   void main() {
+    #ifdef OCCLUDE
+      vLocal = position;
+      vFace = normal;
+      vCell = aCell;
+    #endif
     mat4 placed = modelMatrix;
     #ifdef USE_INSTANCING
       placed = modelMatrix * instanceMatrix;
@@ -47,12 +70,65 @@ const FRAGMENT = /* glsl */ `
   varying float vHeight;
   varying float vLow;
 
+  #ifdef OCCLUDE
+    uniform sampler3D uSolid;
+    uniform vec2 uGrid;
+    uniform vec2 uOcclusion;
+    varying vec3 vLocal;
+    varying vec3 vFace;
+    varying vec4 vCell;
+
+    // Below the map is the floor, which counts as solid; beside it is open air.
+    float filled(vec3 cell) {
+      if (cell.y < 0.0) return 1.0;
+      if (min(cell.x, cell.z) < 0.0 || max(cell.x, cell.z) >= uGrid.x || cell.y >= uGrid.y) return 0.0;
+      return step(0.002, texture(uSolid, (cell.xzy + 0.5) / uGrid.xxy).r);
+    }
+
+    // Nothing over the middle of a face, rising to full along the edge it shares.
+    float toward(float t) {
+      float s = clamp(t * 2.0 - 1.0, 0.0, 1.0);
+      return s * s;
+    }
+
+    // The blocks round the cell a face looks into darken the face toward them,
+    // and anything a few levels over that cell shades it like a roof.
+    vec2 occlusion() {
+      vec3 n = floor(vFace + 0.5);
+      vec3 u = abs(n.x) > 0.5 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0);
+      vec3 v = abs(n.z) > 0.5 ? vec3(0.0, 1.0, 0.0) : vec3(0.0, 0.0, 1.0);
+      vec2 f = vec2(dot(vLocal, u), dot(vLocal, v)) + 0.5;
+      vec3 c = vCell.xyz + n;
+      float su = filled(c + u);
+      float sd = filled(c - u);
+      float sv = filled(c + v);
+      float sw = filled(c - v);
+      vec4 w = vec4(toward(f.x), toward(1.0 - f.x), toward(f.y), toward(1.0 - f.y));
+      float crease = su * w.x + sd * w.y + sv * w.z + sw * w.w;
+      crease += filled(c + u + v) * (1.0 - su) * (1.0 - sv) * w.x * w.z;
+      crease += filled(c + u - v) * (1.0 - su) * (1.0 - sw) * w.x * w.w;
+      crease += filled(c - u + v) * (1.0 - sd) * (1.0 - sv) * w.y * w.z;
+      crease += filled(c - u - v) * (1.0 - sd) * (1.0 - sw) * w.y * w.w;
+      float roof = 0.0;
+      for (int k = 1; k <= 8; k++) {
+        roof = max(roof, filled(c + vec3(0.0, float(k), 0.0)) * (1.0 - float(k - 1) / 9.0));
+      }
+      return vec2(min(crease, 1.0), roof) * vCell.w;
+    }
+  #endif
+
   void main() {
     float facing = dot(normalize(vNormal), uLight) * 0.5 + 0.5;
     vec3 color = mix(uShade, uLit, smoothstep(0.4, 0.95, facing));
     // Ground only, through uDepth: lighter higher up, darker toward each block's foot.
     float lift = 0.42 * clamp(vHeight / uTall, 0.0, 1.0) - 0.24 - 0.1 * vLow;
     color *= 1.0 + uDepth * lift;
+    #ifdef OCCLUDE
+      color *= 1.0 - dot(occlusion(), uOcclusion);
+      // A shade's difference from block to block, so a flat stretch still reads as built of them.
+      float grain = fract(sin(dot(vCell.xyz, vec3(12.9898, 78.233, 37.719))) * 43758.5453);
+      color *= 1.0 + 0.035 * (grain - 0.5) * vCell.w;
+    #endif
     // A hairline round each face, the same width on screen at any size.
     vec2 inset = min(vUv, 1.0 - vUv);
     float border = min(inset.x, inset.y);
@@ -97,6 +173,9 @@ const BUBBLE_FRAGMENT = /* glsl */ `
 // World space, from above and a little to the right: top brightest, then the
 // face on the right, then the one on the left.
 const LIGHT = new Vector3(0.45, 0.85, 0.1).normalize();
+const UP = new Vector3(0, 1, 0);
+/** How dark a face of the map gets in a crease, and under a roof. */
+const OCCLUSION = new Vector2(0.4, 0.22);
 const BLACK = new Color(0, 0, 0);
 const WHITE = new Color(1, 1, 1);
 /** A rat is modelled a little over a unit long, tail included, then brought down to fit one. */
@@ -160,13 +239,62 @@ function tint(from: Color, to: Color, amount: number) {
 /** The geometry and materials every block and rat on the map shares. */
 export class RockfallModels {
   readonly block = new BoxGeometry(1, 1, 1);
+  /** The map's own blocks; the game gives it a per-block `aCell` attribute. */
+  readonly ground = new BoxGeometry(1, 1, 1);
   private readonly aim = unaimed();
+  private readonly solid = new Data3DTexture(
+    new Uint8Array(SIZE * SIZE * HEIGHT),
+    SIZE,
+    SIZE,
+    HEIGHT,
+  );
   readonly stone = tone(1, this.aim);
   readonly coral = tone(0);
   /** The stone's tones on small pieces, without the map's shading by height. */
   readonly dust = tone(0);
   private readonly fur = tone(0);
   private readonly eye = tone(0);
+  /** The shot in flight: coral, and drawn over everything, as it comes from the viewer. */
+  readonly shot = tone(0);
+  /** Shared by every material, so the light can turn with the view. */
+  private readonly light = LIGHT.clone();
+
+  constructor() {
+    for (const material of this.materials()) {
+      material.uniforms.uLight.value = this.light;
+    }
+    this.shot.depthTest = false;
+    this.shot.depthWrite = false;
+    this.solid.format = RedFormat;
+    this.solid.minFilter = NearestFilter;
+    this.solid.magFilter = NearestFilter;
+    this.solid.unpackAlignment = 1;
+    this.stone.defines.OCCLUDE = '';
+    Object.assign(this.stone.uniforms, {
+      uSolid: { value: this.solid },
+      uGrid: { value: new Vector2(SIZE, HEIGHT) },
+      uOcclusion: { value: OCCLUSION.clone() },
+    });
+  }
+
+  /** Shades the map's blocks by what stands round them; call it whenever `solid` changes. */
+  setGround(solid: Uint8Array) {
+    this.solid.image.data = solid;
+    this.solid.needsUpdate = true;
+  }
+
+  /**
+   * Turns the light about the vertical by `angle`, so a view turned by as much
+   * still sees the top brightest, then its right-hand faces, then its left.
+   */
+  turnLight(angle: number) {
+    this.light.copy(LIGHT).applyAxisAngle(UP, angle);
+  }
+
+  /** Fades the shading by neighbours, from 0 to 1: a block shrinking away has none left. */
+  showOcclusion(shown: number) {
+    this.stone.uniforms.uOcclusion.value.copy(OCCLUSION).multiplyScalar(shown);
+  }
 
   /** A rat one unit long, standing on its origin and facing +Z; whoever places it sizes it. */
   rat() {
@@ -254,13 +382,20 @@ export class RockfallModels {
     }
     paint(this.eye, paper);
     paint(this.coral, accent, accent.clone().lerp(BLACK, 0.3));
+    paint(this.shot, accent, accent.clone().lerp(BLACK, 0.3));
     this.aim.uAimColor.value.copy(accent);
   }
 
   dispose() {
     this.block.dispose();
-    for (const material of [this.stone, this.coral, this.dust, this.fur, this.eye]) {
+    this.ground.dispose();
+    this.solid.dispose();
+    for (const material of this.materials()) {
       material.dispose();
     }
+  }
+
+  private materials() {
+    return [this.stone, this.coral, this.dust, this.fur, this.eye, this.shot];
   }
 }

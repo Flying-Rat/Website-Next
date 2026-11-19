@@ -10,10 +10,21 @@ import {
 import { GRAVITY } from './rockfallRubble';
 import { SIZE, type World, isSolid } from './rockfallWorld';
 
-export type ShardKind = 'dust' | 'spark';
+export type ShardKind = 'dust' | 'spark' | 'smoke';
 
 /** How many of each kind can be in the air at once; the oldest makes way for a new one. */
-const CAPACITY = 240;
+const CAPACITY = 360;
+/**
+ * How each kind moves: the share of gravity it feels (below 0 it rises), how
+ * quickly the air slows it, per second, how much it grows over its life, and
+ * how fast it turns against a thrown shard.
+ */
+type Behaviour = { weight: number; drag: number; grow: number; turn: number };
+const BEHAVIOUR: Record<ShardKind, Behaviour> = {
+  dust: { weight: 1, drag: 0, grow: 1, turn: 1 },
+  spark: { weight: 1, drag: 0, grow: 1, turn: 1 },
+  smoke: { weight: -0.04, drag: 2.2, grow: 2.1, turn: 0.12 },
+};
 /** Position, velocity, turning axis, angle, turning speed, size, life, age. */
 const STRIDE = 14;
 const BOUNCE = 0.3;
@@ -32,7 +43,11 @@ class Pool {
   private next = 0;
   private live = 0;
 
-  constructor(geometry: BufferGeometry, material: Material) {
+  constructor(
+    geometry: BufferGeometry,
+    material: Material,
+    private readonly behaviour: Behaviour,
+  ) {
     this.mesh = new InstancedMesh(geometry, material, CAPACITY);
     this.mesh.frustumCulled = false;
     for (let i = 0; i < CAPACITY; i++) {
@@ -59,7 +74,22 @@ class Pool {
     this.next = (this.next + 1) % CAPACITY;
     axis.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
     s.set(
-      [x, y, z, vx, vy, vz, axis.x, axis.y, axis.z, 0, 8 + Math.random() * 16, size, life, 0],
+      [
+        x,
+        y,
+        z,
+        vx,
+        vy,
+        vz,
+        axis.x,
+        axis.y,
+        axis.z,
+        0,
+        (8 + Math.random() * 16) * this.behaviour.turn,
+        size,
+        life,
+        0,
+      ],
       o,
     );
     this.live++;
@@ -70,6 +100,8 @@ class Pool {
       return;
     }
     const s = this.state;
+    const { weight, drag, grow } = this.behaviour;
+    const slow = Math.exp(-drag * dt);
     let live = 0;
     for (let i = 0; i < CAPACITY; i++) {
       const o = i * STRIDE;
@@ -83,7 +115,10 @@ class Pool {
         continue;
       }
       live++;
-      s[o + 4] -= GRAVITY * dt;
+      s[o + 4] -= GRAVITY * weight * dt;
+      s[o + 3] *= slow;
+      s[o + 4] *= slow;
+      s[o + 5] *= slow;
       s[o] += s[o + 3] * dt;
       s[o + 1] += s[o + 4] * dt;
       s[o + 2] += s[o + 5] * dt;
@@ -101,7 +136,8 @@ class Pool {
         s[o + 10] *= 0.5;
       }
       const t = s[o + 13] / life;
-      const left = t < 0.55 ? 1 : 1 - ((t - 0.55) / 0.45) ** 2;
+      const left =
+        (t < 0.55 ? 1 : 1 - ((t - 0.55) / 0.45) ** 2) * (1 + (grow - 1) * (1 - (1 - t) ** 3));
       at.set(s[o], s[o + 1], s[o + 2]);
       turn.setFromAxisAngle(axis.set(s[o + 6], s[o + 7], s[o + 8]), s[o + 9]);
       matrix.compose(at, turn, scale.setScalar(s[o + 11] * left));
@@ -133,15 +169,19 @@ export class Shards {
   private readonly pools: Record<ShardKind, Pool>;
 
   constructor(geometry: BufferGeometry, dust: Material, spark: Material) {
-    this.pools = { dust: new Pool(geometry, dust), spark: new Pool(geometry, spark) };
+    this.pools = {
+      dust: new Pool(geometry, dust, BEHAVIOUR.dust),
+      spark: new Pool(geometry, spark, BEHAVIOUR.spark),
+      smoke: new Pool(geometry, dust, BEHAVIOUR.smoke),
+    };
   }
 
   get meshes() {
-    return [this.pools.dust.mesh, this.pools.spark.mesh];
+    return Object.values(this.pools).map((pool) => pool.mesh);
   }
 
   get busy() {
-    return this.pools.dust.busy || this.pools.spark.busy;
+    return Object.values(this.pools).some((pool) => pool.busy);
   }
 
   /** One shard at `from`, moving at `velocity`, `size` blocks across, gone after `life` seconds. */
@@ -150,17 +190,20 @@ export class Shards {
   }
 
   step(world: World, dt: number) {
-    this.pools.dust.step(world, dt);
-    this.pools.spark.step(world, dt);
+    for (const pool of Object.values(this.pools)) {
+      pool.step(world, dt);
+    }
   }
 
   clear() {
-    this.pools.dust.clear();
-    this.pools.spark.clear();
+    for (const pool of Object.values(this.pools)) {
+      pool.clear();
+    }
   }
 
   dispose() {
-    this.pools.dust.dispose();
-    this.pools.spark.dispose();
+    for (const pool of Object.values(this.pools)) {
+      pool.dispose();
+    }
   }
 }
