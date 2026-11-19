@@ -592,6 +592,7 @@ export class RockfallGame {
    */
   private loosen(view: BlockView, chunk: boolean) {
     view.mode = 'loose';
+    view.drawn = false;
     view.age = 0;
     view.size = chunk ? CHUNK_SIZE : 1;
     view.rest = 0;
@@ -624,6 +625,7 @@ export class RockfallGame {
       }
       if (chunks >= CHUNKS.most || Math.random() > CHUNKS.share) {
         view.mode = 'gone';
+        view.drawn = false;
         if (this.animate && Math.random() < CHUNKS.dust) {
           const away = view.home.clone().sub(middle);
           const close = 1 - Math.min(1, away.length() / BLAST_RADIUS);
