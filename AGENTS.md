@@ -36,7 +36,8 @@ app/
   layout.tsx, page.tsx      root layout (fonts, metadata defaults, JSON-LD) and home page
   HomeClient.tsx            the home page's sections, in order
   components/               shared components; components/icons/ holds every icon
-  components/ShapeScene*    the three.js scene in the About section
+  components/aboutDemos/    the About section's swappable demos, one folder each: `island`
+                            (three.js, the default); see "About demos" below
   hooks/                    useInView, useScrollFrame, usePageIdle, useAnimationsEnabled, ...
   i18n/                     i18next setup; import `useTranslation`, `useLanguage` from here
   locales/en.json, cs.json  all user-facing copy
@@ -87,6 +88,18 @@ A page is a thin server file that exports `metadata` and renders a `*Client.tsx`
 - Add `'use client'` only to files that use hooks or event handlers.
 - Comments explain constraints the code cannot show (a browser bug, a hydration trap).
   Do not write comments that narrate what the code does.
+
+## About demos
+
+- A demo is a folder in `components/aboutDemos/` whose `index.ts` exports an `AboutDemo`
+  (see `types.ts`), plus one line in the registry, `aboutDemos/index.ts`. Removing a demo
+  is deleting both, and its `about.demos.<name>` copy.
+- `About.tsx` must not name or special-case a demo. What a demo needs from the section it
+  declares in its `AboutDemo`: room above the copy, the copy's width, the copy split into
+  `data-target` spans, a class on the section.
+- Demos do not import from each other. Shared code goes to `hooks/` or `components/`.
+- A demo cleans up after itself: listeners, observers, GL contexts and any element it adds
+  outside its own markup.
 
 ## Motion
 

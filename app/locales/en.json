@@ -35,9 +35,11 @@
       "years": "Years of Experience",
       "passion": "Passion"
     },
-    "focus": {
-      "explosion": "Blast a crater in the island",
-      "title": "Send a shockwave across the island"
+    "demos": {
+      "island": {
+        "explosion": "Blast a crater in the island",
+        "title": "Send a shockwave across the island"
+      }
     }
   },
   "whatWeDo": {

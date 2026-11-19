@@ -35,9 +35,11 @@
       "years": "Let zkušeností",
       "passion": "Vášeň"
     },
-    "focus": {
-      "explosion": "Vytvořte výbuchem kráter na ostrově",
-      "title": "Vyšlete rázovou vlnu přes ostrov"
+    "demos": {
+      "island": {
+        "explosion": "Vytvořte výbuchem kráter na ostrově",
+        "title": "Vyšlete rázovou vlnu přes ostrov"
+      }
     }
   },
   "whatWeDo": {
