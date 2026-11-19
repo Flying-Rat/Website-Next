@@ -1980,16 +1980,22 @@ a.work-platform:hover {
 
 /* ----------------------------------------------------------------- marty */
 
-/* Each band of the silk drifts on its own slow loop, offset by its distance from
-   the crest, so a ripple seems to run through the fabric. Transform only, a
-   handful of paths, and paused whenever the avatar is off screen. */
+/* The whole silk sways on a slow tilt while each band drifts on its own loop,
+   offset by its distance from the crest, so a ripple runs through the fabric.
+   Transform only, a handful of paths, and paused whenever it is off screen. */
 @media (prefers-reduced-motion: no-preference) {
+  html:not(.no-motion) .silk-sway {
+    transform-box: view-box;
+    transform-origin: 50px 50px;
+    animation: silk-sway 7s ease-in-out infinite alternate paused;
+  }
+
   html:not(.no-motion) .silk-band {
-    animation: silk-ripple 6s ease-in-out infinite alternate paused;
+    animation: silk-ripple 3.5s ease-in-out infinite alternate paused;
     animation-delay: calc(var(--band, 0) * -0.9s);
   }
 
-  html:not(.no-motion) .silk[data-live='true'] .silk-band {
+  html:not(.no-motion) .silk[data-live='true'] :is(.silk-sway, .silk-band) {
     animation-play-state: running;
   }
 }
@@ -2000,7 +2006,17 @@ a.work-platform:hover {
   }
 
   to {
-    transform: translate(-6px, -3.5px);
+    transform: translate(-12px, -6px);
+  }
+}
+
+@keyframes silk-sway {
+  from {
+    transform: rotate(-6deg);
+  }
+
+  to {
+    transform: rotate(6deg);
   }
 }
 

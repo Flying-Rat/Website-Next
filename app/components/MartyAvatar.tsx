@@ -26,15 +26,15 @@ function waveY(x: number, k: number) {
 
 function wavePath(k: number) {
   let d = '';
-  for (let x = -10; x <= 110; x += 4) {
-    d += `${x === -10 ? 'M' : 'L'}${x} ${waveY(x, k).toFixed(2)}`;
+  for (let x = -20; x <= 120; x += 4) {
+    d += `${x === -20 ? 'M' : 'L'}${x} ${waveY(x, k).toFixed(2)}`;
   }
   return d;
 }
 
 const CREST_PATH = wavePath(0);
 /** The coral body: everything below the crest. */
-const BODY = `${CREST_PATH}L110 110L-10 110Z`;
+const BODY = `${CREST_PATH}L120 125L-20 125Z`;
 /** Ink echoes above the crest, fading as they rise. */
 const ECHOES = [1, 2, 3, 4].map((step) => ({
   d: wavePath(-step),
@@ -74,22 +74,24 @@ export function MartyAvatar({ className = '', label }: MartyAvatarProps) {
       </clipPath>
       <g clipPath={`url(#${clipId})`}>
         <rect width="100" height="100" className="fill-surface-light" />
-        <g fill="none" strokeWidth="2.4" strokeLinecap="round" className="stroke-ink">
-          {ECHOES.map(({ d, opacity }, index) => (
-            <path
-              key={d}
-              d={d}
-              strokeOpacity={opacity}
-              className="silk-band"
-              style={band(index + 1)}
-            />
-          ))}
-        </g>
-        <path d={BODY} className="silk-band fill-accent" style={band(0)} />
-        <g fill="none" strokeWidth="2.4" className="stroke-page" strokeOpacity="0.45">
-          {FOLDS.map((d, index) => (
-            <path key={d} d={d} className="silk-band" style={band(index + 1)} />
-          ))}
+        <g className="silk-sway">
+          <g fill="none" strokeWidth="2.4" strokeLinecap="round" className="stroke-ink">
+            {ECHOES.map(({ d, opacity }, index) => (
+              <path
+                key={d}
+                d={d}
+                strokeOpacity={opacity}
+                className="silk-band"
+                style={band(index + 1)}
+              />
+            ))}
+          </g>
+          <path d={BODY} className="silk-band fill-accent" style={band(0)} />
+          <g fill="none" strokeWidth="2.4" className="stroke-page" strokeOpacity="0.45">
+            {FOLDS.map((d, index) => (
+              <path key={d} d={d} className="silk-band" style={band(index + 1)} />
+            ))}
+          </g>
         </g>
       </g>
     </svg>
