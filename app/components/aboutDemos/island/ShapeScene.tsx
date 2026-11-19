@@ -4,9 +4,9 @@ import { memo, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { DemoPlate } from '../DemoHud';
+import { readDemoLook } from '../demoLook';
 import { VIEW_MODES } from './ShapeScene/shapeSceneConstants';
 import { type SceneStats, ShapeSceneRuntime } from './ShapeScene/ShapeSceneRuntime';
-import { readSceneTheme } from './ShapeScene/shapeSceneTheme';
 import { useEasterEgg } from './ShapeScene/useEasterEgg';
 
 const EASTER_EMAIL = 'marty+levelup@flying-rat.studio';
@@ -66,7 +66,7 @@ export const ShapeScene = memo(function ShapeScene({
 
     const runtime = new ShapeSceneRuntime(container, {
       isMobile: window.innerWidth < 768 || 'ontouchstart' in window,
-      theme: readSceneTheme(),
+      theme: readDemoLook(),
       onModeChange: setMode,
       onStats: (stats) => {
         if (statsRef.current) {
@@ -98,7 +98,7 @@ export const ShapeScene = memo(function ShapeScene({
       const nowLight = root.classList.contains('light');
       if (nowLight !== isLight) {
         isLight = nowLight;
-        runtime.setTheme(readSceneTheme());
+        runtime.setTheme(readDemoLook());
         runtime.render();
       }
     });

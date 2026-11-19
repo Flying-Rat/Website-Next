@@ -12,11 +12,10 @@ import {
   Vector4,
 } from 'three';
 
+import { type DemoLook, blockLight, ratTones } from '../demoLook';
 import { HEIGHT, SIZE } from './rockfallWorld';
 
-export type RockfallTones = { ink: string; paper: string; accent: string };
-
-// Flat tone by which way a face points. Rats use the same boxes as the ground.
+// The demos' shared light on every box. Rats use the same boxes as the ground.
 const VERTEX = /* glsl */ `
   varying vec3 vNormal;
   varying vec2 vUv;
@@ -80,11 +79,10 @@ const VERTEX = /* glsl */ `
 `;
 
 const FRAGMENT = /* glsl */ `
-  uniform vec3 uLit;
-  uniform vec3 uShade;
-  uniform vec3 uLine;
+  uniform vec3 uHigh;
+  uniform vec3 uLow;
   uniform vec3 uLight;
-  uniform float uLines;
+  uniform float uSeam;
   uniform float uDepth;
   uniform float uTall;
   uniform vec4 uAim;
@@ -131,25 +129,30 @@ const FRAGMENT = /* glsl */ `
     }
   #endif
 
+  ${blockLight}
+
   void main() {
-    float facing = dot(normalize(vNormal), uLight) * 0.5 + 0.5;
-    vec3 color = mix(uShade, uLit, smoothstep(0.4, 0.95, facing));
-    // Ground only, through uDepth: lighter higher up, darker toward each block's foot.
-    float lift = 0.42 * clamp(vHeight / uTall, 0.0, 1.0) - 0.24 - 0.1 * vLow;
-    color *= 1.0 + uDepth * lift;
+    // Ground only, through uDepth: stone pales with height, a block at a time,
+    // and a wall darkens toward the floor it stands on.
+    float level = smoothstep(0.02, 0.75, vMiddle.y / uTall);
+    float foot = 0.3 + 0.7 * clamp(vHeight / uTall, 0.0, 1.0) - 0.08 * vLow;
+    vec3 color = mix(uHigh, mix(uLow, uHigh, level), uDepth);
+    color *= blockLight(normalize(vNormal), uLight, mix(1.0, foot, uDepth));
     #ifdef OCCLUDE
       color *= 1.0 - dot(occlusion(), uOcclusion);
       // Per-block grain, so a flat wall is not one tone.
       color *= 1.0 + 0.035 * vGrain;
     #endif
-    // A hairline round each face, the same width on screen at any size.
+    // No line between blocks: each face only falls away softly toward its edges,
+    // as if the blocks stood a little apart. Never narrower than a pixel or two,
+    // so it does not shimmer on small blocks.
     vec2 inset = min(vUv, 1.0 - vUv);
     float border = min(inset.x, inset.y);
-    float edge = 1.0 - smoothstep(0.0, 1.0, (border - 0.008) / max(fwidth(border), 0.0001));
-    color = mix(color, uLine, uLines * edge);
+    float edge = 1.0 - smoothstep(0.0, max(0.11, 1.5 * fwidth(border)), border);
+    color *= 1.0 - uSeam * edge * edge;
     // A block the aimed shot would destroy, whole: the rule goes by its middle.
     float doomed = uAimShown * step(distance(vMiddle, uAim.xyz), uAim.w);
-    color = mix(color, uAimColor, doomed * (0.26 + 0.6 * edge));
+    color = mix(color, uAimColor, doomed * (0.3 + 0.5 * edge));
     float heat = uBurnShown * (1.0 - smoothstep(uBurn.w * 0.45, uBurn.w, distance(vMiddle, uBurn.xyz)));
     color = mix(color, uAimColor, heat * (0.55 + 0.4 * edge));
     gl_FragColor = vec4(color, 1.0);
@@ -183,14 +186,14 @@ const BUBBLE_FRAGMENT = /* glsl */ `
   }
 `;
 
-// World space, from above and a little to the right: top brightest, then the
+// World space, from the right and well above the floor: top brightest, then the
 // face on the right, then the one on the left.
-const LIGHT = new Vector3(0.45, 0.85, 0.1).normalize();
+const LIGHT = new Vector3(0.78, 0.6, 0.17).normalize();
 const UP = new Vector3(0, 1, 0);
 /** How dark a face of the map gets in a crease, and under a roof. */
 const OCCLUSION = new Vector2(0.4, 0.22);
-const BLACK = new Color(0, 0, 0);
-const WHITE = new Color(1, 1, 1);
+/** How much a ground block's faces darken at their edges. */
+const SEAM = 0.3;
 /** A rat is modelled a little over a unit long, tail included, then brought down to fit one. */
 const RAT_SCALE = 0.85;
 
@@ -208,11 +211,10 @@ function tone(depth: number, aim: Aim = unaimed()) {
     vertexShader: VERTEX,
     fragmentShader: FRAGMENT,
     uniforms: {
-      uLit: { value: new Color() },
-      uShade: { value: new Color() },
-      uLine: { value: new Color() },
+      uHigh: { value: new Color() },
+      uLow: { value: new Color() },
       uLight: { value: LIGHT },
-      uLines: { value: 0 },
+      uSeam: { value: 0 },
       uDepth: { value: depth },
       // The height at which the ground is at its lightest.
       uTall: { value: HEIGHT * 0.78 },
@@ -231,22 +233,10 @@ function unaimed(): Aim {
   };
 }
 
-function paint(material: ShaderMaterial, lit: Color, shade: Color = lit) {
-  material.uniforms.uLit.value.copy(lit);
-  material.uniforms.uShade.value.copy(shade);
-}
-
-export function luminance(color: Color) {
-  return 0.2126 * color.r + 0.7152 * color.g + 0.0722 * color.b;
-}
-
-/** Part of the way from one colour to another, measured as the eye sees it. */
-function tint(from: Color, to: Color, amount: number) {
-  return from
-    .clone()
-    .convertLinearToSRGB()
-    .lerp(to.clone().convertLinearToSRGB(), amount)
-    .convertSRGBToLinear();
+/** `low` is what the ground is at the floor; everything else is one colour all over. */
+function paint(material: ShaderMaterial, high: Color, low: Color = high) {
+  material.uniforms.uHigh.value.copy(high);
+  material.uniforms.uLow.value.copy(low);
 }
 
 export class RockfallModels {
@@ -282,6 +272,7 @@ export class RockfallModels {
     this.solid.magFilter = NearestFilter;
     this.solid.unpackAlignment = 1;
     this.stone.defines.OCCLUDE = '';
+    this.stone.uniforms.uSeam.value = SEAM;
     Object.assign(this.stone.uniforms, {
       uSolid: { value: this.solid },
       uGrid: { value: new Vector2(SIZE, HEIGHT) },
@@ -373,29 +364,15 @@ export class RockfallModels {
     this.aim.uAimShown.value = shown;
   }
 
-  setTones(tones: RockfallTones) {
-    const ink = new Color(tones.ink);
-    const paper = new Color(tones.paper);
-    const accent = new Color(tones.accent);
-    // The ground stays close to the page and the rats take the page's ink, so on
-    // either theme the rats and their coral are the strongest things on the map.
-    if (luminance(ink) < luminance(paper)) {
-      paint(this.stone, tint(paper, WHITE, 0.6), tint(paper, ink, 0.3));
-      paint(this.dust, tint(paper, ink, 0.12), tint(paper, ink, 0.4));
-      this.stone.uniforms.uLine.value.copy(tint(paper, ink, 0.5));
-      this.stone.uniforms.uLines.value = 0.32;
-      paint(this.fur, tint(ink, paper, 0.28), ink);
-    } else {
-      paint(this.stone, tint(paper, ink, 0.38), tint(paper, ink, 0.12));
-      paint(this.dust, tint(paper, ink, 0.5), tint(paper, ink, 0.2));
-      this.stone.uniforms.uLine.value.copy(tint(paper, ink, 0.62));
-      this.stone.uniforms.uLines.value = 0.36;
-      paint(this.fur, ink, tint(ink, paper, 0.5));
-    }
-    paint(this.eye, paper);
-    paint(this.coral, accent, accent.clone().lerp(BLACK, 0.3));
-    paint(this.shot, accent, accent.clone().lerp(BLACK, 0.3));
-    this.aim.uAimColor.value.copy(accent);
+  setLook(look: DemoLook) {
+    paint(this.stone, look.high, look.low);
+    paint(this.dust, look.low.clone().lerp(look.high, 0.5));
+    const rat = ratTones(look);
+    paint(this.fur, rat.fur);
+    paint(this.eye, rat.eye);
+    paint(this.coral, look.accent);
+    paint(this.shot, look.accent);
+    this.aim.uAimColor.value.copy(look.accent);
   }
 
   dispose() {

@@ -6,6 +6,7 @@
  * is ever re-uploaded after start-up.
  */
 
+import { blockLight, floorGrid } from '../../demoLook';
 import {
   BRIDGE,
   CLOUD_COUNT,
@@ -269,6 +270,8 @@ const lighting = /* glsl */ `
 
   // Light left on a surface the sun does not reach.
   const float SHADE = 0.44;
+
+  ${blockLight}
 `;
 
 /**
@@ -544,12 +547,10 @@ export const terrainFragmentShader = /* glsl */ `
   const float CREVICE = 0.58;
 
   vec3 shadeLit(vec3 normal) {
-    float diffuse = max(dot(normal, uLight), 0.0);
     float isTop = step(0.5, normal.y);
-    // Sides darken toward the base, a cheap stand-in for ambient occlusion.
     float along = clamp(vLocal.y + 0.5, 0.0, 1.0);
-    float side = mix(0.3, 0.72, along) * (0.7 + 0.55 * diffuse);
-    float light = mix(side, 1.0, isTop) * mix(SHADE, 1.0, vSunlit) * mix(CREVICE, 1.0, vOpen);
+    float light =
+      blockLight(normal, uLight, along) * mix(SHADE, 1.0, vSunlit) * mix(CREVICE, 1.0, vOpen);
 
     vec3 albedo = mix(uLow, uHigh, smoothstep(0.02, 0.75, vRelief));
     // Tops whose height lands near a multiple of the step get inked.
@@ -719,19 +720,11 @@ export const gridFragmentShader = /* glsl */ `
 
   varying vec2 vGround;
 
-  // Coverage of grid lines at the given cell size, one pixel wide.
-  float gridLines(float spacing) {
-    vec2 cell = vGround / spacing;
-    vec2 footprint = fwidth(cell);
-    vec2 d = abs(fract(cell - 0.5) - 0.5) / max(footprint, vec2(1e-5));
-    float line = 1.0 - min(min(d.x, d.y), 1.0);
-    // Where cells shrink to a pixel or less the lines would merge into a haze: drop them.
-    return line * (1.0 - smoothstep(0.25, 0.8, max(footprint.x, footprint.y)));
-  }
+  ${floorGrid}
 
   void main() {
     float fromCenter = length(vGround);
-    float lines = max(gridLines(uSpacing) * 0.45, gridLines(uSpacing * 4.0));
+    float lines = floorGrid(vGround, uSpacing, 4.0);
     float rim = 1.0 - smoothstep(uRadius * 0.42, uRadius, fromCenter);
 
     float ring = pulseRing(vGround);

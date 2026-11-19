@@ -1,20 +1,20 @@
 import {
-  BufferGeometry,
   CircleGeometry,
   Color,
   DoubleSide,
-  Float32BufferAttribute,
   Group,
-  LineSegments,
   Mesh,
   MeshBasicMaterial,
+  PlaneGeometry,
   type Quaternion,
   RingGeometry,
   ShaderMaterial,
   type Vector3,
 } from 'three';
 
-/** Grid lines on each side of the middle one. */
+import { type DemoLook, floorGrid, floorInk } from '../demoLook';
+
+/** How far the floor runs from the cannon, in cells. */
 const CELLS = 13;
 
 const FADE_VERTEX = /* glsl */ `
@@ -33,24 +33,35 @@ const FADE_FRAGMENT = /* glsl */ `
   uniform float uReach;
   varying vec2 vPlane;
 
+  #ifdef RULED
+    ${floorGrid}
+  #endif
+
   void main() {
     // Narrower across than along: the lines running toward the viewer carry the
     // depth, while the ones spreading sideways would only cross the copy.
     float away = length(vPlane * vec2(1.7, 1.0)) / uReach;
-    gl_FragColor = vec4(uColor, uOpacity * (1.0 - smoothstep(0.08, 1.0, away)));
+    float alpha = uOpacity * (1.0 - smoothstep(0.08, 1.0, away));
+    #ifdef RULED
+      // A full rule round each cell, and a fine one halving it each way.
+      alpha *= floorGrid(vPlane, 0.5, 2.0);
+    #endif
+    if (alpha < 0.004) discard;
+    gl_FragColor = vec4(uColor, alpha);
     #include <colorspace_fragment>
   }
 `;
 
-function fading(opacity: number, reach: number) {
+function fading(reach: number, ruled = false) {
   return new ShaderMaterial({
     vertexShader: FADE_VERTEX,
     fragmentShader: FADE_FRAGMENT,
     transparent: true,
     depthWrite: false,
+    defines: ruled ? { RULED: '' } : {},
     uniforms: {
       uColor: { value: new Color() },
-      uOpacity: { value: opacity },
+      uOpacity: { value: 0 },
       uReach: { value: reach },
     },
   });
@@ -59,19 +70,14 @@ function fading(opacity: number, reach: number) {
 /** The grid dissolves with distance; the lines converging place the cannon in depth. */
 export class CannonGround {
   readonly group = new Group();
-  private readonly gridGeometry = new BufferGeometry();
-  private readonly gridMaterial = fading(0.26, CELLS);
+  private readonly gridGeometry = new PlaneGeometry(2 * CELLS, 2 * CELLS).rotateX(-Math.PI / 2);
+  private readonly gridMaterial = fading(CELLS, true);
   private readonly shadowGeometry = new CircleGeometry(1, 48).rotateX(-Math.PI / 2);
-  private readonly shadowMaterial = fading(0.22, 1.7);
+  private readonly shadowMaterial = fading(1.7);
   private readonly shadow: Mesh;
 
   constructor() {
-    const lines: number[] = [];
-    for (let i = -CELLS; i <= CELLS; i++) {
-      lines.push(i, 0, -CELLS, i, 0, CELLS, -CELLS, 0, i, CELLS, 0, i);
-    }
-    this.gridGeometry.setAttribute('position', new Float32BufferAttribute(lines, 3));
-    const grid = new LineSegments(this.gridGeometry, this.gridMaterial);
+    const grid = new Mesh(this.gridGeometry, this.gridMaterial);
     grid.renderOrder = -1;
     this.shadow = new Mesh(this.shadowGeometry, this.shadowMaterial);
     this.shadow.renderOrder = -2;
@@ -86,10 +92,12 @@ export class CannonGround {
     this.shadow.scale.setScalar(footprint);
   }
 
-  /** `shade` is the darker of the page's two tones: a shadow cannot be lighter than the page. */
-  setTones(ink: Color, shade: Color) {
-    this.gridMaterial.uniforms.uColor.value.copy(ink);
-    this.shadowMaterial.uniforms.uColor.value.copy(shade);
+  setLook(look: DemoLook) {
+    this.gridMaterial.uniforms.uColor.value.copy(look.line);
+    this.gridMaterial.uniforms.uOpacity.value = floorInk(look);
+    // A shadow is the darker of the page's two tones: it cannot be lighter than the page.
+    this.shadowMaterial.uniforms.uColor.value.copy(look.isLight ? look.line : look.fog);
+    this.shadowMaterial.uniforms.uOpacity.value = look.isLight ? 0.22 : 0.5;
   }
 
   dispose() {

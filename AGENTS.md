@@ -99,6 +99,9 @@ A page is a thin server file that exports `metadata` and renders a `*Client.tsx`
 - Every demo draws its hint and numbers with `DemoHud` (`aboutDemos/DemoHud.tsx`), which
   places them and draws the switcher under them, and puts its scene in `DEMO_SCENE`. Do
   not style or place a demo's plates by hand.
+- Every demo takes its look from `aboutDemos/demoLook.ts`: the stone, ink and coral tones
+  (`readDemoLook`), the soft light on a solid (`blockLight`) and the ruled floor
+  (`floorGrid`). No drawn outlines, no hard tone steps, no colours of a demo's own.
 - Switching demos must not move the page: the scene box, the plates' position, the room
   above the copy and the copy's width are the same for every demo.
 - `About.tsx` must not name or special-case a demo. What a demo needs from the section it

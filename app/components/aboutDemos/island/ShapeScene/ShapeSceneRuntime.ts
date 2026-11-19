@@ -24,6 +24,7 @@ import {
   WebGLRenderTarget,
 } from 'three';
 
+import type { DemoLook } from '../../demoLook';
 import { BlastPhysics } from './BlastPhysics';
 import {
   BRIDGE,
@@ -54,7 +55,6 @@ import {
   terrainFragmentShader,
   terrainVertexShader,
 } from './shapeSceneShaders';
-import type { SceneTheme } from './shapeSceneTheme';
 
 export interface SceneStats {
   drawCalls: number;
@@ -66,7 +66,7 @@ export interface SceneStats {
 
 export interface RuntimeOptions {
   isMobile: boolean;
-  theme: SceneTheme;
+  theme: DemoLook;
   /** Called whenever the active view mode changes, including the automatic cycle. */
   onModeChange?: (mode: number) => void;
   /** Called a couple of times a second with numbers read back from the renderer. */
@@ -553,7 +553,7 @@ export class ShapeSceneRuntime {
   }
 
   /** Swaps every theme-dependent color in place; no geometry or GL state is rebuilt. */
-  setTheme(theme: SceneTheme): void {
+  setTheme(theme: DemoLook): void {
     const terrain = this.terrainUniforms;
     terrain.uLow.value.copy(theme.low);
     terrain.uHigh.value.copy(theme.high);

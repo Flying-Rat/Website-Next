@@ -9,6 +9,7 @@ import {
   WebGLRenderer,
 } from 'three';
 
+import { readDemoLook } from '../demoLook';
 import { CannonModel, GROUND, HALF_WIDTH, HEIGHT, MUZZLE, RAT_RADIUS } from './cannon3dModel';
 import { CannonGround, Rings } from './cannon3dStage';
 
@@ -176,23 +177,11 @@ export class Cannon3dRound {
 
   /** Picks up the theme's colours again; call it once the theme has changed. */
   restyle() {
-    const css = getComputedStyle(document.documentElement);
-    const token = (name: string) => css.getPropertyValue(name).trim();
-    const tones = {
-      ink: token('--color-text'),
-      paper: token('--color-bg'),
-      accent: token('--color-accent'),
-    };
-    this.model.setTones({
-      ...tones,
-      accentDeep: token('--color-accent-dark'),
-      surfaces: [token('--color-surface'), token('--color-surface-lighter')],
-    });
-    this.ink.set(tones.ink);
-    this.accent.set(tones.accent);
-    const paper = new Color(tones.paper);
-    const inkIsDark = this.ink.r + this.ink.g + this.ink.b < paper.r + paper.g + paper.b;
-    this.ground.setTones(this.ink, inkIsDark ? this.ink : paper);
+    const look = readDemoLook();
+    this.model.setLook(look);
+    this.ground.setLook(look);
+    this.ink.copy(look.line);
+    this.accent.copy(look.accent);
     this.render();
   }
 
@@ -207,7 +196,6 @@ export class Cannon3dRound {
     // pixels cost more than they show.
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     this.renderer.setSize(width, height, false);
-    this.model.setViewport(width, height);
     this.layout();
     this.settle();
     this.render();

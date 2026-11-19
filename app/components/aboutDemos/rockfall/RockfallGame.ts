@@ -13,6 +13,7 @@ import {
   WebGLRenderer,
 } from 'three';
 
+import { readDemoLook } from '../demoLook';
 import { RockfallFloor } from './rockfallFloor';
 import { RockfallModels } from './rockfallModels';
 import { type Body, GRAVITY, type Impact, Rubble, bodyAt } from './rockfallRubble';
@@ -323,15 +324,9 @@ export class RockfallGame {
 
   /** Picks up the theme's colours again; call it once the theme has changed. */
   restyle() {
-    const css = getComputedStyle(document.documentElement);
-    const token = (name: string) => css.getPropertyValue(name).trim();
-    const tones = {
-      ink: token('--color-text'),
-      paper: token('--color-bg'),
-      accent: token('--color-accent'),
-    };
-    this.models.setTones(tones);
-    this.floor.setTones(tones);
+    const look = readDemoLook();
+    this.models.setLook(look);
+    this.floor.setLook(look);
     this.render();
   }
 
