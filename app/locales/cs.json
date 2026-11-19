@@ -53,6 +53,16 @@
         "score": "Skóre",
         "miss": "Vedle",
         "hit": "Zásah! +{{points}}"
+      },
+      "rockfall": {
+        "name": "Sesuv",
+        "hint": "Shoď všechny krysy",
+        "rats": "Krysy",
+        "shots": "Rány",
+        "won": "Všechny dole!",
+        "lost": "Došly rány",
+        "again": "Nová mapa",
+        "status": "Zbývá krys: {{rats}}, ran: {{shots}}"
       }
     }
   },

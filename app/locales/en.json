@@ -53,6 +53,16 @@
         "score": "Score",
         "miss": "Miss",
         "hit": "Hit! +{{points}}"
+      },
+      "rockfall": {
+        "name": "Rockfall",
+        "hint": "Knock every rat down",
+        "rats": "Rats",
+        "shots": "Shots",
+        "won": "All down!",
+        "lost": "Out of shots",
+        "again": "New map",
+        "status": "{{rats}} rats left, {{shots}} shots left"
       }
     }
   },
