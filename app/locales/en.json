@@ -46,6 +46,13 @@
         "score": "Score",
         "miss": "Miss",
         "hit": "Hit! +{{points}}"
+      },
+      "cannon3d": {
+        "name": "Rat cannon",
+        "hint": "Point at the text, click to fire",
+        "score": "Score",
+        "miss": "Miss",
+        "hit": "Hit! +{{points}}"
       }
     }
   },

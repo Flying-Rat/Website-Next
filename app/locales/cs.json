@@ -46,6 +46,13 @@
         "score": "Skóre",
         "miss": "Vedle",
         "hit": "Zásah! +{{points}}"
+      },
+      "cannon3d": {
+        "name": "Krysí kanón",
+        "hint": "Zamiř na text a klikni",
+        "score": "Skóre",
+        "miss": "Vedle",
+        "hit": "Zásah! +{{points}}"
       }
     }
   },
