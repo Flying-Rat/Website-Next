@@ -257,12 +257,12 @@ export const ShapeScene = memo(function ShapeScene({
       {hudTarget
         ? createPortal(
             <div className="scene-hud scene-enter-late">
-              <div className="scene-modes" role="group" aria-label="Render view">
+              <div className="demo-plate plate-segments" role="group" aria-label="Render view">
                 {VIEW_MODES.map((name, index) => (
                   <button
                     key={name}
                     type="button"
-                    className="scene-mode"
+                    className="plate-segment"
                     aria-pressed={mode === index}
                     onClick={() => selectMode(index)}
                   >
@@ -270,7 +270,7 @@ export const ShapeScene = memo(function ShapeScene({
                   </button>
                 ))}
               </div>
-              <p ref={statsRef} className="scene-stats" aria-hidden="true" />
+              <p ref={statsRef} className="demo-plate hud-plate scene-stats" aria-hidden="true" />
             </div>,
             hudTarget,
           )

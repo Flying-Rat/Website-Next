@@ -36,9 +36,9 @@ app/
   layout.tsx, page.tsx      root layout (fonts, metadata defaults, JSON-LD) and home page
   HomeClient.tsx            the home page's sections, in order
   components/               shared components; components/icons/ holds every icon
-  components/aboutDemos/    the About section's swappable demos, one folder each: `island`
-                            (three.js, the default) and, picked with `/?demo=<name>`,
-                            `cannon3d` and `rockfall`; see "About demos" below
+  components/aboutDemos/    the About section's swappable demos, one folder each:
+                            `rockfall` (the default), `cannon3d` and `island`, picked
+                            with the switcher under each demo; see "About demos" below
   hooks/                    useInView, useScrollFrame, usePageIdle, useAnimationsEnabled, ...
   i18n/                     i18next setup; import `useTranslation`, `useLanguage` from here
   locales/en.json, cs.json  all user-facing copy
@@ -93,11 +93,17 @@ A page is a thin server file that exports `metadata` and renders a `*Client.tsx`
 ## About demos
 
 - A demo is a folder in `components/aboutDemos/` whose `index.ts` exports an `AboutDemo`
-  (see `types.ts`), plus one line in the registry, `aboutDemos/index.ts`. Removing a demo
-  is deleting both, and its `about.demos.<name>` copy.
+  (see `types.ts`), plus one line in the registry, `aboutDemos/index.ts`, and its name in
+  `aboutDemos/choice.ts`, which orders the switcher. Removing a demo is deleting all
+  three, and its `about.demos.<name>` copy.
+- Every demo draws its hint and numbers with `DemoHud` (`aboutDemos/DemoHud.tsx`), which
+  places them and draws the switcher under them, and puts its scene in `DEMO_SCENE`. Do
+  not style or place a demo's plates by hand.
+- Switching demos must not move the page: the scene box, the plates' position, the room
+  above the copy and the copy's width are the same for every demo.
 - `About.tsx` must not name or special-case a demo. What a demo needs from the section it
-  declares in its `AboutDemo`: room above the copy, the copy's width, the copy split into
-  `data-target` spans, a class on the section.
+  declares in its `AboutDemo`: the copy split into `data-target` spans, a class on the
+  section.
 - Demos do not import from each other. Shared code goes to `hooks/` or `components/`.
 - A demo cleans up after itself: listeners, observers, GL contexts and any element it adds
   outside its own markup.

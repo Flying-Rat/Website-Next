@@ -535,6 +535,16 @@ html.light .partner-logo {
     backdrop-filter: none;
   }
 
+  .demo-plate {
+    --plate-fill: color-mix(in srgb, var(--color-bg) 94%, transparent);
+    backdrop-filter: none;
+  }
+
+  .demo-switcher {
+    background: color-mix(in srgb, var(--color-text) 94%, transparent);
+    backdrop-filter: none;
+  }
+
   [class*='backdrop-blur'] {
     backdrop-filter: none;
   }
@@ -1011,8 +1021,7 @@ html.light .unlock-toast {
   }
 }
 
-/* Top edge stays unclipped so `.hero-title-echo` stays locked to `h1.hero-title`
-   throughout the entrance, while the bottom sweeps open like a widescreen frame. */
+/* Top edge stays unclipped so `.hero-title-echo` stays locked to `h1.hero-title` throughout the entrance. */
 @keyframes hero-photo-unlock {
   from {
     opacity: 0;
@@ -1210,78 +1219,166 @@ html.light .unlock-toast {
 
 .scene-hud {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.625rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
   pointer-events: auto;
 }
 
-@media (min-width: 768px) {
-  .scene-hud {
-    align-items: flex-end;
+/* Too long for a phone; doubled up so it outranks the plate's own display. */
+.scene-stats.hud-plate {
+  display: none;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 640px) {
+  .scene-stats.hud-plate {
+    display: flex;
   }
 }
 
-.scene-modes,
-.scene-stats {
+/* ----------------------------------------------------------- demo plates */
+
+/* Frosted glass for the plates over the About demos: what runs behind them
+   blurs and pales, and a lit top edge gives the pane its thickness. */
+.demo-plate {
+  --plate-fill: color-mix(in srgb, var(--color-surface) 55%, transparent);
+  --plate-edge: var(--color-surface);
+  --plate-shadow: color-mix(in srgb, var(--color-text) 22%, transparent);
   border: 1px solid var(--color-border);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--color-bg) 88%, transparent);
-  backdrop-filter: blur(10px);
+  background: var(--plate-fill);
+  backdrop-filter: blur(24px) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 var(--plate-edge),
+    0 12px 28px -16px var(--plate-shadow);
 }
 
-.scene-modes {
-  display: inline-flex;
-  padding: 3px;
+html.dark .demo-plate {
+  --plate-fill: color-mix(in srgb, var(--color-surface-light) 55%, transparent);
+  --plate-edge: color-mix(in srgb, var(--color-text) 12%, transparent);
+  --plate-shadow: var(--color-bg);
 }
 
-.scene-mode {
-  padding: 0.4375rem 0.75rem;
+.hud-plate {
+  display: flex;
+  align-items: center;
+  height: 2rem;
+  padding: 0 0.875rem;
   border-radius: 999px;
   font-family: var(--font-mono);
   font-size: 0.6875rem;
   line-height: 1;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--color-text-muted);
+  white-space: nowrap;
+  color: var(--color-text-secondary);
+}
+
+/* One plate holding a choice of several: the chosen one is filled in. */
+.plate-segments {
+  display: inline-flex;
+  gap: 2px;
+  height: 2rem;
+  padding: 3px;
+  border-radius: 999px;
+}
+
+.plate-segment {
+  display: flex;
+  align-items: center;
+  padding: 0 0.75rem;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--color-text-secondary);
   cursor: pointer;
   transition:
     background-color 0.25s var(--ease-smooth),
     color 0.25s var(--ease-smooth);
 }
 
-@media (pointer: coarse) {
-  .scene-mode {
-    padding: 0.75rem 0.875rem;
-  }
-}
-
-.scene-mode:hover {
+.plate-segment:hover {
   color: var(--color-text);
 }
 
-.scene-mode[aria-pressed='true'] {
+.plate-segment[aria-pressed='true'] {
   background: var(--color-text);
   color: var(--color-bg);
 }
 
-.scene-stats {
-  display: none;
+/* Smoked with the page's ink, so it reads as the site's control and not as part of the game. */
+.demo-switcher {
+  display: inline-flex;
+  gap: 2px;
+  height: 2rem;
+  padding: 3px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--color-text) 70%, transparent);
+  background: color-mix(in srgb, var(--color-text) 78%, transparent);
+  backdrop-filter: blur(32px) saturate(140%);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--color-bg) 22%, transparent),
+    0 14px 30px -16px color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+
+html.dark .demo-switcher {
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--color-bg) 22%, transparent),
+    0 14px 30px -16px var(--color-bg);
+}
+
+.demo-switch {
+  display: flex;
   align-items: center;
-  /* A fixed height, so the plate does not jump when the first numbers arrive. */
-  height: 1.75rem;
+  gap: 0.4375rem;
   padding: 0 0.75rem;
+  border-radius: 999px;
   font-family: var(--font-mono);
   font-size: 0.6875rem;
   line-height: 1;
-  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   white-space: nowrap;
-  color: var(--color-text-secondary);
+  color: color-mix(in srgb, var(--color-bg) 80%, var(--color-text));
+  cursor: pointer;
+  transition:
+    background-color 0.25s var(--ease-smooth),
+    color 0.25s var(--ease-smooth);
 }
 
-@media (min-width: 640px) {
-  .scene-stats {
-    display: inline-flex;
+.demo-switch::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  margin-left: -0.25rem;
+  border-radius: 999px;
+  background: var(--color-accent);
+  display: none;
+}
+
+.demo-switch:hover {
+  color: var(--color-bg);
+}
+
+.demo-switch[aria-pressed='true'] {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.demo-switch[aria-pressed='true']::before {
+  display: block;
+}
+
+/* Swapping demos cross-fades the page, rather than cutting to the new layout. */
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.no-motion)::view-transition-old(root),
+  html:not(.no-motion)::view-transition-new(root) {
+    animation-duration: 0.5s;
+    animation-timing-function: var(--ease-smooth);
   }
 }
 

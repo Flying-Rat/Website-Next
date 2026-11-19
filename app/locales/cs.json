@@ -36,25 +36,26 @@
       "passion": "Vášeň"
     },
     "demos": {
+      "switch": "Vyber demo",
       "island": {
+        "name": "Renderlab",
         "explosion": "Vytvořte výbuchem kráter na ostrově",
         "title": "Vyšlete rázovou vlnu přes ostrov"
       },
       "cannon3d": {
-        "name": "Krysí kanón",
+        "name": "Balistika",
         "hint": "Zamiř na text a klikni",
         "score": "Skóre",
         "miss": "Vedle",
         "hit": "Zásah! +{{points}}"
       },
       "rockfall": {
-        "name": "Sesuv",
+        "name": "Demolice",
         "hint": "Shoď všechny krysy",
         "rats": "Krysy",
         "shots": "Rány",
         "won": "Všechny dole!",
         "lost": "Došly rány",
-        "again": "Nová mapa",
         "status": "Zbývá krys: {{rats}}, ran: {{shots}}"
       }
     }

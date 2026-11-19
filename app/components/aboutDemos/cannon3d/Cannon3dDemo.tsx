@@ -6,13 +6,16 @@ import { useElementSize } from '../../../hooks/useElementSize';
 import { useInView } from '../../../hooks/useInView';
 import { useThemeChange } from '../../../hooks/useThemeChange';
 import { useTranslation } from '../../../i18n';
-import { DemoHud, DemoNote, DemoStat } from '../DemoHud';
+import { DEMO_SCENE, DemoHud, DemoNote, DemoStat } from '../DemoHud';
 import type { AboutDemoProps } from '../types';
 import { Cannon3dRound } from './Cannon3dRound';
 
 export function Cannon3dDemo({ frame, copy, animate }: AboutDemoProps) {
   const { t } = useTranslation();
-  const miss = t('about.demos.cannon3d.miss');
+  // Read by the round when a shot misses, so a change of language does not
+  // rebuild the whole scene.
+  const missLabel = t('about.demos.cannon3d.miss');
+  const miss = useRef(missLabel);
   const field = useRef<HTMLDivElement>(null);
   const stage = useRef<HTMLButtonElement>(null);
   const note = useRef<HTMLSpanElement>(null);
@@ -43,7 +46,7 @@ export function Cannon3dDemo({ frame, copy, animate }: AboutDemoProps) {
       copy.current,
       note.current,
       animate,
-      miss,
+      () => miss.current,
       (points) => {
         setLast(points);
         setScore((value) => value + points);
@@ -52,13 +55,20 @@ export function Cannon3dDemo({ frame, copy, animate }: AboutDemoProps) {
     round.current = game;
 
     const visibility = () => game.setActive(!document.hidden);
-    const aim = (event: PointerEvent) => game.aimAt(event.clientX, event.clientY);
+    // Over the cannon itself the barrel would turn to point at its own body, so
+    // it stays on what it last aimed at; a click there fires at that.
+    const aim = (event: PointerEvent) => {
+      if (!cannon.contains(event.target as Node)) {
+        game.aimAt(event.clientX, event.clientY);
+      }
+    };
     const rest = () => game.clearAim();
     const fire = (event: MouseEvent) => {
-      // From the keyboard, or on the cannon itself, there is no letter under the
-      // pointer to aim at, so the cannon picks one.
-      if (event.detail === 0 || cannon.contains(event.target as Node)) {
+      // From the keyboard there is no pointer to aim with, so the cannon picks a letter.
+      if (event.detail === 0) {
         game.fire(null);
+      } else if (cannon.contains(event.target as Node)) {
+        game.fireAhead();
       } else if (document.getSelection()?.isCollapsed !== false) {
         game.fire({ x: event.clientX, y: event.clientY });
       }
@@ -77,7 +87,11 @@ export function Cannon3dDemo({ frame, copy, animate }: AboutDemoProps) {
       game.dispose();
       round.current = null;
     };
-  }, [visible, frame, copy, animate, miss]);
+  }, [visible, frame, copy, animate]);
+
+  useEffect(() => {
+    miss.current = missLabel;
+  }, [missLabel]);
 
   useEffect(() => {
     if (size) {
@@ -91,27 +105,27 @@ export function Cannon3dDemo({ frame, copy, animate }: AboutDemoProps) {
     <div ref={field} className="pointer-events-none absolute inset-0 z-20">
       {/* Above the canvas, which is added after it: the plates' glass has to blur
           the floor behind them, not sit under it. */}
-      <div className="absolute inset-0 z-10 container">
-        <div className="absolute inset-x-6 top-14 md:top-1/2 md:left-2/3 md:-translate-y-1/2">
+      <div className={`${DEMO_SCENE} z-10`}>
+        <div className="absolute inset-x-6 top-20 md:top-1/2 md:-translate-y-2/3">
           <button
             type="button"
             ref={stage}
             aria-label={t('about.demos.cannon3d.name')}
             aria-describedby="cannon3d-hint"
-            className="pointer-events-auto block h-36 w-full cursor-pointer rounded-sm select-none md:h-44"
+            className="pointer-events-auto mx-auto block h-36 w-full max-w-sm cursor-pointer rounded-sm select-none md:h-44"
           />
-          {/* Glass plates rather than bare text: the floor's grid runs behind them. */}
-          <DemoHud className="mt-10">
-            <DemoNote id="cannon3d-hint">{t('about.demos.cannon3d.hint')}</DemoNote>
-            <DemoStat label={t('about.demos.cannon3d.score')} value={score} />
-          </DemoHud>
-          <span role="status" className="sr-only">
-            {last === null
-              ? ''
-              : `${last ? t('about.demos.cannon3d.hit', { points: last }) : t('about.demos.cannon3d.miss')}. ${t('about.demos.cannon3d.score')} ${score}`}
-          </span>
         </div>
       </div>
+      {/* Glass plates rather than bare text: the floor's grid runs behind them. */}
+      <DemoHud>
+        <DemoNote id="cannon3d-hint">{t('about.demos.cannon3d.hint')}</DemoNote>
+        <DemoStat label={t('about.demos.cannon3d.score')} value={score} />
+      </DemoHud>
+      <span role="status" className="sr-only">
+        {last === null
+          ? ''
+          : `${last ? t('about.demos.cannon3d.hit', { points: last }) : t('about.demos.cannon3d.miss')}. ${t('about.demos.cannon3d.score')} ${score}`}
+      </span>
       <span
         ref={note}
         aria-hidden="true"

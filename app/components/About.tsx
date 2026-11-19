@@ -76,9 +76,11 @@ export function About() {
       )}
 
       <div className="pointer-events-none relative z-10 container">
-        <div className={`md:hidden ${demo.clearance}`} aria-hidden="true" />
+        {/* Room for the demo above the copy, the same for every demo so that
+            switching between them moves nothing. */}
+        <div className="h-88 md:hidden" aria-hidden="true" />
 
-        <FadeInView className={`pointer-events-auto max-w-xl ${demo.copyWidth ?? ''}`}>
+        <FadeInView className="pointer-events-auto max-w-xl">
           <div ref={copy}>
             <h2 className="section-title mb-5 md:mb-7">
               <SplitText text={t('about.title')} by={demo.splitCopy && 'letters'} />

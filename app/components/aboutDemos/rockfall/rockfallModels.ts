@@ -25,16 +25,44 @@ const VERTEX = /* glsl */ `
   varying vec3 vMiddle;
   #ifdef OCCLUDE
     attribute vec4 aCell;
+    uniform sampler3D uSolid;
+    uniform vec2 uGrid;
     varying vec3 vLocal;
     varying vec3 vFace;
-    varying vec4 vCell;
+    // The neighbours round the cell a face looks into: its four sides, its four
+    // corners, and how near a roof is over it. The same at every corner of a
+    // face, so they are read once a corner here, not once a pixel.
+    varying vec4 vSides;
+    varying vec4 vCorners;
+    varying float vRoof;
+    varying float vGrain;
+
+    // Below the map is the floor, which counts as solid; beside it is open air.
+    float filled(vec3 cell) {
+      if (cell.y < 0.0) return 1.0;
+      if (min(cell.x, cell.z) < 0.0 || max(cell.x, cell.z) >= uGrid.x || cell.y >= uGrid.y) return 0.0;
+      return step(0.002, texture(uSolid, (cell.xzy + 0.5) / uGrid.xxy).r);
+    }
   #endif
 
   void main() {
     #ifdef OCCLUDE
       vLocal = position;
       vFace = normal;
-      vCell = aCell;
+      vec3 n = floor(normal + 0.5);
+      vec3 u = abs(n.x) > 0.5 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0);
+      vec3 v = abs(n.z) > 0.5 ? vec3(0.0, 1.0, 0.0) : vec3(0.0, 0.0, 1.0);
+      vec3 c = aCell.xyz + n;
+      // A block that has left its cell takes no shade from it.
+      vSides = vec4(filled(c + u), filled(c - u), filled(c + v), filled(c - v)) * aCell.w;
+      vCorners =
+        vec4(filled(c + u + v), filled(c + u - v), filled(c - u + v), filled(c - u - v)) * aCell.w;
+      float roof = 0.0;
+      for (int k = 1; k <= 8; k++) {
+        roof = max(roof, filled(c + vec3(0.0, float(k), 0.0)) * (1.0 - float(k - 1) / 9.0));
+      }
+      vRoof = roof * aCell.w;
+      vGrain = (fract(sin(dot(aCell.xyz, vec3(12.9898, 78.233, 37.719))) * 43758.5453) - 0.5) * aCell.w;
     #endif
     mat4 placed = modelMatrix;
     #ifdef USE_INSTANCING
@@ -71,19 +99,13 @@ const FRAGMENT = /* glsl */ `
   varying float vLow;
 
   #ifdef OCCLUDE
-    uniform sampler3D uSolid;
-    uniform vec2 uGrid;
     uniform vec2 uOcclusion;
     varying vec3 vLocal;
     varying vec3 vFace;
-    varying vec4 vCell;
-
-    // Below the map is the floor, which counts as solid; beside it is open air.
-    float filled(vec3 cell) {
-      if (cell.y < 0.0) return 1.0;
-      if (min(cell.x, cell.z) < 0.0 || max(cell.x, cell.z) >= uGrid.x || cell.y >= uGrid.y) return 0.0;
-      return step(0.002, texture(uSolid, (cell.xzy + 0.5) / uGrid.xxy).r);
-    }
+    varying vec4 vSides;
+    varying vec4 vCorners;
+    varying float vRoof;
+    varying float vGrain;
 
     // Nothing over the middle of a face, rising to full along the edge it shares.
     float toward(float t) {
@@ -98,22 +120,14 @@ const FRAGMENT = /* glsl */ `
       vec3 u = abs(n.x) > 0.5 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0);
       vec3 v = abs(n.z) > 0.5 ? vec3(0.0, 1.0, 0.0) : vec3(0.0, 0.0, 1.0);
       vec2 f = vec2(dot(vLocal, u), dot(vLocal, v)) + 0.5;
-      vec3 c = vCell.xyz + n;
-      float su = filled(c + u);
-      float sd = filled(c - u);
-      float sv = filled(c + v);
-      float sw = filled(c - v);
+      vec4 s = vSides;
       vec4 w = vec4(toward(f.x), toward(1.0 - f.x), toward(f.y), toward(1.0 - f.y));
-      float crease = su * w.x + sd * w.y + sv * w.z + sw * w.w;
-      crease += filled(c + u + v) * (1.0 - su) * (1.0 - sv) * w.x * w.z;
-      crease += filled(c + u - v) * (1.0 - su) * (1.0 - sw) * w.x * w.w;
-      crease += filled(c - u + v) * (1.0 - sd) * (1.0 - sv) * w.y * w.z;
-      crease += filled(c - u - v) * (1.0 - sd) * (1.0 - sw) * w.y * w.w;
-      float roof = 0.0;
-      for (int k = 1; k <= 8; k++) {
-        roof = max(roof, filled(c + vec3(0.0, float(k), 0.0)) * (1.0 - float(k - 1) / 9.0));
-      }
-      return vec2(min(crease, 1.0), roof) * vCell.w;
+      float crease = dot(s, w);
+      crease += vCorners.x * (1.0 - s.x) * (1.0 - s.z) * w.x * w.z;
+      crease += vCorners.y * (1.0 - s.x) * (1.0 - s.w) * w.x * w.w;
+      crease += vCorners.z * (1.0 - s.y) * (1.0 - s.z) * w.y * w.z;
+      crease += vCorners.w * (1.0 - s.y) * (1.0 - s.w) * w.y * w.w;
+      return vec2(min(crease, 1.0), vRoof);
     }
   #endif
 
@@ -125,9 +139,8 @@ const FRAGMENT = /* glsl */ `
     color *= 1.0 + uDepth * lift;
     #ifdef OCCLUDE
       color *= 1.0 - dot(occlusion(), uOcclusion);
-      // A shade's difference from block to block, so a flat stretch still reads as built of them.
-      float grain = fract(sin(dot(vCell.xyz, vec3(12.9898, 78.233, 37.719))) * 43758.5453);
-      color *= 1.0 + 0.035 * (grain - 0.5) * vCell.w;
+      // Per-block grain, so a flat wall is not one tone.
+      color *= 1.0 + 0.035 * vGrain;
     #endif
     // A hairline round each face, the same width on screen at any size.
     vec2 inset = min(vUv, 1.0 - vUv);
@@ -236,7 +249,6 @@ function tint(from: Color, to: Color, amount: number) {
     .convertSRGBToLinear();
 }
 
-/** The geometry and materials every block and rat on the map shares. */
 export class RockfallModels {
   readonly block = new BoxGeometry(1, 1, 1);
   /** The map's own blocks; the game gives it a per-block `aCell` attribute. */
@@ -254,7 +266,7 @@ export class RockfallModels {
   readonly dust = tone(0);
   private readonly fur = tone(0);
   private readonly eye = tone(0);
-  /** The shot in flight: coral, and drawn over everything, as it comes from the viewer. */
+  /** Drawn over everything: it comes from the viewer, so a depth test would hide it. */
   readonly shot = tone(0);
   /** Shared by every material, so the light can turn with the view. */
   private readonly light = LIGHT.clone();

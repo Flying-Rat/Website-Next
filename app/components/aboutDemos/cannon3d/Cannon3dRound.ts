@@ -38,6 +38,14 @@ type Shaken = {
   force: number;
   age: number;
 };
+/** What a letter looked like on the page, read before anything on the page is changed. */
+type Snapshot = {
+  rect: DOMRect;
+  inline: boolean;
+  type: string[];
+  lineHeight: string;
+  whiteSpace: string;
+};
 
 // The copy lies on the plane z = 0, one unit to a CSS pixel, with the eye this far
 // in front of it and the cannon that far behind. Anything past the plane is
@@ -45,7 +53,7 @@ type Shaken = {
 const EYE = 1100;
 const DEPTH = 1500;
 /** Where things leave the picture: close enough to the eye to be several times life size. */
-const EXIT = EYE * 0.85;
+const EXIT = EYE * 0.92;
 const FLIGHT_SECONDS = 0.5;
 const SHOT_GRAVITY = 1800;
 const MAX_SHOTS = 6;
@@ -57,7 +65,7 @@ const LOOSE_GRAVITY = 520;
 const RETURN_AT = 1.9;
 const RETURN_FADE = 0.3;
 /** The shockwave reaches this many blast radii, travelling this fast in pixels a second. */
-const SHAKE_REACH = 2.8;
+const SHAKE_REACH = 3.2;
 const SHAKE_SPEED = 1100;
 const SHAKE_SECONDS = 0.75;
 const NOTE_SECONDS = 1.2;
@@ -99,6 +107,9 @@ export class Cannon3dRound {
   private readonly layer = document.createElement('div');
   private readonly basis = new Matrix4();
   private readonly facing = new Quaternion();
+  private readonly ahead = new Vector3();
+  private readonly side = new Vector3();
+  private readonly up = new Vector3();
   private readonly ink = new Color();
   private readonly accent = new Color();
   private width = 1;
@@ -119,6 +130,8 @@ export class Cannon3dRound {
   private reload = 0;
   private cooldown = 0;
   private pointer: Point | null = null;
+  /** The barrel is still swinging toward where it is aimed. */
+  private turning = false;
   private held: Point | null = null;
   private holding = 0;
   private shots: Shot[] = [];
@@ -133,7 +146,7 @@ export class Cannon3dRound {
     private copy: HTMLElement,
     private note: HTMLElement,
     private animate: boolean,
-    private missLabel: string,
+    private missLabel: () => string,
     private result: (points: number) => void,
   ) {
     this.renderer = new WebGLRenderer({
@@ -170,7 +183,11 @@ export class Cannon3dRound {
       paper: token('--color-bg'),
       accent: token('--color-accent'),
     };
-    this.model.setTones(tones);
+    this.model.setTones({
+      ...tones,
+      accentDeep: token('--color-accent-dark'),
+      surfaces: [token('--color-surface'), token('--color-surface-lighter')],
+    });
     this.ink.set(tones.ink);
     this.accent.set(tones.accent);
     const paper = new Color(tones.paper);
@@ -186,8 +203,11 @@ export class Cannon3dRound {
     }
     this.width = width;
     this.height = height;
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    // The canvas spans the whole section and is mostly empty: past 1.5 the extra
+    // pixels cost more than they show.
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     this.renderer.setSize(width, height, false);
+    this.model.setViewport(width, height);
     this.layout();
     this.settle();
     this.render();
@@ -213,14 +233,25 @@ export class Cannon3dRound {
   aimAt(clientX: number, clientY: number) {
     const field = this.mount.getBoundingClientRect();
     this.pointer = { x: clientX - field.left, y: clientY - field.top };
+    this.turning = true;
   }
 
   clearAim() {
     this.pointer = null;
   }
 
-  /** Fires at a point on the page, or at a letter of its own choosing without one. */
-  fire(client: Point | null) {
+  /** Fires where the barrel points now: for a click on the cannon itself. */
+  fireAhead() {
+    const field = this.mount.getBoundingClientRect();
+    const at = this.wanted();
+    this.fire({ x: at.x + field.left, y: at.y + field.top }, true);
+  }
+
+  /**
+   * Fires at a point on the page, or at a letter of its own choosing without one.
+   * `hold` keeps the barrel on that point for a moment after the shot.
+   */
+  fire(client: Point | null, hold = !client) {
     const rat = this.rats.find((candidate) => !candidate.visible);
     if (!this.active || this.cooldown > 0 || !rat) {
       return;
@@ -228,7 +259,9 @@ export class Cannon3dRound {
     // Font swaps and the section entrance can move things after mount.
     this.layout();
     const field = this.mount.getBoundingClientRect();
-    const targets = this.targets(field);
+    // Every letter's place is read only when this shot needs it: to pick one to
+    // aim at, or to score a shot that is not shown flying.
+    const targets = !client || !this.animate ? this.targets(field) : [];
     const pick = targets[Math.floor(Math.random() * targets.length)] ?? this.rest;
     const aim = client
       ? { x: client.x - field.left, y: client.y - field.top }
@@ -238,7 +271,7 @@ export class Cannon3dRound {
       this.result(this.struck(targets, aim).length * POINTS_PER_LETTER);
       return;
     }
-    if (!client) {
+    if (hold) {
       this.held = aim;
       this.holding = HOLD_SECONDS;
     }
@@ -275,15 +308,12 @@ export class Cannon3dRound {
     this.renderer.domElement.remove();
   }
 
-  /** Puts every letter back and empties the air. */
   private clear() {
     for (const piece of this.loose) {
       piece.clone?.remove();
       piece.target.element.style.removeProperty('opacity');
     }
-    for (const piece of this.shaken) {
-      this.still(piece);
-    }
+    this.stillAll();
     for (const shot of this.shots) {
       shot.rat.visible = false;
     }
@@ -369,7 +399,7 @@ export class Cannon3dRound {
 
   /** How far from the point of impact a letter is still carried off. */
   private blast() {
-    return RAT_RADIUS * this.scale * 1.1;
+    return RAT_RADIUS * this.scale * 1.35;
   }
 
   private struck(targets: Target[], at: Point) {
@@ -424,10 +454,10 @@ export class Cannon3dRound {
   }
 
   private placeShot(shot: Shot) {
-    shot.rat.position.copy(this.world(shot));
-    const ahead = new Vector3(shot.vx, -shot.vy, shot.vz).normalize();
-    const side = new Vector3().crossVectors(UP, ahead).normalize();
-    this.basis.makeBasis(side, new Vector3().crossVectors(ahead, side), ahead);
+    shot.rat.position.set(shot.x - this.eye.x, this.eye.y - shot.y, shot.z);
+    const ahead = this.ahead.set(shot.vx, -shot.vy, shot.vz).normalize();
+    const side = this.side.crossVectors(UP, ahead).normalize();
+    this.basis.makeBasis(side, this.up.crossVectors(ahead, side), ahead);
     shot.rat.quaternion.setFromRotationMatrix(this.basis);
     shot.rat.rotateZ(shot.roll);
   }
@@ -438,7 +468,6 @@ export class Cannon3dRound {
     }
     const elapsed = now - this.lastFrame;
     const lively =
-      this.pointer ||
       this.held ||
       this.shots.length ||
       this.loose.length ||
@@ -448,10 +477,16 @@ export class Cannon3dRound {
       this.reload > 0 ||
       this.cooldown > 0 ||
       this.noteAge < NOTE_SECONDS;
-    if (lively || elapsed >= IDLE_FRAME_MS - 1) {
+    // Aimed at a pointer that has stopped, the barrel comes to rest and nothing
+    // changes until the pointer moves again, so nothing is drawn. Left alone, it
+    // sways, which a lower rate shows well enough.
+    const due = this.pointer ? this.turning : elapsed >= IDLE_FRAME_MS - 1;
+    if (lively || due) {
       this.lastFrame = now;
       this.step(Math.min(0.05, elapsed / 1000));
       this.render();
+    } else if (this.pointer) {
+      this.lastFrame = now;
     }
     this.frame = requestAnimationFrame(this.tick);
   };
@@ -465,11 +500,11 @@ export class Cannon3dRound {
     }
     const ease = 1 - Math.exp(-dt * 14);
     const { yaw, pitch } = this.heading(this.launch(this.pivot, this.wanted()));
+    this.turning = Math.abs(yaw - this.yaw) + Math.abs(pitch - this.pitch) > 1e-4;
     this.yaw += (yaw - this.yaw) * ease;
     this.pitch += (pitch - this.pitch) * ease;
     this.recoil = Math.max(0, this.recoil - dt * 3.2);
     if (this.reload > 0) {
-      // The next rat pops up in the mouth, a little too far, then settles.
       this.reload = Math.max(0, this.reload - dt);
       const up = 1 - this.reload / RELOAD_SECONDS;
       this.model.passenger.visible = true;
@@ -512,16 +547,29 @@ export class Cannon3dRound {
     const field = this.mount.getBoundingClientRect();
     const radius = this.blast();
     const hits: Target[] = [];
+    const near: Target[] = [];
     for (const target of this.targets(field)) {
+      const distance = Math.hypot(target.x - shot.aim.x, target.y - shot.aim.y);
+      if (distance <= radius) {
+        hits.push(target);
+      } else if (distance <= radius * SHAKE_REACH) {
+        near.push(target);
+      }
+    }
+    // Everything is read off the page before anything on it is changed: reading
+    // after a change makes the browser lay the page out again, once per letter.
+    const snapshots = hits.map((target) => this.snapshot(target.element));
+    const inline = near.map((target) => this.wasInline(target.element));
+    for (const [index, target] of hits.entries()) {
+      const dx = target.x - shot.aim.x;
+      const dy = target.y - shot.aim.y;
+      this.loosen(target, snapshots[index], shot, dx, dy, Math.hypot(dx, dy) / radius);
+    }
+    for (const [index, target] of near.entries()) {
       const dx = target.x - shot.aim.x;
       const dy = target.y - shot.aim.y;
       const distance = Math.hypot(dx, dy);
-      if (distance <= radius) {
-        hits.push(target);
-        this.loosen(target, shot, dx, dy, distance / radius);
-      } else if (distance <= radius * SHAKE_REACH) {
-        this.shake(target.element, dx / distance, dy / distance, distance, radius);
-      }
+      this.shake(target.element, inline[index], dx / distance, dy / distance, distance, radius);
     }
     this.rings.open(
       this.world({ ...shot.aim, z: 0 }),
@@ -530,31 +578,46 @@ export class Cannon3dRound {
       radius * 0.5,
       radius * SHAKE_REACH,
       (radius * (SHAKE_REACH - 1)) / SHAKE_SPEED + 0.12,
-      0.32,
+      0.45,
     );
     this.note.textContent = hits.length
       ? `+${hits.length * POINTS_PER_LETTER}`
-      : this.missLabel.toUpperCase();
+      : this.missLabel().toUpperCase();
     this.note.dataset.hit = String(hits.length > 0);
     this.notePoint = { x: shot.aim.x, y: shot.aim.y - 18 };
     this.noteAge = 0;
     this.result(hits.length * POINTS_PER_LETTER);
   }
 
+  /** Whether a letter is inline on the page, whatever a shake has made it for now. */
+  private wasInline(element: HTMLElement) {
+    const shaking = this.shaken.find((piece) => piece.element === element);
+    return shaking ? shaking.inline : getComputedStyle(element).display === 'inline';
+  }
+
+  private snapshot(element: HTMLElement): Snapshot {
+    const type = getComputedStyle(element);
+    return {
+      rect: element.getBoundingClientRect(),
+      inline: this.wasInline(element),
+      type: TYPE.map((property) => type.getPropertyValue(property)),
+      lineHeight: type.lineHeight,
+      whiteSpace: type.whiteSpace,
+    };
+  }
+
   /** Lifts a letter off the page as a stand-in that can fly anywhere on screen. */
-  private loosen(target: Target, shot: Shot, dx: number, dy: number, away: number) {
+  private loosen(target: Target, seen: Snapshot, shot: Shot, dx: number, dy: number, away: number) {
     const shaking = this.shaken.find((piece) => piece.element === target.element);
     if (shaking) {
       this.still(shaking);
       this.shaken = this.shaken.filter((piece) => piece !== shaking);
     }
-    const rect = target.element.getBoundingClientRect();
-    const type = getComputedStyle(target.element);
-    const inline = type.display === 'inline';
+    const { rect, inline } = seen;
     const clone = target.element.cloneNode(true) as HTMLElement;
     delete clone.dataset.target;
-    for (const property of TYPE) {
-      clone.style.setProperty(property, type.getPropertyValue(property));
+    for (const [index, property] of TYPE.entries()) {
+      clone.style.setProperty(property, seen.type[index]);
     }
     Object.assign(clone.style, {
       position: 'absolute',
@@ -563,15 +626,15 @@ export class Cannon3dRound {
       top: `${rect.top}px`,
       width: `${rect.width}px`,
       // An inline box is as tall as its glyphs, so that height is its line too.
-      lineHeight: inline ? `${rect.height}px` : type.lineHeight,
-      whiteSpace: inline ? 'pre' : type.whiteSpace,
+      lineHeight: inline ? `${rect.height}px` : seen.lineHeight,
+      whiteSpace: inline ? 'pre' : seen.whiteSpace,
     });
     this.layer.append(clone);
     target.element.style.opacity = '0';
 
     const turn = away > 0.02 ? Math.atan2(dy, dx) : between(0, Math.PI * 2);
     // A modest push sideways: the growth toward the eye does most of the spreading.
-    const push = between(90, 300);
+    const push = between(140, 420);
     this.loose.push({
       target,
       clone,
@@ -580,23 +643,35 @@ export class Cannon3dRound {
       y: target.y,
       z: 0,
       vx: Math.cos(turn) * push + shot.vx * 0.12,
-      vy: Math.sin(turn) * push - between(60, 260),
-      vz: between(650, 1500),
+      vy: Math.sin(turn) * push - between(120, 380),
+      vz: between(1100, 2000) * (1 - 0.35 * away),
       axis: `${between(-1, 1).toFixed(2)},${between(-1, 1).toFixed(2)},${between(-1, 1).toFixed(2)}`,
       angle: 0,
-      spin: between(3, 9) * (Math.random() < 0.5 ? -1 : 1),
-      // The ones nearest the middle leave first, so the burst opens outward.
+      spin: between(4, 11) * (Math.random() < 0.5 ? -1 : 1),
+      // Negative age waits; nearer the middle leaves first.
       age: -0.08 * away,
     });
   }
 
-  private shake(element: HTMLElement, dx: number, dy: number, distance: number, radius: number) {
+  private shake(
+    element: HTMLElement,
+    inline: boolean,
+    dx: number,
+    dy: number,
+    distance: number,
+    radius: number,
+  ) {
     const span = radius * (SHAKE_REACH - 1);
     const at = this.shaken.findIndex((other) => other.element === element);
+    // A transform does nothing on an inline box, and the copy's letters are
+    // inline. They all change box together as the wave sets off, so the copy is
+    // laid out again once, not once for each letter the wave reaches.
+    if (inline) {
+      element.style.display = 'inline-block';
+    }
     const piece = {
       element,
-      // Its box may already be changed for an earlier wave; keep what it really was.
-      inline: at === -1 ? getComputedStyle(element).display === 'inline' : this.shaken[at].inline,
+      inline,
       dx,
       dy,
       force: 1 - (distance - radius) / span,
@@ -616,28 +691,37 @@ export class Cannon3dRound {
     }
   }
 
+  private stillAll() {
+    for (const piece of this.shaken) {
+      this.still(piece);
+    }
+    this.shaken = [];
+  }
+
   private stepShaken(dt: number) {
     if (!this.shaken.length) {
       return;
     }
-    this.shaken = this.shaken.filter((piece) => {
+    let shaking = false;
+    for (const piece of this.shaken) {
       piece.age += dt;
       if (piece.age < 0) {
-        return true;
+        shaking = true;
+        continue;
       }
       if (piece.age >= SHAKE_SECONDS) {
-        this.still(piece);
-        return false;
+        piece.element.style.removeProperty('transform');
+        continue;
       }
-      // A transform does nothing on an inline box, and the copy's letters are inline.
-      if (piece.inline) {
-        piece.element.style.display = 'inline-block';
-      }
+      shaking = true;
       const swing = piece.force * Math.exp(-6.5 * piece.age) * Math.sin(20 * piece.age);
-      const out = 18 * swing;
+      const out = 24 * swing;
       piece.element.style.transform = `translate(${piece.dx * out}px,${piece.dy * out}px) rotate(${0.22 * swing * piece.dx}rad)`;
-      return true;
-    });
+    }
+    // Every letter goes back to its own box at once, when the last one is still.
+    if (!shaking) {
+      this.stillAll();
+    }
   }
 
   private stepLoose(dt: number) {
@@ -677,12 +761,13 @@ export class Cannon3dRound {
       const near = EYE / (EYE - piece.z);
       const x = piece.from.x + (piece.x - piece.from.x) * near - piece.target.x;
       const y = piece.from.y + (piece.y - piece.from.y) * near - piece.target.y;
+      const pop = 1 + 0.45 * Math.exp(-14 * piece.age);
       const clone = piece.clone.style;
-      clone.transform = `translate(${x}px,${y}px) scale(${near}) rotate3d(${piece.axis},${piece.angle}rad)`;
+      clone.transform = `translate(${x}px,${y}px) scale(${near * pop}) rotate3d(${piece.axis},${piece.angle}rad)`;
       clone.opacity = String(Math.min(1, (EXIT - piece.z) / (EYE * 0.22)));
-      // Past the focus of the page they soften, like anything too close to a lens.
-      const soft = Math.min(7, (near - 2) * 1.8);
-      clone.filter = soft > 0.4 ? `blur(${soft.toFixed(1)}px)` : '';
+      // In a few steps: each new blur has the letter, many times its size, drawn again.
+      const soft = near < 2.4 ? 0 : near < 3.4 ? 2 : near < 4.6 ? 4 : 7;
+      clone.filter = soft ? `blur(${soft}px)` : '';
       return true;
     });
   }

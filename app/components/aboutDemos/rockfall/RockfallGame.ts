@@ -138,7 +138,6 @@ const RINGS = [
  */
 const RIPPLE = { speed: 44, width: 5, reach: 4.5 * BLAST_RADIUS, lift: 0.55 };
 const RIPPLE_SECONDS = (RIPPLE.reach + RIPPLE.width) / RIPPLE.speed;
-/** What a blast throws besides rubble: sparks, and puffs that rise as a plume. */
 const SPARKS = 70;
 const PUFFS = 18;
 /** Rubble already lying near a blast is thrown again, out to this many blast radii. */
@@ -160,10 +159,7 @@ const AIM_FOLLOW = 24;
 /** How long the result stays up before the map is cleared away. */
 const WON_SECONDS = 1.5;
 const LOST_SECONDS = 1.5;
-/**
- * The map goes from the top down and the front back: each block shrinks away in
- * `seconds`, the last starting `spread` after the first. Rats and loose rubble go first.
- */
+/** Each block shrinks away in `seconds`; the last starts `spread` after the first. Rats and loose rubble go first. */
 const LEAVE = { seconds: 0.32, spread: 0.6, sink: 0.6 };
 const LEAVE_SECONDS = LEAVE.spread + LEAVE.seconds;
 /** The whole map with room for debris, in blocks, as the view has to fit it. */
@@ -174,10 +170,7 @@ const SHADOW = { across: 0.38, along: 0.56 };
 const SHADOW_LIFT = 0.03;
 const LOOK_AT = new Vector3(0, 2.4 * RAT, 0);
 const EYE_DISTANCE = 50 * RAT;
-/**
- * The view circles the map, in radians a second, from the corner it starts at.
- * It keeps the same height, so the map is seen from as high on every side.
- */
+/** Radians a second, from the starting corner. Height stays fixed on every side. */
 const ORBIT = { speed: 0.07, start: Math.PI / 4 };
 /** A soft edge all round, so debris leaving the view dissolves instead of being cut. */
 const EDGE_FADE = 'radial-gradient(ellipse closest-side, #000 76%, transparent)';
@@ -386,7 +379,8 @@ export class RockfallGame {
     if (this.phase !== 'play') {
       // Without motion nothing clears the finished map away, so the next press does.
       if (!this.animate) {
-        this.restart();
+        this.build();
+        this.render();
       }
       return;
     }
@@ -408,7 +402,6 @@ export class RockfallGame {
       return;
     }
     const to = toScene(centre.x, centre.y, centre.z);
-    // From under the middle of the view, a little toward the side it is aimed at.
     const target = to.clone().project(this.camera);
     const from = new Vector3(target.x * 0.35, -1.3, target.z)
       .unproject(this.camera)
@@ -420,16 +413,6 @@ export class RockfallGame {
     this.shots.push({ ball, from, to, up, centre, age: 0 });
     this.retarget();
     this.tell();
-  }
-
-  /** Throws the map away and deals a new one. */
-  restart() {
-    if (this.animate && this.active) {
-      this.leave();
-      return;
-    }
-    this.build();
-    this.render();
   }
 
   dispose() {
@@ -542,7 +525,7 @@ export class RockfallGame {
       this.blockAt.set(cellKey(cell), view);
     }
     this.mesh.count = this.blockViews.length;
-    this.cells.needsUpdate = true;
+    this.markCells();
 
     this.ratViews = new Map();
     for (const model of [...this.rats, ...this.shadows]) {
@@ -605,7 +588,7 @@ export class RockfallGame {
     view.velocity.set(0, 0, 0);
     view.spin.set(0, 0, 0);
     this.cells.setW(view.index, 0);
-    this.cells.needsUpdate = true;
+    this.markCells();
   }
 
   /** Applies one blast to the world and sets everything it loosened in motion. */
@@ -750,7 +733,6 @@ export class RockfallGame {
     }
   }
 
-  /** A piece that came down whole meets the ground: some of it bursts, and the view shakes. */
   private land(impacts: Impact<BlockView>[]) {
     this.shake = Math.min(SHAKE.most, this.shake + impacts.length * SHAKE.landing);
     let puffs = 0;
@@ -792,10 +774,23 @@ export class RockfallGame {
   private moving() {
     return (
       this.blockViews.some((view) => view.mode === 'loose' && view.age < SETTLE_SECONDS) ||
-      [...this.ratViews.values()].some(
-        (view) => view.mode === 'riding' || view.mode === 'doomed' || view.mode === 'flying',
-      )
+      this.ratsMoving()
     );
+  }
+
+  private markCells() {
+    this.cells.clearUpdateRanges();
+    this.cells.addUpdateRange(0, this.mesh.count * 4);
+    this.cells.needsUpdate = true;
+  }
+
+  private ratsMoving() {
+    for (const view of this.ratViews.values()) {
+      if (view.mode === 'riding' || view.mode === 'doomed' || view.mode === 'flying') {
+        return true;
+      }
+    }
+    return false;
   }
 
   /** Ends the round once it is decided: every rat down, or no shots left to try. */
@@ -845,7 +840,6 @@ export class RockfallGame {
     this.shots = this.shots.filter((shot) => {
       shot.age += dt;
       const t = clamp01(shot.age / SHOT_SECONDS);
-      // Fast while near the eye and slower as it gets further in.
       const along = 1 - (1 - t) ** 2;
       shot.ball.position
         .lerpVectors(shot.from, shot.to, along)
@@ -1046,6 +1040,9 @@ export class RockfallGame {
       this.mesh.setMatrixAt(index, pose.matrix);
     }
     if (redrawn) {
+      // Only the blocks this map has: the buffer is sized for the largest map.
+      this.mesh.instanceMatrix.clearUpdateRanges();
+      this.mesh.instanceMatrix.addUpdateRange(0, this.mesh.count * 16);
       this.mesh.instanceMatrix.needsUpdate = true;
     }
 

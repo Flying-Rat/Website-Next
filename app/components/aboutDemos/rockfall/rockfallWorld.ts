@@ -459,21 +459,59 @@ export function blast(world: World, centre: Point, radius = BLAST_RADIUS): Outco
 
 /**
  * The first block a ray meets, and where it meets it, in block coordinates.
- * `direction` must be a unit vector.
+ * `direction` must be a unit vector. Walks the grid one cell at a time, so it
+ * looks at each cell the ray crosses once and misses none of them.
  */
 export function trace(world: World, origin: Point, direction: Point) {
-  const STEP = 0.1;
-  // Enough to reach the far side of the map from an eye well outside it.
-  const far = SIZE * 9;
-  for (let t = 0; t < far; t += STEP) {
-    const x = origin.x + direction.x * t;
-    const y = origin.y + direction.y * t;
-    const z = origin.z + direction.z * t;
-    if (isSolid(world, Math.floor(x), Math.floor(y), Math.floor(z))) {
+  const o = [origin.x, origin.y, origin.z];
+  const d = [direction.x, direction.y, direction.z];
+  const size = [SIZE, HEIGHT, SIZE];
+  // Where the ray enters and leaves the map's box.
+  let enter = 0;
+  let leave = Infinity;
+  for (let axis = 0; axis < 3; axis++) {
+    if (d[axis] === 0) {
+      if (o[axis] < 0 || o[axis] >= size[axis]) {
+        return null;
+      }
+      continue;
+    }
+    const a = (0 - o[axis]) / d[axis];
+    const b = (size[axis] - o[axis]) / d[axis];
+    enter = Math.max(enter, Math.min(a, b));
+    leave = Math.min(leave, Math.max(a, b));
+  }
+  if (enter > leave) {
+    return null;
+  }
+  const cell = [0, 0, 0];
+  const step = [0, 0, 0];
+  const next = [Infinity, Infinity, Infinity];
+  const across = [Infinity, Infinity, Infinity];
+  for (let axis = 0; axis < 3; axis++) {
+    const first = o[axis] + d[axis] * enter;
+    cell[axis] = Math.min(size[axis] - 1, Math.max(0, Math.floor(first)));
+    if (d[axis] !== 0) {
+      step[axis] = d[axis] > 0 ? 1 : -1;
+      across[axis] = Math.abs(1 / d[axis]);
+      const edge = cell[axis] + (d[axis] > 0 ? 1 : 0);
+      next[axis] = (edge - o[axis]) / d[axis];
+    }
+  }
+  let t = enter;
+  while (t <= leave) {
+    if (isSolid(world, cell[0], cell[1], cell[2])) {
       return {
-        cell: { x: Math.floor(x), y: Math.floor(y), z: Math.floor(z) },
-        point: { x, y, z },
+        cell: { x: cell[0], y: cell[1], z: cell[2] },
+        point: { x: o[0] + d[0] * t, y: o[1] + d[1] * t, z: o[2] + d[2] * t },
       };
+    }
+    const axis = next[0] < next[1] ? (next[0] < next[2] ? 0 : 2) : next[1] < next[2] ? 1 : 2;
+    t = next[axis];
+    cell[axis] += step[axis];
+    next[axis] += across[axis];
+    if (cell[axis] < 0 || cell[axis] >= size[axis]) {
+      return null;
     }
   }
   return null;
