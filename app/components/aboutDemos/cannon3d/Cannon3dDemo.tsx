@@ -6,6 +6,7 @@ import { useElementSize } from '../../../hooks/useElementSize';
 import { useInView } from '../../../hooks/useInView';
 import { useThemeChange } from '../../../hooks/useThemeChange';
 import { useTranslation } from '../../../i18n';
+import { DemoHud, DemoNote, DemoStat } from '../DemoHud';
 import type { AboutDemoProps } from '../types';
 import { Cannon3dRound } from './Cannon3dRound';
 
@@ -100,18 +101,10 @@ export function Cannon3dDemo({ frame, copy, animate }: AboutDemoProps) {
             className="pointer-events-auto block h-36 w-full cursor-pointer rounded-sm select-none md:h-44"
           />
           {/* Glass plates rather than bare text: the floor's grid runs behind them. */}
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-2">
-            <p
-              id="cannon3d-hint"
-              className="glass eyebrow flex h-9 items-center rounded-full border border-line px-4 text-secondary"
-            >
-              {t('about.demos.cannon3d.hint')}
-            </p>
-            <p className="glass eyebrow flex h-9 items-center rounded-full border border-line px-4 text-secondary">
-              {t('about.demos.cannon3d.score')}
-              <b className="ml-2 font-semibold text-ink tabular-nums">{score}</b>
-            </p>
-          </div>
+          <DemoHud className="mt-10">
+            <DemoNote id="cannon3d-hint">{t('about.demos.cannon3d.hint')}</DemoNote>
+            <DemoStat label={t('about.demos.cannon3d.score')} value={score} />
+          </DemoHud>
           <span role="status" className="sr-only">
             {last === null
               ? ''

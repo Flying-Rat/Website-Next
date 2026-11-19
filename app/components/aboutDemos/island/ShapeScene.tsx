@@ -3,6 +3,7 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
+import { DemoPlate } from '../DemoHud';
 import { VIEW_MODES } from './ShapeScene/shapeSceneConstants';
 import { type SceneStats, ShapeSceneRuntime } from './ShapeScene/ShapeSceneRuntime';
 import { readSceneTheme } from './ShapeScene/shapeSceneTheme';
@@ -291,11 +292,11 @@ export const ShapeScene = memo(function ShapeScene({
       )}
       {inputKeys.length > 0 && (
         <div className="absolute top-3 right-3 z-10">
-          <div className="flex items-center gap-1 rounded-full border border-white/10 bg-black/60 px-3 py-1.5 text-[10px] tracking-[0.2em] text-zinc-300 uppercase backdrop-blur">
+          <DemoPlate className="gap-2">
             {inputKeys.map((entry) => (
               <span key={entry.id}>{entry.key.replace('arrow', '')}</span>
             ))}
-          </div>
+          </DemoPlate>
         </div>
       )}
     </div>
