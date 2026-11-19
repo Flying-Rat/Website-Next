@@ -40,13 +40,6 @@
         "explosion": "Vytvořte výbuchem kráter na ostrově",
         "title": "Vyšlete rázovou vlnu přes ostrov"
       },
-      "cannon": {
-        "name": "Krysí kanón",
-        "hint": "Podrž a nabij, pusť a vystřel",
-        "score": "Skóre",
-        "miss": "Vedle",
-        "hit": "Zásah! +{{points}}"
-      },
       "cannon3d": {
         "name": "Krysí kanón",
         "hint": "Zamiř na text a klikni",
@@ -63,17 +56,6 @@
         "lost": "Došly rány",
         "again": "Nová mapa",
         "status": "Zbývá krys: {{rats}}, ran: {{shots}}"
-      },
-      "pinball": {
-        "name": "Pinball",
-        "hint": "Stiskni a zvedni páčky, tref kruh",
-        "ready": "Stiskni a pusť míček",
-        "still": "Hra potřebuje zapnuté animace",
-        "balls": "Míčky",
-        "won": "Prostříleno!",
-        "lost": "Došly míčky",
-        "again": "Nový stůl",
-        "status": "Zbývá míčků: {{balls}}"
       }
     }
   },

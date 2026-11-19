@@ -38,7 +38,7 @@ app/
   components/               shared components; components/icons/ holds every icon
   components/aboutDemos/    the About section's swappable demos, one folder each: `island`
                             (three.js, the default) and, picked with `/?demo=<name>`,
-                            `cannon`, `cannon3d`, `rockfall` and `pinball`; see "About demos" below
+                            `cannon3d` and `rockfall`; see "About demos" below
   hooks/                    useInView, useScrollFrame, usePageIdle, useAnimationsEnabled, ...
   i18n/                     i18next setup; import `useTranslation`, `useLanguage` from here
   locales/en.json, cs.json  all user-facing copy

@@ -40,13 +40,6 @@
         "explosion": "Blast a crater in the island",
         "title": "Send a shockwave across the island"
       },
-      "cannon": {
-        "name": "Rat cannon",
-        "hint": "Hold to charge, release to fire",
-        "score": "Score",
-        "miss": "Miss",
-        "hit": "Hit! +{{points}}"
-      },
       "cannon3d": {
         "name": "Rat cannon",
         "hint": "Point at the text, click to fire",
@@ -63,17 +56,6 @@
         "lost": "Out of shots",
         "again": "New map",
         "status": "{{rats}} rats left, {{shots}} shots left"
-      },
-      "pinball": {
-        "name": "Pinball",
-        "hint": "Press to flip, reach the ring",
-        "ready": "Press to drop a ball",
-        "still": "Turn on motion to play",
-        "balls": "Balls",
-        "won": "You're through!",
-        "lost": "Out of balls",
-        "again": "New table",
-        "status": "{{balls}} balls left"
       }
     }
   },
