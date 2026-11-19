@@ -39,6 +39,13 @@
       "island": {
         "explosion": "Vytvořte výbuchem kráter na ostrově",
         "title": "Vyšlete rázovou vlnu přes ostrov"
+      },
+      "cannon": {
+        "name": "Krysí kanón",
+        "hint": "Podrž a nabij, pusť a vystřel",
+        "score": "Skóre",
+        "miss": "Vedle",
+        "hit": "Zásah! +{{points}}"
       }
     }
   },

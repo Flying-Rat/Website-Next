@@ -39,6 +39,13 @@
       "island": {
         "explosion": "Blast a crater in the island",
         "title": "Send a shockwave across the island"
+      },
+      "cannon": {
+        "name": "Rat cannon",
+        "hint": "Hold to charge, release to fire",
+        "score": "Score",
+        "miss": "Miss",
+        "hit": "Hit! +{{points}}"
       }
     }
   },
