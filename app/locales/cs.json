@@ -296,13 +296,34 @@
       "title": "Vaše nástroje. Naše zázemí.",
       "body": "Pracujeme ve vašem stacku a ve vaší pipeline. Potřebujete víc výkonu? Připojte se k naší vlastní infrastruktuře, vyladěné na velkou zátěž a obrovské objemy dat.",
       "specs": [
-        { "name": "Scribe", "label": "Hyper-scale správa verzí" },
-        { "name": "Hikari", "label": "Zig + Odin, moderní meshlet renderer" },
-        { "name": "CI/CD", "label": "On-prem TeamCity a Scribe Flows" },
-        { "name": "AI", "label": "Vlastní modely i hardware, offline" },
-        { "name": "Zálohy", "label": "3-2-1-1-0, v základu" },
-        { "name": "Zabezpečení", "label": "Neveřejné, přístup jen pro zapojené" },
-        { "name": "Nástroje", "label": "Na míru projektu" }
+        {
+          "name": "Scribe",
+          "label": "Hyper-scale správa verzí"
+        },
+        {
+          "name": "Hikari",
+          "label": "Zig + Odin, moderní meshlet renderer"
+        },
+        {
+          "name": "CI/CD",
+          "label": "On-prem TeamCity a Scribe Flows"
+        },
+        {
+          "name": "AI",
+          "label": "Vlastní modely i hardware, offline"
+        },
+        {
+          "name": "Zálohy",
+          "label": "3-2-1-1-0, v základu"
+        },
+        {
+          "name": "Zabezpečení",
+          "label": "Post-kvantové TLS, audit logy"
+        },
+        {
+          "name": "Nástroje",
+          "label": "Na míru projektu"
+        }
       ]
     }
   },

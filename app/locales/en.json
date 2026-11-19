@@ -296,13 +296,34 @@
       "title": "Your tools. Our backup.",
       "body": "We work in your stack and your pipeline. Need more muscle? Plug into our in-house infrastructure, tuned for heavy workloads and massive data.",
       "specs": [
-        { "name": "Scribe", "label": "Hyper-scale version control" },
-        { "name": "Hikari", "label": "Zig + Odin, modern meshlet renderer" },
-        { "name": "CI/CD", "label": "On-prem TeamCity and Scribe Flows" },
-        { "name": "AI", "label": "Own models, own hardware, offline" },
-        { "name": "Backups", "label": "3-2-1-1-0, built in" },
-        { "name": "Security", "label": "Private, need-to-know access" },
-        { "name": "Tooling", "label": "To match your project" }
+        {
+          "name": "Scribe",
+          "label": "Hyper-scale version control"
+        },
+        {
+          "name": "Hikari",
+          "label": "Zig + Odin, modern meshlet renderer"
+        },
+        {
+          "name": "CI/CD",
+          "label": "On-prem TeamCity and Scribe Flows"
+        },
+        {
+          "name": "AI",
+          "label": "Own models, own hardware, offline"
+        },
+        {
+          "name": "Backups",
+          "label": "3-2-1-1-0, built in"
+        },
+        {
+          "name": "Security",
+          "label": "Post-quantum TLS, audit logs"
+        },
+        {
+          "name": "Tooling",
+          "label": "To match your project"
+        }
       ]
     }
   },
