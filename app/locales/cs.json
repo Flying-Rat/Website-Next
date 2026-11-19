@@ -643,7 +643,33 @@
     "status": "výška letu ...... cestovní\ncrunch .......... 404 nenalezeno\nfotbálek ........ obsazený\ndeskovky ........ po práci\nvolná místa ..... jo, fakt",
     "statusReply": "Všechno pípá, jak má.",
     "cta": "Jestli čteš console logy pro zábavu, měli bychom si promluvit:",
-    "hire": "Nemáš čas na small talk? Napiš hire() a dej Enter.",
-    "hireReply": "Dobrá volba. Jdeme na stránku s pozicemi…"
+    "hint": "Napiš rat.help() a uvidíš, co dalšího krysa umí.\nNemáš čas na small talk? hire() tě vezme rovnou na pozice.",
+    "hireReply": "Dobrá volba. Jdeme na stránku s pozicemi…",
+    "help": {
+      "status": "jak se studiu daří",
+      "games": "na čem jsme pracovali",
+      "fly": "uvidíš",
+      "theme": "rozsvítit, zhasnout",
+      "lang": "čeština ⇄ English",
+      "cheese": "nakrmit krysu",
+      "sudo": "no zkus to",
+      "contact": "kam napsat",
+      "hire": "rovnou na stránku s pozicemi"
+    },
+    "helpReply": "Vyber si. Krysa čeká.",
+    "gamesReply": "Příběhy za nimi najdeš na hlavní stránce v sekci Naše práce.",
+    "flyReply": "Jůůů!",
+    "flyGrounded": "Krysa zůstává na zemi: tvůj systém žádá omezený pohyb.",
+    "themeDark": "Zhasnuto.",
+    "themeLight": "Rozsvíceno.",
+    "langReply": "Přepnuto do češtiny.",
+    "cheese": [
+      "Mňam. Krysa děkuje.",
+      "Další? Krysa je dojatá.",
+      "Krysa je plná. A taky je to teď o kousek větší krysa.",
+      "Už žádný sýr. Krysa má za pět minut code review."
+    ],
+    "sudoReply": "rat není v souboru sudoers. Incident bude nahlášen Martymu.",
+    "contactReply": "Ozvi se."
   }
 }

@@ -643,7 +643,33 @@
     "status": "altitude ........ cruising\ncrunch .......... 404 not found\nfoosball table .. occupied\nboard games ..... after hours\nopen seats ...... yes, really",
     "statusReply": "All systems squeak.",
     "cta": "If you read console logs for fun, we should talk:",
-    "hire": "No time for small talk? Type hire() and press Enter.",
-    "hireReply": "Good choice. Taking you to the jobs page…"
+    "hint": "Type rat.help() to see what else the rat can do.\nNo time for small talk? hire() goes straight to the jobs page.",
+    "hireReply": "Good choice. Taking you to the jobs page…",
+    "help": {
+      "status": "how the studio is doing",
+      "games": "what we've worked on",
+      "fly": "you'll see",
+      "theme": "lights on, lights off",
+      "lang": "English ⇄ čeština",
+      "cheese": "feed the rat",
+      "sudo": "go on, try it",
+      "contact": "where to write",
+      "hire": "straight to the jobs page"
+    },
+    "helpReply": "Pick one. The rat is waiting.",
+    "gamesReply": "The stories behind them are on the home page, under Our Work.",
+    "flyReply": "Wheee!",
+    "flyGrounded": "The rat stays grounded: your system asks for reduced motion.",
+    "themeDark": "Lights off.",
+    "themeLight": "Lights on.",
+    "langReply": "Switched to English.",
+    "cheese": [
+      "Om nom. The rat thanks you.",
+      "Another one? The rat is touched.",
+      "The rat is full. The rat is also now a slightly larger rat.",
+      "No more cheese. The rat has a code review in five minutes."
+    ],
+    "sudoReply": "rat is not in the sudoers file. This incident will be reported to Marty.",
+    "contactReply": "Say hi."
   }
 }

@@ -121,8 +121,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       suppressHydrationWarning
     >
       <body className="bg-page text-ink antialiased">
-        <ThemeProvider>{children}</ThemeProvider>
-        <ConsoleGreeting />
+        <ThemeProvider>
+          {children}
+          <ConsoleGreeting />
+        </ThemeProvider>
         <script
           type="application/ld+json"
           // oxlint-disable-next-line react/no-danger -- JSON-LD has to be raw script text; `<` is escaped so the payload cannot close the tag

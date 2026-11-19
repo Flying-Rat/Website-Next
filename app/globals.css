@@ -2474,3 +2474,40 @@ html.light .ai-panel {
 .ai-flip[data-flipped='true'] > span:last-child {
   transform: none;
 }
+
+/* ------------------------------------------------------------ rat.fly() */
+
+/* The rat that `rat.fly()` sends across the page from the console. It is only
+   visible while the flight runs, so it never lingers when motion is off. */
+.rat-flight {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.no-motion) .rat-flight {
+    animation: rat-flight 3.2s ease-in-out forwards;
+  }
+}
+
+@keyframes rat-flight {
+  0% {
+    opacity: 1;
+    transform: translate(-10rem, 6rem) rotate(-8deg);
+  }
+  20% {
+    transform: translate(18vw, -2rem) rotate(5deg) scale(1.06);
+  }
+  40% {
+    transform: translate(38vw, 3rem) rotate(-6deg);
+  }
+  60% {
+    transform: translate(58vw, -3rem) rotate(6deg) scale(1.06);
+  }
+  80% {
+    transform: translate(78vw, 2rem) rotate(-5deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(calc(100vw + 2rem), -4rem) rotate(4deg);
+  }
+}
