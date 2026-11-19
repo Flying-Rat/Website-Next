@@ -111,6 +111,11 @@
   },
   "community": {
     "title": "Giving Back to the Community",
+    "note": {
+      "lead": "We love video games and the community around them.",
+      "body1": "I grew up learning from people who generously shared their knowledge, experience, and passion. Without them, I wouldn't be where I am today.",
+      "body2": "In the age of AI, I believe giving back matters more than ever. We want to keep that spirit alive: sharing what we learn, inspiring others, and helping the next generation of creators go even further than we did."
+    },
     "items": {
       "gda": {
         "tag": "Board member",
@@ -241,6 +246,10 @@
         }
       }
     }
+  },
+  "motto": {
+    "line1": "We don’t intend to catch up.",
+    "line2": "We intend to set the pace."
   },
   "howWeWork": {
     "title": "How We Work",

@@ -1482,6 +1482,14 @@ html.light .work {
   opacity: 0;
 }
 
+/* The drift moves the wrapper, never the blur: a changing filter re-blurs the whole
+   section every frame, a moving layer of already-blurred pixels costs almost nothing. */
+.work-ambient-drift,
+.work-glow-drift {
+  position: absolute;
+  inset: 0;
+}
+
 .work-list {
   border-top: 1px solid var(--color-border);
 }
@@ -1965,6 +1973,41 @@ a.work-platform:hover {
     animation: work-glow-in 1.2s var(--ease-smooth) both;
   }
 
+  html:not(.no-motion) .work-ambient-drift {
+    animation: work-ambient-drift 34s ease-in-out infinite alternate paused;
+  }
+
+  html:not(.no-motion) .work-glow-drift {
+    animation: work-glow-drift 21s ease-in-out infinite alternate paused;
+  }
+
+  html:not(.no-motion) .work[data-live='true'] :is(.work-ambient-drift, .work-glow-drift) {
+    animation-play-state: running;
+  }
+
+  html:not(.no-motion) .work-row:not([data-open='true']) .work-glow-drift {
+    animation-play-state: paused;
+  }
+
+  /* The motto is lit word by word as it scrolls up the screen. Motto.tsx feeds
+     three numbers from 0 to 1: how far each line has been read, and how far the
+     first has stepped back. The fallbacks are the resting state, which is also
+     what the plain colour classes show when motion is off. */
+  html:not(.no-motion) .motto-word {
+    --lit: clamp(0, calc((var(--motto-first, 1) * (var(--words) + 2) - var(--word)) / 2), 1);
+    color: color-mix(
+      in oklab,
+      var(--color-text) calc(var(--lit) * (1 - var(--motto-rest, 1)) * 100%),
+      var(--color-text-muted)
+    );
+    transition: color 0.25s linear;
+  }
+
+  html:not(.no-motion) .motto-lead .motto-word {
+    --lit: clamp(0, calc((var(--motto-second, 1) * (var(--words) + 2) - var(--word)) / 2), 1);
+    color: color-mix(in oklab, var(--color-text) calc(var(--lit) * 100%), var(--color-text-muted));
+  }
+
   html:not(.no-motion) .work-frame-in {
     animation: work-frame-in 1s var(--ease-smooth) both;
   }
@@ -2038,6 +2081,45 @@ a.work-platform:hover {
 
   to {
     opacity: 0;
+  }
+}
+
+@keyframes work-ambient-drift {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+  }
+
+  35% {
+    opacity: 0.78;
+    transform: translate3d(-4%, 2.5%, 0) scale(1.07) rotate(-2deg);
+  }
+
+  70% {
+    opacity: 0.95;
+    transform: translate3d(3%, -3%, 0) scale(1.03) rotate(1.5deg);
+  }
+
+  100% {
+    opacity: 0.85;
+    transform: translate3d(1.5%, 3.5%, 0) scale(1.1) rotate(-1deg);
+  }
+}
+
+@keyframes work-glow-drift {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  40% {
+    opacity: 0.8;
+    transform: translate3d(3%, -2.5%, 0) scale(1.06);
+  }
+
+  100% {
+    opacity: 0.92;
+    transform: translate3d(-2.5%, 2%, 0) scale(0.97);
   }
 }
 

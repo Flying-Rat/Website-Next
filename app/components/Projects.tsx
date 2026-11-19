@@ -95,28 +95,30 @@ export const Projects = () => {
   };
 
   return (
-    <section ref={sectionRef} id="projects" className="work section-pad">
+    <section ref={sectionRef} id="projects" className="work section-pad" data-live={inView}>
       <div className="work-ambient" aria-hidden="true">
-        {previousProject?.image && (
-          <Image
-            key={previousProject.id}
-            src={previousProject.image}
-            alt=""
-            fill
-            sizes="96px"
-            className="work-ambient-image work-ambient-out"
-          />
-        )}
-        {activeProject.image && (
-          <Image
-            key={activeProject.id}
-            src={activeProject.image}
-            alt=""
-            fill
-            sizes="96px"
-            className="work-ambient-image work-ambient-in"
-          />
-        )}
+        <div className="work-ambient-drift">
+          {previousProject?.image && (
+            <Image
+              key={previousProject.id}
+              src={previousProject.image}
+              alt=""
+              fill
+              sizes="96px"
+              className="work-ambient-image work-ambient-out"
+            />
+          )}
+          {activeProject.image && (
+            <Image
+              key={activeProject.id}
+              src={activeProject.image}
+              alt=""
+              fill
+              sizes="96px"
+              className="work-ambient-image work-ambient-in"
+            />
+          )}
+        </div>
       </div>
 
       <div className="relative container">
@@ -286,14 +288,16 @@ function ProjectDetail({
     <div className="work-detail">
       {project.image && (
         <div className="work-glow" aria-hidden="true">
-          <Image
-            key={project.id}
-            src={project.image}
-            alt=""
-            fill
-            sizes="96px"
-            className="work-glow-image"
-          />
+          <div className="work-glow-drift">
+            <Image
+              key={project.id}
+              src={project.image}
+              alt=""
+              fill
+              sizes="96px"
+              className="work-glow-image"
+            />
+          </div>
         </div>
       )}
 

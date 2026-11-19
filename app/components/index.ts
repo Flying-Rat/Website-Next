@@ -6,6 +6,7 @@ export { Footer } from './Footer';
 export { Header } from './Header';
 export { Hero } from './Hero';
 export { HowWeWork } from './HowWeWork';
+export { Motto } from './Motto';
 export { OpeningCurtain } from './OpeningCurtain';
 export { Projects } from './Projects';
 export { ScrollProgress } from './ScrollProgress';

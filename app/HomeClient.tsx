@@ -9,6 +9,7 @@ import {
   Header,
   Hero,
   HowWeWork,
+  Motto,
   OpeningCurtain,
   Projects,
   CONTENT_ID,
@@ -34,6 +35,7 @@ export function HomeClient() {
         <WhatWeDo />
         <TechStack />
         <Projects />
+        <Motto />
         <HowWeWork />
         <AiPolicy />
         <Community />

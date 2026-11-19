@@ -5,6 +5,7 @@ import type { ReactNode } from 'react';
 
 import { useTranslation } from '../i18n';
 import { PARTNER_URLS } from '../lib/site';
+import { FOUNDER } from './ContactSection';
 import { FadeInView } from './FadeInView';
 import { ExternalLinkIcon, MailIcon } from './icons';
 
@@ -87,6 +88,26 @@ export function Community() {
               );
             })}
           </ul>
+          <figure className="mt-10 grid gap-x-8 gap-y-3 border-t border-line pt-6 md:mt-12 lg:grid-cols-4">
+            <figcaption className="flex items-center gap-2 self-start text-meta leading-tight">
+              <Image
+                src={FOUNDER.photo}
+                alt=""
+                width={24}
+                height={24}
+                sizes="24px"
+                className="size-6 shrink-0 rounded-full object-cover"
+              />
+              <span className="font-semibold text-ink">{FOUNDER.name}</span>
+              <span className="text-muted">{t(FOUNDER.roleKey)}</span>
+            </figcaption>
+            <blockquote className="max-w-3xl text-meta leading-relaxed text-pretty text-muted lg:col-span-3">
+              <p>
+                <span className="text-ink">{t('community.note.lead')}</span>{' '}
+                {t('community.note.body1')} {t('community.note.body2')}
+              </p>
+            </blockquote>
+          </figure>
         </FadeInView>
 
         <FadeInView margin="-60px" className="mt-14 md:mt-20">

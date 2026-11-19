@@ -111,6 +111,11 @@
   },
   "community": {
     "title": "Vracíme komunitě",
+    "note": {
+      "lead": "Milujeme videohry a komunitu kolem nich.",
+      "body1": "Vyrostl jsem díky lidem, kteří se velkoryse dělili o své znalosti, zkušenosti a nadšení. Bez nich bych dnes nebyl tam, kde jsem.",
+      "body2": "Věřím, že v době AI je vracet komunitě důležitější než kdy dřív. Chceme tohoto ducha udržet naživu: sdílet, co se naučíme, inspirovat ostatní a pomáhat další generaci tvůrců dojít ještě dál, než jsme došli my."
+    },
     "items": {
       "gda": {
         "tag": "Člen vedení",
@@ -241,6 +246,10 @@
         }
       }
     }
+  },
+  "motto": {
+    "line1": "Nechceme dohánět.",
+    "line2": "Chceme udávat tempo."
   },
   "howWeWork": {
     "title": "Jak pracujeme",
