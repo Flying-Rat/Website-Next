@@ -112,6 +112,12 @@ const CORE_SECONDS = 0.18;
 /** The blast holds everything nearly still for a moment before it all flies. */
 const STALL = { seconds: 0.1, pace: 0.04 };
 /**
+ * The most of a frame the rubble's physics may take, in milliseconds, and the
+ * largest share of the rubble that crumbles to dust in one frame to get back
+ * under it. A device that cannot keep up shows less rubble, not fewer frames.
+ */
+const LOAD = { most: 8, shed: 0.5 };
+/**
  * How far the view shakes, in blocks, and how quickly that dies away, per second;
  * `roll` is how far it twists, in radians, for each block it shakes.
  */
@@ -228,6 +234,8 @@ export class RockfallGame {
   private shake = 0;
   private punch = 0;
   private stall = 0;
+  /** Milliseconds the rubble's physics took last frame. */
+  private spent = 0;
   /** Where the pointer is, and the middle of the blast a shot there would make. */
   private pointer: { x: number; y: number } | null = null;
   private aimTarget: Vector3 | null = null;
@@ -241,6 +249,8 @@ export class RockfallGame {
   /** From the middle of the map toward the eye, as the view turns. */
   private readonly toward = new Vector3();
   private time = 0;
+  /** Seconds as they pass, where `time` stalls with the scene at a blast. */
+  private clock = 0;
 
   constructor(
     private mount: HTMLElement,
@@ -500,6 +510,7 @@ export class RockfallGame {
     this.rippleAge = RIPPLE_SECONDS;
     this.leaveAge = null;
     this.stall = 0;
+    this.spent = 0;
     this.models.setGround(this.world.solid);
 
     this.blockViews = [];
@@ -756,6 +767,23 @@ export class RockfallGame {
     }
   }
 
+  /**
+   * Crumbles `share` of the rubble to dust. A piece still falling whole is left
+   * alone: it costs little until it lands, and would show the holes.
+   */
+  private shed(rubble: BlockView[], share: number) {
+    const velocity = new Vector3();
+    for (const view of rubble) {
+      if (view.intact || view.mode === 'gone' || Math.random() >= share) {
+        continue;
+      }
+      view.mode = 'gone';
+      velocity.copy(view.velocity).multiplyScalar(0.4);
+      velocity.y += between(0.5, 1.5) * RAT;
+      this.shards.throw('dust', view.position, velocity, between(0.3, 0.55), between(0.4, 0.8));
+    }
+  }
+
   /** Without motion: everything a blast loosened is simply gone. */
   private settle() {
     for (const view of this.blockViews) {
@@ -829,6 +857,7 @@ export class RockfallGame {
     const dt = this.stall > 0 ? frame * STALL.pace : frame;
     this.stall -= frame;
     this.time += dt;
+    this.clock += frame;
     this.orbit += ORBIT.speed * dt;
     this.placeCamera();
     // The map turns under a pointer that holds still, so what it aims at changes.
@@ -890,9 +919,20 @@ export class RockfallGame {
       }
     }
     this.impacts.length = 0;
+    const before = performance.now();
     this.rubble.simulate(this.world, rubble, dt, this.impacts);
+    const spent = performance.now() - before;
+    // The lesser of two frames running: one slow frame is a hiccup, two are a load.
+    const load = Math.min(spent, this.spent);
+    this.spent = spent;
     if (this.impacts.length) {
       this.land(this.impacts);
+    }
+    if (load > LOAD.most) {
+      const share = Math.min(LOAD.shed, 1 - LOAD.most / load);
+      this.shed(rubble, share);
+      // What the next frame should take, so one overload is not shed for twice.
+      this.spent *= 1 - share;
     }
     this.shards.step(this.world, dt);
 
@@ -1009,10 +1049,13 @@ export class RockfallGame {
 
     const { pose } = this;
     let redrawn = false;
-    for (const [index, view] of this.blockViews.entries()) {
+    for (let index = 0; index < this.blockViews.length; index++) {
+      const view = this.blockViews[index];
+      const lift = rippling && view.mode === 'still' ? this.jolt(view.home) : 0;
       // Most of the map stands still most of the time; those blocks are drawn once.
+      // The jolt is a band a few blocks wide, so it moves only the blocks it is under.
       const fixed =
-        !over && leaveAge === null && !rippling && (view.mode === 'still' || view.mode === 'gone');
+        !over && leaveAge === null && lift === 0 && (view.mode === 'still' || view.mode === 'gone');
       if (fixed && view.drawn) {
         continue;
       }
@@ -1021,7 +1064,7 @@ export class RockfallGame {
       pose.position.copy(view.position);
       let size = view.mode === 'gone' ? 0 : view.size;
       if (view.mode === 'still') {
-        pose.position.y += this.jolt(view.home);
+        pose.position.y += lift;
         if (cheer > 0) {
           const ring = (Math.hypot(view.home.x, view.home.z) * 0.7) / RAT - this.phaseAge * 9;
           pose.position.y += 0.35 * RAT * cheer * Math.max(0, Math.sin(ring));
@@ -1074,7 +1117,9 @@ export class RockfallGame {
     // from the view at rest.
     const moved = this.shake > 0.001 || this.punch > 0.0005;
     if (moved) {
-      const t = this.time;
+      // On the clock that keeps running, or the view would hang where the blast
+      // threw it for as long as the scene stalls: that reads as a dropped frame.
+      const t = this.clock;
       camera.translateX(this.shake * (0.6 * Math.sin(t * 61) + 0.4 * Math.sin(t * 37 + 1)));
       camera.translateY(this.shake * (0.6 * Math.cos(t * 53) + 0.4 * Math.sin(t * 29 + 2)));
       camera.rotateZ(this.shake * SHAKE.roll * Math.sin(t * 43 + 0.5));
