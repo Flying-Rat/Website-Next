@@ -63,6 +63,17 @@
         "lost": "Došly rány",
         "again": "Nová mapa",
         "status": "Zbývá krys: {{rats}}, ran: {{shots}}"
+      },
+      "pinball": {
+        "name": "Pinball",
+        "hint": "Stiskni a zvedni páčky, tref kruh",
+        "ready": "Stiskni a pusť míček",
+        "still": "Hra potřebuje zapnuté animace",
+        "balls": "Míčky",
+        "won": "Prostříleno!",
+        "lost": "Došly míčky",
+        "again": "Nový stůl",
+        "status": "Zbývá míčků: {{balls}}"
       }
     }
   },

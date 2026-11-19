@@ -63,6 +63,17 @@
         "lost": "Out of shots",
         "again": "New map",
         "status": "{{rats}} rats left, {{shots}} shots left"
+      },
+      "pinball": {
+        "name": "Pinball",
+        "hint": "Press to flip, reach the ring",
+        "ready": "Press to drop a ball",
+        "still": "Turn on motion to play",
+        "balls": "Balls",
+        "won": "You're through!",
+        "lost": "Out of balls",
+        "again": "New table",
+        "status": "{{balls}} balls left"
       }
     }
   },
