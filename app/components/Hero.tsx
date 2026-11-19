@@ -33,7 +33,7 @@ function usePragueTime() {
 
 function reveal(delayMs: number, distance = 18, durationMs = 950) {
   return {
-    '--reveal-delay': `${delayMs}ms`,
+    '--reveal-delay': `calc(var(--opening-hold) + ${delayMs}ms)`,
     '--reveal-duration': `${durationMs}ms`,
     '--reveal-from': `translateY(${distance}px)`,
   } as CSSProperties;
@@ -52,7 +52,7 @@ export function Hero() {
         <div className="hero-grid flex flex-col">
           <h1
             className="hero-title reveal-on-load pointer-events-none relative z-10 order-1"
-            style={reveal(780, 34, 950)}
+            style={reveal(120, 34, 950)}
           >
             {t('hero.tagline')}
           </h1>
@@ -60,18 +60,18 @@ export function Hero() {
           <div className="hero-aside order-3 mt-7 lg:order-2 lg:mt-0">
             <p
               className="eyebrow reveal-on-load flex items-baseline justify-between gap-4"
-              style={reveal(860, 14, 850)}
+              style={reveal(200, 14, 850)}
             >
               <span>{t('hero.place')}</span>
               <time className="text-muted tabular-nums">{pragueTime ?? '--:--'}</time>
             </p>
             <p
               className="hero-lede reveal-on-load mt-4 max-w-xl text-pretty"
-              style={reveal(940, 18, 900)}
+              style={reveal(280, 18, 900)}
             >
               {t('hero.subtitle')}
             </p>
-            <div className="reveal-on-load mt-6 flex flex-wrap gap-3" style={reveal(1020, 16, 850)}>
+            <div className="reveal-on-load mt-6 flex flex-wrap gap-3" style={reveal(360, 16, 850)}>
               <a href="#projects" className="btn btn-primary">
                 {t('hero.cta.projects')}
                 <ArrowRightIcon className="btn-arrow size-4" />
@@ -88,7 +88,7 @@ export function Hero() {
                   redrawn in the accent colour and clipped by the photo's own frame. */}
               <span
                 className="hero-title hero-title-echo reveal-on-load"
-                style={reveal(780, 34, 950)}
+                style={reveal(120, 34, 950)}
                 aria-hidden="true"
               >
                 {t('hero.tagline')}
@@ -99,6 +99,7 @@ export function Hero() {
                 width={2047}
                 height={1166}
                 className="hero-photo-image"
+                data-opening-cue
                 preload
                 // Phones show the photo wider than the screen, but hinting its true
                 // width makes 3x screens fetch the 1920px file; one screen-width is
@@ -119,7 +120,7 @@ export function Hero() {
           items={trustedStudios}
           prominent
           className="reveal-on-load pt-10 lg:pt-8"
-          style={reveal(1140, 12, 850)}
+          style={reveal(480, 12, 850)}
         />
       </div>
     </section>

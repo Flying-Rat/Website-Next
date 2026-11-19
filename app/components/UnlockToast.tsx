@@ -13,10 +13,10 @@ type Project = (typeof projects)[number];
 const unlockable = projects.filter((project) => project.image).toReversed();
 const MAX_PLATFORMS = 4;
 
-/** Seconds the very first notification waits for the hero opening to settle. */
-const FIRST_DELAY = 1.85;
+/** How long the very first notification waits for the hero opening to settle. */
+const FIRST_DELAY = 'calc(var(--opening-hold) + 1.2s)';
 /** The beat of empty photo between one notification leaving and the next arriving. */
-const NEXT_DELAY = 0.18;
+const NEXT_DELAY = '0.18s';
 
 function UnlockItem({
   project,
@@ -91,7 +91,7 @@ export function UnlockToast({
       href="#projects"
       className="unlock-toast"
       data-leaving={leaving || undefined}
-      style={{ '--unlock-delay': `${step === 0 ? FIRST_DELAY : NEXT_DELAY}s` } as CSSProperties}
+      style={{ '--unlock-delay': step === 0 ? FIRST_DELAY : NEXT_DELAY } as CSSProperties}
     >
       <span className="unlock-slot">
         <UnlockItem

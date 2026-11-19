@@ -437,6 +437,21 @@ html.light .partner-logo {
 
 /* ------------------------------------------------------- opening curtain */
 
+/* The veil lifts upward, so its edge sweeps the hero from the photo up to the
+   header in the middle of the lift. The hero entrance and the header start from
+   `--opening-hold`, the half-lifted moment; anything earlier plays unseen.
+   `--opening-lift-delay` defaults to the longest the veil may wait, which also
+   holds without JavaScript. OpeningCurtain shortens it once the hero photo and
+   fonts are ready; every animation that reads it is retimed from its original
+   start, so the mark's and the rule's exits must stay keyed to it. */
+:root {
+  --opening-wait-cap: 2.5s;
+  --opening-lift-delay: var(--opening-wait-cap);
+  --opening-lift-duration: 0.86s;
+  --opening-hold: calc(var(--opening-lift-delay) + var(--opening-lift-duration) * 0.5);
+  --opening-bow: min(12vh, 16vw);
+}
+
 /* Hidden by default so reduced-motion visitors never see a veil; CSS activates
    it on first paint before hydration when motion is welcome. */
 .opening-curtain {
@@ -446,68 +461,102 @@ html.light .partner-logo {
   will-change: transform;
 }
 
+.opening-curtain-fill {
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   html:not(.no-motion) .opening-curtain {
     display: flex;
-    animation: opening-curtain-lift 0.62s var(--ease-curtain) 0.54s both;
+    animation: opening-curtain-lift var(--opening-lift-duration) var(--ease-curtain)
+      var(--opening-lift-delay) both;
   }
 
-  html:not(.no-motion) .opening-curtain-stage {
-    animation: opening-stage-exit 0.34s var(--ease-curtain) 0.48s both;
-  }
-
+  /* Exits use `forwards`: a backwards fill would hold the entrance at its start. */
   html:not(.no-motion) .opening-curtain-mark {
-    animation: opening-mark-rise 0.44s var(--ease-cinema) 0.02s both;
+    animation:
+      opening-mark-rise 0.52s var(--ease-cinema) 0.02s both,
+      opening-mark-exit 0.46s var(--ease-curtain) calc(var(--opening-lift-delay) - 0.24s) forwards;
   }
 
-  html:not(.no-motion) .opening-curtain-rule {
-    transform-origin: center;
-    animation: opening-rule-draw 0.42s var(--ease-cinema) 0.08s both;
+  html:not(.no-motion) .opening-curtain-track {
+    animation:
+      opening-track-draw 0.5s var(--ease-cinema) 0.16s both,
+      opening-track-exit 0.42s var(--ease-curtain) calc(var(--opening-lift-delay) - 0.2s) forwards;
+  }
+
+  /* Crawls toward full while the page loads; OpeningCurtain completes it. */
+  html:not(.no-motion) .opening-curtain-fill {
+    animation: opening-fill-crawl var(--opening-wait-cap) var(--ease-cinema) 0.24s both;
   }
 
   html:not(.no-motion) .opening-header {
-    animation: opening-header-enter 0.72s var(--ease-cinema) 0.82s both;
+    animation: opening-header-enter 0.72s var(--ease-cinema) calc(var(--opening-hold) + 0.14s) both;
   }
 }
 
 @keyframes opening-mark-rise {
   from {
     opacity: 0;
+    filter: blur(6px);
     transform: translateY(105%);
   }
 
   to {
     opacity: 1;
+    filter: none;
     transform: none;
   }
 }
 
-@keyframes opening-rule-draw {
+/* Past the mask's padding too, or a sliver of the mark stays in view. */
+@keyframes opening-mark-exit {
+  to {
+    transform: translateY(-125%);
+  }
+}
+
+@keyframes opening-track-draw {
   from {
-    opacity: 0;
-    transform: scaleX(0);
+    clip-path: inset(0 50% 0 50%);
   }
 
   to {
-    opacity: 1;
-    transform: scaleX(1);
+    clip-path: inset(0);
   }
 }
 
-@keyframes opening-stage-exit {
+@keyframes opening-track-exit {
+  from {
+    clip-path: inset(0);
+  }
+
   to {
-    opacity: 0;
-    transform: translateY(-14px);
+    clip-path: inset(0 0 0 100%);
   }
 }
 
+@keyframes opening-fill-crawl {
+  to {
+    transform: scaleX(0.9);
+  }
+}
+
+/* The bottom edge bows as it rises, the middle trailing the corners. */
 @keyframes opening-curtain-lift {
   from {
     transform: translate3d(0, 0, 0);
+    border-radius: 0;
+  }
+
+  45% {
+    border-radius: 0 0 50% 50% / 0 0 var(--opening-bow) var(--opening-bow);
   }
 
   to {
-    transform: translate3d(0, -102%, 0);
+    transform: translate3d(0, -104%, 0);
+    border-radius: 0 0 50% 50% / 0 0 var(--opening-bow) var(--opening-bow);
     visibility: hidden;
   }
 }
@@ -984,15 +1033,15 @@ html.light .unlock-toast {
   /* On the frame, not its wrapper: the achievement block hangs off the frame's
      bottom edge on phones and must not be clipped along with the photo. */
   html:not(.no-motion) .hero-photo-crop {
-    animation: hero-photo-unlock 1.05s var(--ease-cinema) 0.66s both;
+    animation: hero-photo-unlock 1.05s var(--ease-cinema) var(--opening-hold) both;
   }
 
   html:not(.no-motion) .hero-photo-image {
-    animation: hero-photo-settle 2s var(--ease-cinema) 0.66s both;
+    animation: hero-photo-settle 2s var(--ease-cinema) var(--opening-hold) both;
   }
 
   html:not(.no-motion) .hero-aside::before {
-    animation: hero-rule-draw 0.85s var(--ease-cinema) 0.8s both;
+    animation: hero-rule-draw 0.85s var(--ease-cinema) calc(var(--opening-hold) + 0.14s) both;
   }
 
   html:not(.no-motion) .unlock-toast {
