@@ -6,6 +6,7 @@ export { Footer } from './Footer';
 export { Header } from './Header';
 export { Hero } from './Hero';
 export { HowWeWork } from './HowWeWork';
+export { OpeningCurtain } from './OpeningCurtain';
 export { Projects } from './Projects';
 export { ScrollProgress } from './ScrollProgress';
 export { CONTENT_ID, SkipLink } from './SkipLink';

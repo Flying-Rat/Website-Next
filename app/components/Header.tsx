@@ -15,11 +15,12 @@ const navSections = [
   { href: 'https://tech.flying-rat.studio/', key: 'nav.blog' },
 ];
 
-export function Header() {
+export function Header({ className }: { className?: string }) {
   const { t } = useTranslation();
 
   return (
     <SiteHeader
+      className={className}
       navLabel={t('nav.primary')}
       links={navSections.map(({ href, key }) => ({ href, label: t(key) }))}
       brand={

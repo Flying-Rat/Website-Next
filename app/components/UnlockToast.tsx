@@ -13,8 +13,8 @@ type Project = (typeof projects)[number];
 const unlockable = projects.filter((project) => project.image).toReversed();
 const MAX_PLATFORMS = 4;
 
-/** Seconds the very first notification waits for the hero photo to open. */
-const FIRST_DELAY = 1.5;
+/** Seconds the very first notification waits for the hero opening to settle. */
+const FIRST_DELAY = 1.85;
 /** The beat of empty photo between one notification leaving and the next arriving. */
 const NEXT_DELAY = 0.18;
 

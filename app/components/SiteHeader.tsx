@@ -43,10 +43,12 @@ export function SiteHeader({
   brand,
   links,
   navLabel,
+  className = '',
 }: {
   brand: ReactNode;
   links: HeaderLink[];
   navLabel: string;
+  className?: string;
 }) {
   const { t } = useTranslation();
   const isScrolled = useScrolledPast(24);
@@ -70,7 +72,7 @@ export function SiteHeader({
 
   return (
     <header
-      className={`site-header fixed inset-x-0 top-0 z-50 border-b ${isScrolled ? 'glass py-3' : 'border-transparent py-5'}`}
+      className={`site-header fixed inset-x-0 top-0 z-50 border-b ${isScrolled ? 'glass py-3' : 'border-transparent py-5'} ${className}`}
     >
       {isMenuOpen && (
         <button

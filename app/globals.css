@@ -15,6 +15,8 @@
   --font-sans: var(--font-mona), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, 'SF Mono', Menlo, monospace;
   --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-cinema: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-curtain: cubic-bezier(0.76, 0, 0.24, 1);
   /* Two steps the default type scale lacks: body copy between `sm` and `base`,
      and mono details (addresses, spec names) between `xs` and `sm`. */
   --text-md: 0.9375rem;
@@ -402,9 +404,8 @@ html.light .partner-logo {
 
 /* Entrances share one motion: ease in from `--reveal-from`. `.reveal` waits for
    `data-pending` to be lifted (FadeInView does that on scroll); `.reveal-on-load`
-   plays as the page first paints, with no script involved. */
-.reveal,
-.reveal-on-load {
+   plays via keyframes from first paint so choreographed delays never flash. */
+.reveal {
   transition:
     opacity var(--reveal-duration, 0.9s) var(--ease-smooth) var(--reveal-delay, 0s),
     transform var(--reveal-duration, 0.9s) var(--ease-smooth) var(--reveal-delay, 0s);
@@ -415,10 +416,111 @@ html.light .partner-logo {
   transform: var(--reveal-from, translateY(20px));
 }
 
-@starting-style {
-  .reveal-on-load {
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.no-motion) .reveal-on-load {
+    animation: reveal-on-load var(--reveal-duration, 0.95s) var(--ease-cinema)
+      var(--reveal-delay, 0s) both;
+  }
+}
+
+@keyframes reveal-on-load {
+  from {
     opacity: 0;
     transform: var(--reveal-from, translateY(20px));
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ------------------------------------------------------- opening curtain */
+
+/* Hidden by default so reduced-motion visitors never see a veil; CSS activates
+   it on first paint before hydration when motion is welcome. */
+.opening-curtain {
+  display: none;
+  z-index: 120;
+  pointer-events: none;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.no-motion) .opening-curtain {
+    display: flex;
+    animation: opening-curtain-lift 0.62s var(--ease-curtain) 0.54s both;
+  }
+
+  html:not(.no-motion) .opening-curtain-stage {
+    animation: opening-stage-exit 0.34s var(--ease-curtain) 0.48s both;
+  }
+
+  html:not(.no-motion) .opening-curtain-mark {
+    animation: opening-mark-rise 0.44s var(--ease-cinema) 0.02s both;
+  }
+
+  html:not(.no-motion) .opening-curtain-rule {
+    transform-origin: center;
+    animation: opening-rule-draw 0.42s var(--ease-cinema) 0.08s both;
+  }
+
+  html:not(.no-motion) .opening-header {
+    animation: opening-header-enter 0.72s var(--ease-cinema) 0.82s both;
+  }
+}
+
+@keyframes opening-mark-rise {
+  from {
+    opacity: 0;
+    transform: translateY(105%);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes opening-rule-draw {
+  from {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes opening-stage-exit {
+  to {
+    opacity: 0;
+    transform: translateY(-14px);
+  }
+}
+
+@keyframes opening-curtain-lift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(0, -102%, 0);
+    visibility: hidden;
+  }
+}
+
+@keyframes opening-header-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
   }
 }
 
@@ -646,9 +748,20 @@ html.light .hero h1.hero-title {
 /* The photo paints over the last stretch of this rule, so the padding ends it on the frame. */
 @media (min-width: 1024px) {
   .hero-aside {
+    position: relative;
     padding-bottom: calc(var(--hero-overlap) + 1.75rem);
     padding-left: 1.5rem;
-    border-left: 1px solid var(--color-border-hover);
+  }
+
+  .hero-aside::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 1px;
+    background: var(--color-border-hover);
+    transform-origin: top;
   }
 }
 
@@ -861,11 +974,15 @@ html.light .unlock-toast {
   /* On the frame, not its wrapper: the achievement block hangs off the frame's
      bottom edge on phones and must not be clipped along with the photo. */
   html:not(.no-motion) .hero-photo-crop {
-    animation: hero-photo-unlock 1.5s var(--ease-smooth) 0.25s both;
+    animation: hero-photo-unlock 1.05s var(--ease-cinema) 0.66s both;
   }
 
   html:not(.no-motion) .hero-photo-image {
-    animation: hero-photo-settle 2.6s var(--ease-smooth) 0.25s both;
+    animation: hero-photo-settle 2s var(--ease-cinema) 0.66s both;
+  }
+
+  html:not(.no-motion) .hero-aside::before {
+    animation: hero-rule-draw 0.85s var(--ease-cinema) 0.8s both;
   }
 
   html:not(.no-motion) .unlock-toast {
@@ -894,23 +1011,39 @@ html.light .unlock-toast {
   }
 }
 
+/* Top edge stays unclipped so `.hero-title-echo` stays locked to `h1.hero-title`
+   throughout the entrance, while the bottom sweeps open like a widescreen frame. */
 @keyframes hero-photo-unlock {
   from {
-    clip-path: inset(49% 4% 49% 4% round 999px);
+    opacity: 0;
+    clip-path: inset(0% 0% 24% 0% round var(--hero-radius));
+    transform: translateY(28px) scale(0.985);
   }
 
   to {
+    opacity: 1;
     clip-path: inset(0 0 0 0 round var(--hero-radius));
+    transform: none;
   }
 }
 
 @keyframes hero-photo-settle {
   from {
-    transform: scale(1.12);
+    transform: scale(1.1);
   }
 
   to {
     transform: none;
+  }
+}
+
+@keyframes hero-rule-draw {
+  from {
+    transform: scaleY(0);
+  }
+
+  to {
+    transform: scaleY(1);
   }
 }
 

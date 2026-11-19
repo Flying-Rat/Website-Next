@@ -9,6 +9,7 @@ import {
   Header,
   Hero,
   HowWeWork,
+  OpeningCurtain,
   Projects,
   CONTENT_ID,
   ScrollProgress,
@@ -23,9 +24,10 @@ export function HomeClient() {
 
   return (
     <>
+      <OpeningCurtain />
       <SkipLink />
       <ScrollProgress />
-      <Header />
+      <Header className="opening-header" />
       <main id={CONTENT_ID} tabIndex={-1}>
         <Hero />
         <About />
