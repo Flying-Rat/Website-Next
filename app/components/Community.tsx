@@ -12,10 +12,34 @@ import { ExternalLinkIcon, MailIcon } from './icons';
 const EVENT_EMAIL = 'marty+events@flying-rat.studio';
 
 const items = [
-  { key: 'gda', href: 'https://gda.cz/', label: 'gda.cz', dot: 'bg-gda' },
-  { key: 'bnf', href: 'https://bnf.events/', label: 'bnf.events', dot: 'bg-bonfire' },
-  { key: 'dekoder', href: 'https://dekoder.fm/', label: 'dekoder.fm', dot: 'bg-dekoder' },
-  { key: 'events', href: `mailto:${EVENT_EMAIL}`, label: EVENT_EMAIL, dot: 'bg-accent' },
+  {
+    key: 'gda',
+    href: 'https://gda.cz/',
+    label: 'gda.cz',
+    dot: 'bg-gda',
+    hover: 'group-hover:text-gda',
+  },
+  {
+    key: 'bnf',
+    href: 'https://bnf.events/',
+    label: 'bnf.events',
+    dot: 'bg-bonfire',
+    hover: 'group-hover:text-bonfire-ink',
+  },
+  {
+    key: 'dekoder',
+    href: 'https://dekoder.fm/',
+    label: 'dekoder.fm',
+    dot: 'bg-dekoder',
+    hover: 'group-hover:text-dekoder',
+  },
+  {
+    key: 'events',
+    href: `mailto:${EVENT_EMAIL}`,
+    label: EVENT_EMAIL,
+    dot: 'bg-accent',
+    hover: 'group-hover:text-accent-ink',
+  },
 ];
 
 const partners = [
@@ -58,7 +82,7 @@ export function Community() {
           <RuleHeading>{t('community.title')}</RuleHeading>
 
           <ul className="grid gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
-            {items.map(({ key, href, label, dot }) => {
+            {items.map(({ key, href, label, dot, hover }) => {
               const isMail = href.startsWith('mailto:');
               const Icon = isMail ? MailIcon : ExternalLinkIcon;
               return (
@@ -73,7 +97,9 @@ export function Community() {
                       <span className={`size-1.5 rounded-full ${dot}`} />
                       {t(`community.items.${key}.tag`)}
                     </span>
-                    <span className="font-display mt-3 block text-xl font-semibold transition-colors duration-300 group-hover:text-accent-ink">
+                    <span
+                      className={`font-display mt-3 block text-xl font-semibold transition-colors duration-300 ${hover}`}
+                    >
                       {t(`community.items.${key}.name`)}
                     </span>
                     <span className="mt-1.5 block max-w-[17rem] text-md leading-relaxed text-pretty text-muted">

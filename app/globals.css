@@ -39,11 +39,12 @@
   --color-line: var(--color-border);
   --color-line-strong: var(--color-border-hover);
   --color-on-accent: var(--color-on-accent);
-  /* Coral, green and Zet indigo deep enough to read as small text; fills use
+  /* Coral, green, Zet indigo and Bonfire orange deep enough to read as text; fills use
      `accent` / `online` / `zet`. */
   --color-accent-ink: var(--color-accent-text);
   --color-online-ink: var(--color-online-text);
   --color-zet-ink: var(--color-zet-text);
+  --color-bonfire-ink: var(--color-bonfire-text);
   --color-gda: var(--color-brand-gda);
   --color-dekoder: var(--color-brand-dekoder);
   --color-plana: var(--color-brand-plana);
@@ -73,6 +74,7 @@ html.dark {
   --color-online-text: var(--color-online);
   /* Zet's indigo itself falls short of 4.5:1 here; a lighter step of it does not. */
   --color-zet-text: #818cf8;
+  --color-bonfire-text: var(--color-bonfire);
   /* GDACZ's navy and Dekodér's blue disappear on black; their logo cyan and
      signature yellow do not. */
   --color-brand-gda: #2ea5d6;
@@ -101,6 +103,8 @@ html.light {
   --color-accent-text: #c92d41;
   --color-online-text: #187a3c;
   --color-zet-text: #4f46e5;
+  /* Bonfire's orange is too pale to read on this page; a deeper cut of it is not. */
+  --color-bonfire-text: #c2410c;
   --color-brand-gda: #0e125b;
   --color-brand-dekoder: #1e3aff;
   /* Plan A's lime vanishes on a light page; their deep green does not. */
