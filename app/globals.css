@@ -2295,6 +2295,26 @@ a.work-platform:hover {
   box-shadow: 0 24px 48px -36px rgb(0 0 0 / 0.45);
 }
 
+/* Past roles open and close smoothly where the browser can animate to `auto`;
+   elsewhere the rule is dropped and they simply toggle. */
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.no-motion) .past-role {
+    interpolate-size: allow-keywords;
+  }
+
+  html:not(.no-motion) .past-role::details-content {
+    block-size: 0;
+    overflow-y: clip;
+    transition:
+      block-size 0.4s var(--ease-smooth),
+      content-visibility 0.4s allow-discrete;
+  }
+
+  html:not(.no-motion) .past-role[open]::details-content {
+    block-size: auto;
+  }
+}
+
 /* ----------------------------------------------------------- how we work */
 
 .seat-dot,

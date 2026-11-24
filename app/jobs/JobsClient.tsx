@@ -12,6 +12,7 @@ import { useClipboard } from '../hooks/useClipboard';
 import { useTranslation } from '../i18n';
 import { HiringTimeline } from './HiringTimeline';
 import { jobSections as sections } from './jobSections';
+import { PastPositions } from './PastPositions';
 
 function toAnchorId(sectionId: string, title: string): string {
   const slug = title
@@ -60,6 +61,11 @@ export function JobsClient() {
     }
 
     // No explicit behaviour: the stylesheet decides, smooth unless motion is reduced.
+    // A shared link to a past role lands on a collapsed row, so open it.
+    if (element instanceof HTMLDetailsElement) {
+      element.open = true;
+    }
+
     const timeoutId = setTimeout(() => element.scrollIntoView(), 100);
     return () => clearTimeout(timeoutId);
   }, []);
@@ -131,13 +137,7 @@ export function JobsClient() {
               <section
                 key={section.id}
                 id={section.id}
-                className={`grid scroll-mt-24 gap-6 border-t border-line py-10 lg:grid-cols-12 lg:gap-8 ${
-                  // Past roles are faded to show they are closed; hovering or tabbing into
-                  // them brings the text back to full contrast for anyone who wants to read it.
-                  isPast
-                    ? 'opacity-55 transition-opacity duration-300 focus-within:opacity-100 hover:opacity-100'
-                    : ''
-                }`}
+                className="grid scroll-mt-24 gap-6 border-t border-line py-10 lg:grid-cols-12 lg:gap-8"
               >
                 <div className="lg:col-span-3">
                   <h3 className="font-display text-2xl font-semibold lg:sticky lg:top-28">
@@ -145,89 +145,97 @@ export function JobsClient() {
                   </h3>
                 </div>
 
-                <div className="space-y-4 lg:col-span-9">
-                  {section.positions.map((position) => {
-                    const title = t(`jobs.positions.${position.key}.title`);
-                    const anchorId = toAnchorId(section.id, title);
-                    const points = t(`jobs.positions.${position.key}.points`, {
-                      returnObjects: true,
-                    }) as string[];
+                {isPast ? (
+                  <div className="lg:col-span-9">
+                    <PastPositions
+                      positions={section.positions.map((position) => ({
+                        ...position,
+                        anchorId: toAnchorId(section.id, t(`jobs.positions.${position.key}.title`)),
+                      }))}
+                    />
+                  </div>
+                ) : (
+                  <div className="space-y-4 lg:col-span-9">
+                    {section.positions.map((position) => {
+                      const title = t(`jobs.positions.${position.key}.title`);
+                      const anchorId = toAnchorId(section.id, title);
+                      const points = t(`jobs.positions.${position.key}.points`, {
+                        returnObjects: true,
+                      }) as string[];
 
-                    return (
-                      <article
-                        key={position.key}
-                        id={anchorId}
-                        className="job-card surface-card scroll-mt-28 p-5 sm:p-8 lg:p-10"
-                      >
-                        <div className="flex items-center justify-between gap-4">
-                          <p className="eyebrow flex flex-wrap items-center gap-x-2.5 gap-y-1">
-                            <span className="text-ink">{t(`jobs.levels.${position.level}`)}</span>
-                            <span aria-hidden="true">/</span>
-                            <span>{t('jobs.location')}</span>
-                          </p>
-                          <button
-                            type="button"
-                            onClick={() => handleCopyLink(anchorId)}
-                            className="-m-3 shrink-0 cursor-pointer rounded-full p-3 transition-colors hover:bg-surface-light"
-                            title={t('jobs.copyLink')}
-                            // The only feedback is an icon swap, so the name carries it too.
-                            aria-label={
-                              copiedId === anchorId ? t('jobs.linkCopied') : t('jobs.copyLink')
-                            }
-                          >
-                            {copiedId === anchorId ? (
-                              <CheckIcon className="size-4 text-online-ink" />
-                            ) : (
-                              <LinkIcon className="size-4 text-subtle" />
-                            )}
-                          </button>
-                        </div>
-
-                        <h4 className="font-display mt-4 text-2xl leading-[1.05] font-semibold text-balance sm:text-[1.75rem] md:text-4xl">
-                          {title}
-                        </h4>
-
-                        <p className="mt-5 max-w-3xl text-md leading-relaxed text-pretty text-secondary sm:mt-6 sm:text-[17px]">
-                          {t(`jobs.positions.${position.key}.description`)}
-                        </p>
-
-                        {/* Past roles drop their requirement list on small screens to keep the page short. */}
-                        <ul
-                          className={`mt-5 gap-x-10 sm:mt-7 sm:grid sm:grid-cols-2 ${isPast ? 'hidden' : 'grid'}`}
+                      return (
+                        <article
+                          key={position.key}
+                          id={anchorId}
+                          className="job-card surface-card scroll-mt-28 p-5 sm:p-8 lg:p-10"
                         >
-                          {points.map((point) => (
-                            <li
-                              key={point}
-                              className="border-t border-line py-2.5 text-sm text-muted sm:py-3 sm:text-md"
+                          <div className="flex items-center justify-between gap-4">
+                            <p className="eyebrow flex flex-wrap items-center gap-x-2.5 gap-y-1">
+                              <span className="text-ink">{t(`jobs.levels.${position.level}`)}</span>
+                              <span aria-hidden="true">/</span>
+                              <span>{t('jobs.location')}</span>
+                            </p>
+                            <button
+                              type="button"
+                              onClick={() => handleCopyLink(anchorId)}
+                              className="-m-3 shrink-0 cursor-pointer rounded-full p-3 transition-colors hover:bg-surface-light"
+                              title={t('jobs.copyLink')}
+                              // The only feedback is an icon swap, so the name carries it too.
+                              aria-label={
+                                copiedId === anchorId ? t('jobs.linkCopied') : t('jobs.copyLink')
+                              }
                             >
-                              {point}
-                            </li>
-                          ))}
-                        </ul>
+                              {copiedId === anchorId ? (
+                                <CheckIcon className="size-4 text-online-ink" />
+                              ) : (
+                                <LinkIcon className="size-4 text-subtle" />
+                              )}
+                            </button>
+                          </div>
 
-                        <a
-                          href={getMailtoUrl(title)}
-                          className="group mt-6 flex items-center justify-between gap-6 border-t border-line pt-5 sm:mt-8 sm:pt-6"
-                        >
-                          <span className="flex min-w-0 flex-1 flex-col gap-1.5">
-                            <span className="font-display text-xl font-semibold text-balance sm:text-2xl">
-                              {t('jobs.apply')}
-                              <span className="sr-only">: {title}</span>
-                            </span>
-                            {/* Zero intrinsic width, so a long address is cut short on a narrow
+                          <h4 className="font-display mt-4 text-2xl leading-[1.05] font-semibold text-balance sm:text-[1.75rem] md:text-4xl">
+                            {title}
+                          </h4>
+
+                          <p className="mt-5 max-w-3xl text-md leading-relaxed text-pretty text-secondary sm:mt-6 sm:text-[17px]">
+                            {t(`jobs.positions.${position.key}.description`)}
+                          </p>
+
+                          <ul className="mt-5 grid gap-x-10 sm:mt-7 sm:grid-cols-2">
+                            {points.map((point) => (
+                              <li
+                                key={point}
+                                className="border-t border-line py-2.5 text-sm text-muted sm:py-3 sm:text-md"
+                              >
+                                {point}
+                              </li>
+                            ))}
+                          </ul>
+
+                          <a
+                            href={getMailtoUrl(title)}
+                            className="group mt-6 flex items-center justify-between gap-6 border-t border-line pt-5 sm:mt-8 sm:pt-6"
+                          >
+                            <span className="flex min-w-0 flex-1 flex-col gap-1.5">
+                              <span className="font-display text-xl font-semibold text-balance sm:text-2xl">
+                                {t('jobs.apply')}
+                                <span className="sr-only">: {title}</span>
+                              </span>
+                              {/* Zero intrinsic width, so a long address is cut short on a narrow
                                 phone and never widens the page. */}
-                            <span className="w-0 min-w-full truncate font-mono text-xs text-subtle transition-colors duration-300 group-hover:text-ink">
-                              {email}
+                              <span className="w-0 min-w-full truncate font-mono text-xs text-subtle transition-colors duration-300 group-hover:text-ink">
+                                {email}
+                              </span>
                             </span>
-                          </span>
-                          <span className="grid size-11 shrink-0 place-items-center rounded-full bg-accent text-on-accent transition-colors duration-300 group-hover:bg-ink group-hover:text-page sm:size-12">
-                            <ArrowRightIcon className="size-4 transition-transform duration-300 ease-smooth group-hover:translate-x-0.5" />
-                          </span>
-                        </a>
-                      </article>
-                    );
-                  })}
-                </div>
+                            <span className="grid size-11 shrink-0 place-items-center rounded-full bg-accent text-on-accent transition-colors duration-300 group-hover:bg-ink group-hover:text-page sm:size-12">
+                              <ArrowRightIcon className="size-4 transition-transform duration-300 ease-smooth group-hover:translate-x-0.5" />
+                            </span>
+                          </a>
+                        </article>
+                      );
+                    })}
+                  </div>
+                )}
               </section>
             );
           })}

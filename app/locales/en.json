@@ -338,6 +338,7 @@
     "apply": "Apply for this role",
     "copyLink": "Copy link",
     "linkCopied": "Link copied",
+    "closed": "Closed",
     "levels": {
       "junior": "Junior",
       "medior": "Medior",
